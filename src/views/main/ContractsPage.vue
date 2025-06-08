@@ -4,6 +4,6 @@
 
 <script>
 export default {
-  name: 'NotFoundPage',
+  name: 'ContractsPage',
 }
 </script>
