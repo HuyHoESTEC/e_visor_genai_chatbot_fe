@@ -1,30 +1,29 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { useAuthStore } from './stores/auth';
+import SideBar from './components/layout/SideBar.vue';
+
+const authStore = useAuthStore();
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="app" :class="{ 'app-layout': authStore.isLoggedIn, 'full-page-layout': !authStore.isLoggedIn }">
+    <SideBar v-if="authStore.isLoggedIn" />
+    <router-view />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/* Layout khi người dùng đã đăng nhập (có sidebar) */
+.app-layout {
+  display: flex;
+  width: 100%;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+/* Layout khi người dùng chưa đăng nhập (login/register, chiếm toàn bộ trang) */
+.full-page-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 </style>
