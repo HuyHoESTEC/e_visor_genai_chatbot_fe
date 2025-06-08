@@ -1,26 +1,26 @@
 <template>
   <div class="auth-page">
-    <div class="auth-car">
-      <h2>Register new account</h2>
+    <div class="auth-card">
+      <h2>Đăng ký tài khoản mới</h2>
       <el-form @submit.prevent="handleRegister">
         <el-form-item label="Email">
-          <el-input v-model="email" type="email" placeholder="Typing your email" />
+          <el-input v-model="email" type="email" placeholder="Vui lòng nhập email của bạn" />
         </el-form-item>
-        <el-form-item label="Password">
-          <el-input v-model="password" type="password" placeholder="Create password" show-password />
+        <el-form-item label="Mật khẩu">
+          <el-input v-model="password" type="password" placeholder="Vui lòng nhập mật khẩu của bạn" show-password />
         </el-form-item>
-        <el-form-item label="Confirm the password">
-          <el-input v-model="confirmPassword" type="password" placeholder="Confirm the password" />
+        <el-form-item label="Xác nhận lại mật khẩu">
+          <el-input v-model="confirmPassword" type="password" placeholder="Xác nhận lại mật khẩu" />
         </el-form-item>
         <el-alert v-if="authStore.error" type="error" :title="authStore.error" show-icon class="mb-3" />
         <el-form-item>
           <el-button type="primary" native-type="submit" :loading="authStore.loading" class="full-width">
-            Register
+            Đăng ký
           </el-button>
         </el-form-item>
       </el-form>
       <p class="mt-3">
-        There are accounts ? <router-link to="/login">Login</router-link>
+        Bạn đã có tài khoản ? <router-link to="/login">Đăng nhập</router-link>
       </p>
     </div>
   </div>
@@ -63,9 +63,18 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f0f2f5;
   width: 100%;
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.6),   /* overlay bóng mờ màu đen 50% */
+      rgba(0, 0, 0, 0.6)
+    ),
+    url('../../assets/img/form_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  width: 100vw;         
+  height: 100vh;          
+  overflow: hidden;
 }
 
 .auth-card {
