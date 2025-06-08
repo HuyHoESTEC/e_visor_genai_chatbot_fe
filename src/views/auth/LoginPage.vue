@@ -1,21 +1,21 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <h2>Login</h2>
+      <h2>Đăng nhập</h2>
       <el-form @submit.prevent="handleLogin">
           <el-form-item label="Email">
-            <el-input v-model="email" type="email" placeholder="Typing your email" />
+            <el-input v-model="email" type="email" placeholder="Vui lòng nhập email của bạn" />
           </el-form-item>
-          <el-form-item label="Password">
-            <el-input v-model="password" type="password" placeholder="Typing your password" show-password />
+          <el-form-item label="Mật khẩu">
+            <el-input v-model="password" type="password" placeholder="Vui lòng nhập mật khẩu của bạn" show-password />
           </el-form-item>
           <el-alert v-if="authStore.error" type="error" :title="authStore.error" show-icon class="mb-3" />
           <el-form-item>
-            <el-button type="primary" native-type="submit" :loading="authStore.loading" class="full-width">Login</el-button>
+            <el-button type="success" native-type="submit" :loading="authStore.loading" class="full-width">Đăng nhập</el-button>
           </el-form-item>
       </el-form>
       <p class="mt-3">
-        No account ? <router-link to="/register">Register now</router-link>
+        Bạn chưa có tài khoản ? <router-link to="/register">Đăng ký tại đây</router-link>
       </p>
     </div>
   </div>
@@ -52,8 +52,18 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f0f2f5;
   width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng khi sidebar không hiển thị */
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.6),   /* overlay bóng mờ màu đen 50% */
+      rgba(0, 0, 0, 0.6)
+    ),
+    url('../../assets/img/form_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  width: 100vw;         
+  height: 100vh;          
+  overflow: hidden;
 }
 
 .auth-card {
