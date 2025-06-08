@@ -87,7 +87,7 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'Login' });
   } else if (to.meta.guestOnly && isLoggedIn) {
     // If the route is only for guests (login/register) that users have logged in, shifted to the main page
-    next({ name: 'ContractReview' }); // Or can redirect to dashboard page
+    next({ name: 'Chat' }); // Or can redirect to dashboard page
   } else {
     next(); // Allow accept to system
   }
