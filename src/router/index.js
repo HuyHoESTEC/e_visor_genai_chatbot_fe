@@ -115,7 +115,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && !isLoggedIn) {
     next({ name: 'Login' });
   } else if (to.meta.guestOnly && isLoggedIn) {
-    next({ name: 'ContractReview' });
+    next({ name: 'Chat' });
   } else {
     next();
   }
