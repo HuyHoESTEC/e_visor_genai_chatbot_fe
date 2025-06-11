@@ -6,13 +6,13 @@ import ContractReviewPage from "../views/main/ContractReviewPage.vue";
 import DashboardPage from "../views/main/DashboardPage.vue";
 import ChatPage from "../views/main/ChatPage.vue";
 import ContractsPage from "../views/main/ContractsPage.vue";
-import SettingsPage from "../views/main/SettingsPage.vue";
+// import SettingsPage from "../views/main/SettingsPage.vue";
 import { onAuthStateChanged, auth } from "../firebase";
 
 const routes = [
   {
     path: '/',
-    redirect: '/contract-review',
+    redirect: '/chat',
     meta: { requiresAuth: true } // Request login to access the default routes
   },
   {
@@ -30,7 +30,7 @@ const routes = [
   {
     path: '/contract-review',
     name: 'ContractReview',
-    component: ContractReviewPage,
+    component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true } // Login request
   },
   {
@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/settings',
     name: 'Settings',
-    component: SettingsPage,
+    component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true }
   },
   {
