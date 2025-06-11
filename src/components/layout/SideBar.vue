@@ -1,7 +1,8 @@
 <template>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <img src="../../assets/vue.svg" alt="Logo" class="sidebar-logo" />
+      <img src="../../assets/img/estec-icon.png" alt="Logo" class="sidebar-logo" />
+      <p>ESTEC DIGITAL</p>
     </div>
     <nav class="sidebar-nav">
       <ul>
@@ -45,38 +46,24 @@ export default {
       {
         name: "chat",
         label: "Chat",
-        iconComponent: "ChatDotSquare",
+        iconComponent: "ChatRound",
         routeName: "Chat",
         isActive: false,
       },
       {
         name: "dashboard",
         label: "Dashboard",
-        iconComponent: "DataAnalysis",
+        iconComponent: "TrendCharts",
         routeName: "Dashboard",
         isActive: false,
       },
       {
         name: "contract-review",
         label: "Contract Review",
-        iconComponent: "Document",
+        iconComponent: "PieChart",
         routeName: "ContractReview",
         isActive: false,
       },
-      // {
-      //   name: "contract-elements",
-      //   label: "Contract Elements",
-      //   iconComponent: "Reading",
-      //   routeName: "ContractElements",
-      //   isActive: false,
-      // },
-      // {
-      //   name: "contracts",
-      //   label: "Contracts",
-      //   iconComponent: "Folder",
-      //   routeName: "Contracts",
-      //   isActive: false,
-      // },
       // {
       //   name: "contact-fields",
       //   label: "Contact Fields",
@@ -153,9 +140,15 @@ export default {
 }
 
 .sidebar-header {
+  display: flex;
+  flex-direction: row;
   padding: 0 20px 20px;
   border-bottom: 1px solid #eee;
   margin-bottom: 20px;
+}
+
+.sidebar-header > p {
+  font-weight: bold;
 }
 
 .sidebar-logo {
