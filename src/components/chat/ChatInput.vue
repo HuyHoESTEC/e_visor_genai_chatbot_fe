@@ -1,119 +1,121 @@
 <template>
   <div class="chat-input-area">
-    <textarea
-      v-model="messageInput"
-      @keyup.enter.prevent="handleEnter"
-      :disabled="!isConnected"
-      placeholder="Nhập câu hỏi về hợp đồng..."
-      rows="1"
-    ></textarea>
-    <button @click="sendClientMessage" :disabled="!isConnected">
-      <i class="fas fa-paper-plane send-icon"></i>
-    </button>
+    <div class="input-container">
+      <el-input
+        v-model="message"
+        placeholder="Type a message..."
+        :rows="1"
+        type="textarea"
+        resize="none"
+        @keyup.enter="sendMessage"
+        class="message-textarea"
+      ></el-input>
+      <el-button type="primary" :icon="Promotion" circle class="send-button" v-on:click="sendMessage"></el-button>
+    </div>
+    <div class="input-actions">
+      <el-button :icon="Upload" class="action-button">Upload</el-button>
+      <el-button :icon="Search" class="action-button">Deep research</el-button>
+      </div>
+    <div class="disclaimer">
+      ESTEC AI can make mistakes. Please check the information before use.
+    </div>
   </div>
-  <p class="input-hint">Bạn có thể hỏi các điều khoản cụ thể hoặc các điểm yếu.</p>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { useWebSocket } from '../../composables/useWebSocket';
+import { Upload, Search, Promotion } from '@element-plus/icons-vue';
 
 export default {
   name: 'ChatInput',
-  setup() {
-    const { isConnected, sendMessage, messages } = useWebSocket();
-    const messageInput = ref('');
-
-    const handleEnter = (event) => {
-      if (!event.shiftKey) {
-        sendClientMessage();
-      }
-    };
-
-    const sendClientMessage = () => {
-      if (messageInput.value.trim() && isConnected.value) {
-        sendMessage({
-          type: 'user_message',
-          message: messageInput.value.trim(),
-          sessionId: messages.length > 0 ? messages[messages.length - 1].sessionId : 'new_session_id'
-        });
-        messageInput.value = ''; // Delete input after send request
+  emits: ['sendMessage'],
+  setup(props, { emit }) {
+    const message = ref('');
+    const sendMessage = () => {
+      if (message.value.trim()) {
+        emit('sendMessage', message.value.trim());
+        message.value = '';
       }
     }
-
+    
     return {
-      isConnected,
+      message,
       sendMessage,
-      messages,
-      messageInput,
-      handleEnter
+      Upload,
+      Search,
+      Promotion
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style scoped>
 .chat-input-area {
+  padding: 20px;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0; /* Ngăn khu vực input bị co lại */
   display: flex;
-  align-items: flex-end; /* Căn chỉnh input và nút gửi */
-  background-color: #ffffff;
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.chat-input-area textarea {
-  flex-grow: 1;
-  border: 1px solid #ddd;
-  border-radius: 20px; /* Bo tròn các góc */
-  padding: 10px 15px;
-  font-size: 1em;
-  resize: none; /* Ngăn người dùng kéo dãn textarea */
-  max-height: 100px; /* Giới hạn chiều cao để không bị quá lớn */
-  overflow-y: auto; /* Cho phép cuộn nếu text quá dài */
-  margin-right: 10px;
-}
-
-.chat-input-area textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.chat-input-area button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%; /* Nút gửi tròn */
-  width: 45px;
-  height: 45px;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  flex-shrink: 0; /* Ngăn nút bị co lại */
+  max-width: 800px; /* Giới hạn chiều rộng tối đa */
+  margin: 0 auto; /* Căn giữa */
 }
 
-.chat-input-area button:hover:not(:disabled) {
-  background-color: #0056b3;
+.input-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+  align-items: flex-end; /* Căn nút gửi với input */
 }
 
-.chat-input-area button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+.message-textarea {
+  flex-grow: 1;
+  margin-right: 10px;
+  /* Override Element Plus default style nếu cần */
 }
 
-.send-icon {
+/* Tùy chỉnh chiều cao của textarea khi không có nhiều dòng */
+.message-textarea :deep(.el-textarea__inner) {
+  min-height: 40px !important; /* Chiều cao tối thiểu */
+  padding-right: 40px; /* Để chừa chỗ cho nút gửi */
+}
+
+
+.send-button {
+  width: 40px;
+  height: 40px;
   font-size: 1.2em;
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
-.input-hint {
-  font-size: 0.85em;
-  color: #777;
+.send-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.input-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.action-button {
+  background-color: #f0f2f5;
+  border-color: #e0e0e0;
+  color: #555;
+  padding: 8px 15px;
+  font-size: 0.9em;
+}
+
+.action-button:hover {
+  background-color: #e9e9e9;
+}
+
+.disclaimer {
+  font-size: 0.8em;
+  color: #999;
   text-align: center;
-  margin-top: 10px;
-  padding-bottom: 10px;
 }
 </style>

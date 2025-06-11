@@ -182,7 +182,7 @@ export const useAuthStore = defineStore('auth', {
         // await this.callBackendProtectedApi(idToken);
 
         // Redirect after login success
-        router.push('/contract-review'); // Replace /chat with Route you want to move towards
+        router.push('/chat'); // Replace /chat with Route you want to move towards
       } catch (err) {
         console.error('Error login:', err);
         // Resolve detail error firebase Auth
