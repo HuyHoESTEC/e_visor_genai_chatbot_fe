@@ -3,7 +3,10 @@
     <ChatSidebar />
     <div class="chat-main-content">
       <ChatMessage ref="messageRef" />
-      <ChatInput @send-message="handleSendMessage" />
+      <ChatInput
+        :is-deep-research="isDeepResearchMode"
+        @send-message="handleSendMessage" 
+        @toggle-deep-research="isDeepResearchMode = !isDeepResearchMode" />
     </div>
   </div>
 </template>
@@ -23,30 +26,12 @@ export default {
   },
   setup() {
     const messageRef = ref('');
+    const isDeepResearchMode = ref(false);
+
     const handleSendMessage = (newMessage) => {
       if (messageRef.value) {
-        // Thêm tin nhắn mới vào danh sách tin nhắn của ChatMessageArea
-        // Bạn cần expose một method hoặc prop để làm điều này trong ChatMessageArea
-        // Hiện tại, ChatMessageArea có biến `messages` riêng, bạn sẽ cần truyền nó qua prop
-        // hoặc sử dụng Vuex/Pinia để quản lý state global.
-        // Ví dụ đơn giản:
-        // messageAreaRef.value.addMessage({
-        //   id: messageAreaRef.value.messages.length + 1,
-        //   text: newMessage,
-        //   sender: 'user'
-        // });
-
-        // Để demo, chúng ta sẽ log ra và giả lập thêm vào.
         console.log("Tin nhắn được gửi:", newMessage);
-
-        // Dưới đây là cách bạn có thể giả lập việc thêm tin nhắn vào ChatMessageArea
-        // Để làm điều này hiệu quả, bạn cần truyền `messages` state từ ChatPage xuống
-        // ChatMessageArea thông qua props và `v-model` hoặc `emit` từ ChatInput lên ChatPage
-        // để ChatPage quản lý danh sách tin nhắn.
-
-        // Tạm thời, để demo: Bạn có thể cập nhật prop 'messages' của ChatMessageArea
-        // Giả sử ChatMessageArea chấp nhận prop `messages`
-        if (messageRef.value && messageRef.value.messages) {
+        if (messageRef.value && messageRef.value.messages && isDeepResearchMode.value) {
           messageRef.value.messages.push({
             id: messageRef.value.messages.length + 1,
             text: newMessage,
@@ -66,6 +51,7 @@ export default {
 
     return {
       messageRef,
+      isDeepResearchMode,
       handleSendMessage
     }
   }

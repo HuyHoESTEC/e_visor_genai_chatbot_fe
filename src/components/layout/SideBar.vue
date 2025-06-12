@@ -71,19 +71,26 @@ export default {
         isActive: false,
       },
       {
+        name: "profile",
+        label: "Thông Tin",
+        iconComponent: "Avatar",
+        routeName: "Profile",
+        isActive: false,
+      },
+      {
         name: "dashboard",
         label: "Dashboard",
         iconComponent: "TrendCharts",
         routeName: "Dashboard",
         isActive: false,
       },
-      // {
-      //   name: "contract-review",
-      //   label: "Contract Review",
-      //   iconComponent: "PieChart",
-      //   routeName: "ContractReview",
-      //   isActive: false,
-      // },
+      {
+        name: "contract",
+        label: "Báo Cáo",
+        iconComponent: "Document",
+        routeName: "Contract",
+        isActive: false,
+      },
     ]);
 
     watch(
@@ -306,6 +313,7 @@ export default {
   height: 32px; /* Kích thước nút nhỏ hơn */
   transition: background-color 0.2s ease, color 0.2s ease;
   padding: 0; /* Loại bỏ padding mặc định của el-button */
+  outline: none;
 }
 
 .toggle-sidebar-button:hover {

@@ -7,6 +7,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { useAuthStore } from './stores/auth'
+import '@/assets/styles/colorList.css'
 
 // If you want to create WebSocket global here
 // import { useWebSocket } from './composables/useWebSocket';
