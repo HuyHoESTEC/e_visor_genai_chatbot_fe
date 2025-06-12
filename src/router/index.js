@@ -2,11 +2,12 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from '../stores/auth';
 import LoginPage from "../views/auth/LoginPage.vue";
 import RegisterPage from "../views/auth/RegisterPage.vue";
-import ContractReviewPage from "../views/main/ContractReviewPage.vue";
-import DashboardPage from "../views/main/DashboardPage.vue";
+// import ContractReviewPage from "../views/main/ContractReviewPage.vue";
+// import DashboardPage from "../views/main/DashboardPage.vue";
 import ChatPage from "../views/main/ChatPage.vue";
-import ContractsPage from "../views/main/ContractsPage.vue";
+// import ContractsPage from "../views/main/ContractsPage.vue";
 // import SettingsPage from "../views/main/SettingsPage.vue";
+// import ProfilePage from '../views/profile/ProfilePage.vue';
 import { onAuthStateChanged, auth } from "../firebase";
 
 const routes = [
@@ -36,7 +37,7 @@ const routes = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: DashboardPage,
+    component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true }
   },
   {
@@ -48,12 +49,18 @@ const routes = [
   {
     path: '/contract',
     name: 'Contract',
-    component: ContractsPage,
+    component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true }
   },
   {
     path: '/settings',
     name: 'Settings',
+    component: () => import('../views/NotFoundPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
     component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true }
   },

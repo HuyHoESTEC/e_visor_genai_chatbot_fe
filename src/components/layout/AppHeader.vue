@@ -4,7 +4,7 @@
             <h1 class="current-tab-name">{{ currentTabName }}</h1>
         </div>
         <div class="header-right">
-            <span class="user-name">{{ userName }}</span>
+            <img :src="userAvatar" alt="User Avatar" class="user-avatar" />
         </div>
     </header>
 </template>
@@ -13,6 +13,7 @@
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { computed } from 'vue';
+import defaultAvatar from '@/assets/img/default-profile-ava.png';
 
 export default {
     name: 'AppHeader',
@@ -25,16 +26,15 @@ export default {
             // Priority Route.meta.title if any, if not, use route.name
             return route.meta.title || route.name || 'Chat'
         });
-        // Computed property to get user name
-        const userName = computed(() => {
-            return authStore.user?.username || 'Guest'
+        const userAvatar = computed(() => {
+            return authStore.user?.avataUrl || defaultAvatar;
         })
 
         return {
             route,
             authStore,
             currentTabName,
-            userName
+            userAvatar
         }
     }
 }
@@ -62,9 +62,12 @@ export default {
   margin: 0;
 }
 
-.header-right .user-name {
-  font-size: 1.1em;
-  font-weight: 500;
-  color: #555;
+.header-right .user-avatar {
+  width: 40px; /* Kích thước avatar */
+  height: 40px;
+  border-radius: 50%; /* Làm cho avatar tròn */
+  object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng */
+  border: 2px solid #e0e0e0; /* Viền nhỏ quanh avatar (tùy chọn) */
+  cursor: pointer; /* Biểu tượng con trỏ khi di chuột qua */
 }
 </style>
