@@ -49,11 +49,12 @@ export default {
       default: false
     }
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const message = ref('');
     const sendMessage = () => {
-      if (message.value.trim()) {
-        emit('sendMessage', message.value);
+      // Only send a message if not creating feedback
+      if (message.value.trim() && !props.isGenerateResponse) {
+        emit('send-message', message.value);
         message.value = '';
       }
     };
@@ -67,7 +68,10 @@ export default {
     };
 
     const toggleDeepResearch = () => {
-      emit('toggle-deep-research');
+      // Only allow the conversion of Deep Research when not creating feedback
+      if (!props.isGenerateResponse) {
+        emit('toggle-deep-research');
+      }
     }
     
     return {
@@ -146,6 +150,11 @@ export default {
   border: 1px solid #e9e9e9;
 }
 
+.send-button:disabled { /* Thêm style cho nút disabled */
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .input-actions {
   display: flex;
   gap: 10px;
@@ -178,6 +187,11 @@ export default {
 .action-button.active {
   background-color: #34495e; /* Màu nền xanh đậm khi active, tương tự active chat item */
   color: var(--siements_web_functional_gray); /* Chữ màu trắng khi active */
+}
+
+.action-button:disabled { /* Thêm style cho nút disabled */
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 
