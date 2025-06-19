@@ -1,43 +1,43 @@
 <template>
-    <header class="app-header">
-        <div class="header-left">
-            <h1 class="current-tab-name">{{ currentTabName }}</h1>
-        </div>
-        <div class="header-right">
-            <img :src="userAvatar" alt="User Avatar" class="user-avatar" />
-        </div>
-    </header>
+  <header class="app-header">
+    <div class="header-left">
+      <h1 class="current-tab-name">{{ currentTabName }}</h1>
+    </div>
+    <div class="header-right">
+      <img :src="userAvatar" alt="User Avatar" class="user-avatar" />
+    </div>
+  </header>
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
-import { useAuthStore } from '../../stores/auth';
-import { computed } from 'vue';
-import defaultAvatar from '@/assets/img/default-profile-ava.png';
+import { useRoute } from "vue-router";
+import { useAuthStore } from "../../stores/auth";
+import { computed } from "vue";
+import defaultAvatar from "@/assets/img/default-profile-ava.png";
 
 export default {
-    name: 'AppHeader',
-    setup(){
-        const route = useRoute();
-        const authStore = useAuthStore();
+  name: "AppHeader",
+  setup() {
+    const route = useRoute();
+    const authStore = useAuthStore();
 
-        // Computed property to get current tab
-        const currentTabName = computed(() => {
-            // Priority Route.meta.title if any, if not, use route.name
-            return route.meta.title || route.name || 'Chat'
-        });
-        const userAvatar = computed(() => {
-            return authStore.user?.avataUrl || defaultAvatar;
-        })
+    // Computed property to get current tab
+    const currentTabName = computed(() => {
+      // Priority Route.meta.title if any, if not, use route.name
+      return route.meta.title || route.name || "Chat";
+    });
+    const userAvatar = computed(() => {
+      return authStore.user?.avataUrl || defaultAvatar;
+    });
 
-        return {
-            route,
-            authStore,
-            currentTabName,
-            userAvatar
-        }
-    }
-}
+    return {
+      route,
+      authStore,
+      currentTabName,
+      userAvatar,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -58,7 +58,7 @@ export default {
 .header-left .current-tab-name {
   font-size: 1.5em;
   font-weight: 600;
-  color: #333;
+  color: var(--estec-unique-color);
   margin: 0;
 }
 

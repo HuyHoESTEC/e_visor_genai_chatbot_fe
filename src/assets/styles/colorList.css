@@ -24,4 +24,11 @@
     --background-white-smooth: #ecf0f1;
     --ai-response-message-color: #85c1e9;
     --google-background-color: #db4437;
+
+    --primary-blue: #007bff; /* Màu xanh sáng của VTI Solutions */
+    --dark-blue: #0056b3; /* Màu xanh đậm cho tiêu đề */
+    --text-color: #555; /* Màu chữ chính */
+    --light-gray: #f8f8f8; /* Màu nền nhẹ */
+    --icon-color: #666; /* Màu xám cho icon */
+    --light-icon-color: #999; /* Màu xám nhạt cho icon */
 }
