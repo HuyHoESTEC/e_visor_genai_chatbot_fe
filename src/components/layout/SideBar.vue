@@ -108,7 +108,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { ref, watch } from "vue";
-import { Expand } from "@element-plus/icons-vue";
+import { Expand, Setting, SwitchButton } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { MENU_ITEMS } from "../../constants/menuItems";
 
@@ -117,6 +117,8 @@ export default {
   emits: ["toggleSidebar"],
   components: {
     Expand,
+    Setting,
+    SwitchButton,
   },
   setup(props, { emit }) {
     const route = useRoute();
@@ -192,6 +194,8 @@ export default {
       confirmLogout,
       toggleSidebar,
       Expand,
+      Setting,
+      SwitchButton,
     };
   },
 };
