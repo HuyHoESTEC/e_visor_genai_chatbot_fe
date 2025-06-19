@@ -1,61 +1,66 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <h2>Đăng ký tài khoản mới</h2>
-      <el-form @submit.prevent="handleRegister">
-        <el-form-item label="Email">
-          <el-input v-model="email" type="email" placeholder="Vui lòng nhập email của bạn" />
-        </el-form-item>
-        <el-form-item label="Mật khẩu">
-          <el-input v-model="password" type="password" placeholder="Vui lòng nhập mật khẩu của bạn" show-password />
-        </el-form-item>
-        <el-form-item label="Xác nhận lại mật khẩu">
-          <el-input v-model="confirmPassword" type="password" placeholder="Xác nhận lại mật khẩu" />
-        </el-form-item>
-        <el-alert v-if="authStore.error" type="error" :title="authStore.error" show-icon class="mb-3" />
-        <el-form-item>
-          <el-button type="primary" native-type="submit" :loading="authStore.loading" class="full-width">
-            Đăng ký
-          </el-button>
-        </el-form-item>
-      </el-form>
-      <p class="mt-3">
-        Bạn đã có tài khoản ? <router-link to="/login">Đăng nhập</router-link>
-      </p>
+      <RegisterForm
+        @handle-register="handleTraditionalRegister"
+        @social-login="handleSocialLogin"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from "../../stores/auth";
+import RegisterForm from "../../components/auth/RegisterForm.vue";
 
 export default {
-  name: 'RegisterPage',
+  name: "RegisterPage",
+  components: {
+    RegisterForm,
+  },
   setup() {
     const authStore = useAuthStore();
 
-    const email = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
-
-    const handleRegister = async () => {
-      if (password.value !== confirmPassword.value) {
-        authStore.error = 'Password confirm is not valid';
+    const handleTraditionalRegister = async (
+      fullName,
+      phoneNumber,
+      addressVal,
+      emailVal,
+      passwordVal,
+      confirmPassword
+    ) => {
+      if (passwordVal.value !== confirmPassword.value) {
+        authStore.error = "Password confirm is not valid";
         return;
       }
-      await authStore.register({ email: email.value, password: password.value });
-    }
+      console.log("User informations has been registered:", {
+        fullname: fullName,
+        phonenumber: phoneNumber,
+        address: addressVal,
+        email: emailVal,
+        password: passwordVal,
+      });
+
+      await authStore.register({
+        fullname: fullName,
+        phonenumber: phoneNumber,
+        address: addressVal,
+        email: emailVal,
+        password: passwordVal,
+      });
+    };
+
+    const handleSocialLogin = () => {
+      return;
+    };
 
     return {
       authStore,
-      email,
-      password,
-      confirmPassword,
-      handleRegister
-    }
-  }
-}
+      handleTraditionalRegister,
+      handleSocialLogin,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -64,16 +69,15 @@ export default {
   justify-content: center;
   align-items: center;
   width: 100%;
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.6),   /* overlay bóng mờ màu đen 50% */
-      rgba(0, 0, 0, 0.6)
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.6),
+      /* overlay bóng mờ màu đen 50% */ rgba(0, 0, 0, 0.6)
     ),
-    url('../../assets/img/form_bg.jpg');
+    url("../../assets/img/login_bg.jpg");
   background-size: cover;
   background-position: center;
-  width: 100vw;         
-  height: 100vh;          
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 

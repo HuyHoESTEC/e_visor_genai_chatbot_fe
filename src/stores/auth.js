@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', {
   //       this.user = response.data.user;
   //       this.token = response.data.token;
   //       localStorage.setItem('authToken', response.data.token); // Save token into localStorage
-  //       this.router.push({ name: 'ContractReview' }); // Redirect after login success
+  //       router.push({ name: 'Login' }); // Redirect after login success
   //     } catch (err) {
   //       this.error = err.response?.data?.message || 'Login failed. Please check your credentials.';
   //       console.error('Login error:', err);
@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
   //       this.user = response.data.user;
   //       this.token = response.data.token;
   //       localStorage.setItem('authToken', response.data.token);
-  //       this.router.push({ name: 'ContractReview' }); // Redirect after register success
+  //       this.router.push({ name: 'Login' }); // Redirect after register success
   //     } catch (err) {
   //       this.error = err.response?.data?.message || 'Registration failed.';
   //       console.error('Register error:', err);
@@ -121,7 +121,7 @@ export const useAuthStore = defineStore('auth', {
         // this.token = idToken;
         // this.user = {
         //   uid: user.uid,
-        //   email: user.email,
+        //   email: user.email,  
         //   displayName: user.displayName,
         //   photoURL: user.photoURL
         // };
