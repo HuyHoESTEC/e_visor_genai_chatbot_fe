@@ -28,6 +28,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 // Initialize store after Pinia was used
 const authStore = useAuthStore();
 authStore.initAuthListener(); // Call action to check and load auth store from localStorage
+// authStore.checkAuth();
 /**
  * Make sure the Navigation Guards Router is waiting for Firebase Auth to be ready
  * (This is a sample to ensure Authready before navigation)

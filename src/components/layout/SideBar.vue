@@ -1,14 +1,18 @@
 <template>
   <aside :class="['sidebar', { 'is-collapsed': isCollaped }]">
     <div class="sidebar-header">
-      <div class="logo-wrapper">
-        <img src="../../assets/img/estec-icon.png" alt="Company Logo" class="sidebar-logo" />
+      <div class="logo-wrapper" @click="isCollaped ? toggleSidebar() : null">
+        <img
+          src="../../assets/img/estec-icon.png"
+          alt="Company Logo"
+          class="sidebar-logo"
+        />
         <span v-if="!isCollaped" class="company-name">ESTEC</span>
       </div>
-      <div class="toggle-button-outside-wrapper">
-        <el-button 
+      <div v-if="!isCollaped" class="toggle-button-outside-wrapper">
+        <el-button
           class="toggle-sidebar-button"
-          :icon="isCollaped ? ArrowRight : ArrowLeft"
+          :icon="Expand"
           circle
           v-on:click="toggleSidebar"
         />
@@ -46,15 +50,14 @@
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { ref, watch } from "vue";
-import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
+import { Expand, Setting, SwitchButton } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
   name: "SideBar",
-  emits: ['toggleSidebar'],
+  emits: ["toggleSidebar"],
   components: {
-    ArrowLeft,
-    ArrowRight,
+    Expand,
   },
   setup(props, { emit }) {
     const route = useRoute();
@@ -104,26 +107,26 @@ export default {
     );
 
     const confirmLogout = () => {
-      ElMessageBox.confirm('Bạn có chắc chắn muốn đăng xuất ?', 'Xác nhận đăng xuất', {
-        confirmButtonText: 'Đăng xuất',
-        cancelButtonText: 'Hủy',
-        type: 'warning',
+      ElMessageBox.confirm("Bạn có chắc chắn muốn đăng xuất ?", "Xác nhận đăng xuất", {
+        confirmButtonText: "Đăng xuất",
+        cancelButtonText: "Hủy",
+        type: "warning",
       })
-      .then(async () => {
-        await authStore.logout();
-        ElMessage.success('Đã đăng xuất thành công!');
-        router.push({ name: 'Login' }) // Redirect to login page
-      })
-      .catch(() => {
-        ElMessage.info('Đã hủy đăng xuất.');
-      });
+        .then(async () => {
+          await authStore.logout();
+          ElMessage.success("Đã đăng xuất thành công!");
+          router.push({ name: "Login" }); // Redirect to login page
+        })
+        .catch(() => {
+          ElMessage.info("Đã hủy đăng xuất.");
+        });
     };
 
     const toggleSidebar = () => {
       isCollaped.value = !isCollaped.value;
       // Emit status sidebar to parent component (App.vue)
-      emit('toggleSidebar', isCollaped.value);
-    }
+      emit("toggleSidebar", isCollaped.value);
+    };
 
     return {
       route,
@@ -133,8 +136,7 @@ export default {
       menuItems,
       confirmLogout,
       toggleSidebar,
-      ArrowLeft,
-      ArrowRight
+      Expand,
     };
   },
 };
@@ -179,7 +181,6 @@ export default {
   overflow: hidden;
 }
 
-/* Wrapper cho logo để căn chỉnh dễ hơn */
 .logo-wrapper {
   display: flex;
   align-items: center;
@@ -332,16 +333,14 @@ export default {
   opacity: 0;
   width: 0;
   visibility: hidden;
+  display: none;
 }
 
-/* Căn giữa icon và giảm padding khi sidebar thu gọn */
-.sidebar.is-collapsed .sidebar-nav a,
 .sidebar.is-collapsed .sidebar-footer a {
   justify-content: center;
   padding: 12px 0px;
 }
 
-.sidebar.is-collapsed .sidebar-nav a .el-icon,
 .sidebar.is-collapsed .sidebar-footer a .el-icon {
   margin-right: 0;
 }
