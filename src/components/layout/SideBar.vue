@@ -75,8 +75,8 @@ export default {
       },
       {
         name: "profile",
-        label: "Thông Tin",
-        iconComponent: "Avatar",
+        label: "Time Tracking",
+        iconComponent: "Timer",
         routeName: "Profile",
         isActive: false,
       },
@@ -88,10 +88,38 @@ export default {
         isActive: false,
       },
       {
-        name: "contract",
-        label: "Báo Cáo",
-        iconComponent: "Document",
-        routeName: "Contract",
+        name: "MESX",
+        label: "MESX",
+        iconComponent: "OfficeBuilding",
+        routeName: "MESX",
+        isActive: false,
+      },
+      {
+        name: "WMSX",
+        label: "WMSX",
+        iconComponent: "Box",
+        routeName: "WMSX",
+        isActive: false,
+      },
+      {
+        name: "QMSX",
+        label: "QMSX",
+        iconComponent: "DataAnalysis",
+        routeName: "QMSX",
+        isActive: false,
+      },
+      {
+        name: "MMSX",
+        label: "MMSX",
+        iconComponent: "Cpu",
+        routeName: "MMSX",
+        isActive: false,
+      },
+      {
+        name: "PMSX",
+        label: "PMSX",
+        iconComponent: "ShoppingTrolley",
+        routeName: "PMSX",
         isActive: false,
       },
     ]);
@@ -181,6 +209,7 @@ export default {
   overflow: hidden;
 }
 
+/* Wrapper cho logo để căn chỉnh dễ hơn */
 .logo-wrapper {
   display: flex;
   align-items: center;
@@ -201,6 +230,7 @@ export default {
   width: 40px; /* Kích thước logo khi thu gọn */
   height: 40px;
   margin-right: 0; /* Bỏ margin khi thu gọn */
+  cursor: pointer;
 }
 
 .sidebar.is-collapsed .company-name {
@@ -278,12 +308,13 @@ export default {
 
 .sidebar-nav li.active a {
   background-color: #e6f0ff; /* Màu nền active */
-  color: #007bff; /* Màu chữ active */
+  color: var(--estec-unique-color); /* Màu chữ active */
   border-left-color: #007bff; /* Màu border active */
+  font-weight: bold;
 }
 
 .sidebar-nav li.active a i .el-icon {
-  color: #007bff; /* Màu icon active */
+  color: var(--estec-unique-color); /* Màu icon active */
 }
 
 .sidebar-footer {

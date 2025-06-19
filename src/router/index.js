@@ -9,6 +9,11 @@ import ChatPage from "../views/main/ChatPage.vue";
 // import SettingsPage from "../views/main/SettingsPage.vue";
 // import ProfilePage from '../views/profile/ProfilePage.vue';
 import { onAuthStateChanged, auth } from "../firebase";
+import MesxDashboard from "../views/MESX/mesxDashboard.vue";
+import WmsxDashboard from "../views/WMSX/wmsxDashboard.vue";
+import QmsxDashboard from "../views/QMSX/qmsxDashboard.vue";
+import MmsxDashboard from "../views/MMSX/mmsxDashboard.vue";
+import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
 
 const routes = [
   {
@@ -62,6 +67,36 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: () => import('../views/NotFoundPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/mesx',
+    name: 'MESX',
+    component: MesxDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/wmsx',
+    name: 'WMSX',
+    component: WmsxDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/qmsx',
+    name: 'QMSX',
+    component: QmsxDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/mmsx',
+    name: 'MMSX',
+    component: MmsxDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/pmsx',
+    name: 'PMSX',
+    component: PmsxDashboard,
     meta: { requiresAuth: true }
   },
   {
