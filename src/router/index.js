@@ -14,6 +14,7 @@ import WmsxDashboard from "../views/WMSX/wmsxDashboard.vue";
 import QmsxDashboard from "../views/QMSX/qmsxDashboard.vue";
 import MmsxDashboard from "../views/MMSX/mmsxDashboard.vue";
 import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
+// import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
 
 const routes = [
   {
@@ -34,12 +35,6 @@ const routes = [
     meta: { guestOnly: true } // Only allow guest (do not login) accept
   },
   {
-    path: '/contract-review',
-    name: 'ContractReview',
-    component: () => import('../views/NotFoundPage.vue'),
-    meta: { requiresAuth: true } // Login request
-  },
-  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../views/NotFoundPage.vue'),
@@ -49,12 +44,6 @@ const routes = [
     path: '/chat',
     name: 'Chat',
     component: ChatPage,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/contract',
-    name: 'Contract',
-    component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true }
   },
   {
@@ -97,6 +86,12 @@ const routes = [
     path: '/pmsx',
     name: 'PMSX',
     component: PmsxDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/time-tracking',
+    name: 'TimeTracking',
+    component: () => import('../views/NotFoundPage.vue'),
     meta: { requiresAuth: true }
   },
   {

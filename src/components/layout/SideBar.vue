@@ -19,14 +19,72 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <ul>
-        <li v-for="item in menuItems" :key="item.name" :class="{ active: item.isActive }">
-          <router-link :to="{ name: item.routeName }">
-            <el-icon><component :is="item.iconComponent" /></el-icon>
+      <el-menu
+        :default-active="route.name"
+        :collapse="isCollaped"
+        class="el-menu-vertical-demo"
+        background-color="transparent"
+        text-color="#555"
+        active-text-color="var(--estec-unique-color)"
+        :collapse-transition="false"
+        :router="true"
+        :default-opened="openMenus"
+      >
+        <template v-for="item in menuItems" :key="item.name">
+          <el-sub-menu
+            v-if="item.children && item.isDropdown"
+            :index="item.name"
+            :class="{ active: item.isActive }"
+          >
+            <template #title>
+              <el-icon><component :is="item.iconComponent" /> </el-icon>
+              <span v-if="!isCollaped">{{ item.label }}</span>
+            </template>
+            <template v-for="child in item.children" :key="child.name">
+              <el-sub-menu
+                v-if="child.children && child.isDropdown"
+                :index="child.name"
+                :class="{ active: child.isActive }"
+              >
+                <template #title>
+                  <el-icon><component :is="child.iconComponent" /> </el-icon>
+                  <span v-if="!isCollaped">{{ child.label }}</span>
+                </template>
+                <el-menu-item
+                  v-for="grandchild in child.children"
+                  :key="grandchild.name"
+                  :index="grandchild.routeName"
+                  :route="{ name: grandchild.routeName }"
+                  :class="{ active: grandchild.isActive }"
+                >
+                  <el-icon><component :is="grandchild.iconComponent" /> </el-icon>
+                  <span v-if="!isCollaped">{{ grandchild.label }}</span>
+                </el-menu-item>
+              </el-sub-menu>
+
+              <el-menu-item
+                v-else
+                :index="child.routeName"
+                :route="{ name: child.routeName }"
+                :class="{ active: child.isActive }"
+              >
+                <el-icon><component :is="child.iconComponent" /> </el-icon>
+                <span v-if="!isCollaped">{{ child.label }}</span>
+              </el-menu-item>
+            </template>
+          </el-sub-menu>
+
+          <el-menu-item
+            v-else
+            :index="item.routeName"
+            :route="{ name: item.routeName }"
+            :class="{ active: item.isActive }"
+          >
+            <el-icon><component :is="item.iconComponent" /> </el-icon>
             <span v-if="!isCollaped">{{ item.label }}</span>
-          </router-link>
-        </li>
-      </ul>
+          </el-menu-item>
+        </template>
+      </el-menu>
     </nav>
     <div class="sidebar-footer">
       <ul>
@@ -50,8 +108,9 @@
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { ref, watch } from "vue";
-import { Expand, Setting, SwitchButton } from "@element-plus/icons-vue";
+import { Expand } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { MENU_ITEMS } from "../../constants/menuItems";
 
 export default {
   name: "SideBar",
@@ -64,72 +123,38 @@ export default {
     const router = useRouter();
     const authStore = useAuthStore();
     const isCollaped = ref(false); // Add a state of reduction/zoom
+    const openMenus = ref([]);
+    // Sử dụng JSON.parse(JSON.stringify) để tạo bản sao sâu, tránh sửa đổi dữ liệu gốc
+    const menuItems = ref(JSON.parse(JSON.stringify(MENU_ITEMS)));
 
-    const menuItems = ref([
-      {
-        name: "chat",
-        label: "Chat",
-        iconComponent: "ChatDotRound",
-        routeName: "Chat",
-        isActive: false,
-      },
-      {
-        name: "profile",
-        label: "Time Tracking",
-        iconComponent: "Timer",
-        routeName: "Profile",
-        isActive: false,
-      },
-      {
-        name: "dashboard",
-        label: "Dashboard",
-        iconComponent: "TrendCharts",
-        routeName: "Dashboard",
-        isActive: false,
-      },
-      {
-        name: "MESX",
-        label: "MESX",
-        iconComponent: "OfficeBuilding",
-        routeName: "MESX",
-        isActive: false,
-      },
-      {
-        name: "WMSX",
-        label: "WMSX",
-        iconComponent: "Box",
-        routeName: "WMSX",
-        isActive: false,
-      },
-      {
-        name: "QMSX",
-        label: "QMSX",
-        iconComponent: "DataAnalysis",
-        routeName: "QMSX",
-        isActive: false,
-      },
-      {
-        name: "MMSX",
-        label: "MMSX",
-        iconComponent: "Cpu",
-        routeName: "MMSX",
-        isActive: false,
-      },
-      {
-        name: "PMSX",
-        label: "PMSX",
-        iconComponent: "ShoppingTrolley",
-        routeName: "PMSX",
-        isActive: false,
-      },
-    ]);
+    // Hàm đệ quy để tìm và cập nhật trạng thái active
+    const updateActiveStatus = (items, currentRouteName) => {
+      let foundActiveChild = false;
+      items.forEach((item) => {
+        if (item.children) {
+          const childActive = updateActiveStatus(item.children, currentRouteName);
+          item.isActive = childActive;
+          if (childActive) {
+            if (!openMenus.value.includes(item.name)) {
+              openMenus.value.push(item.name);
+            }
+            foundActiveChild = true;
+          }
+        } else {
+          item.isActive = item.routeName === currentRouteName;
+          if (item.isActive) {
+            foundActiveChild = true;
+          }
+        }
+      });
+      return foundActiveChild;
+    };
 
     watch(
       () => route.name, // Monitoring route name to update Active status
       (newRouteName) => {
-        menuItems.value.forEach((item) => {
-          item.isActive = item.routeName === newRouteName;
-        });
+        openMenus.value = [];
+        updateActiveStatus(menuItems.value, newRouteName);
       },
       { immediate: true }
     );
@@ -161,7 +186,9 @@ export default {
       router,
       authStore,
       isCollaped,
+      openMenus,
       menuItems,
+      updateActiveStatus,
       confirmLogout,
       toggleSidebar,
       Expand,
@@ -170,31 +197,34 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .sidebar {
-  width: 200px;
+  width: 270px;
   background-color: #ffffff;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Đặt các phần tử con theo chiều dọc */
   padding: 20px 0;
-  flex-shrink: 0; /* Ngăn sidebar bị co lại */
-  transition: width 0.3s ease; /* Motion effect */
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+  height: 100vh; /* Quan trọng: Đảm bảo sidebar chiếm toàn bộ chiều cao viewport */
+  box-sizing: border-box; /* Bao gồm padding vào chiều cao */
 }
 
 .sidebar.is-collapsed {
-  width: 70px; /* Width when miniature (just enough icon and padding) */
+  width: 70px;
 }
 
+/* Base style for icons in sidebar (should be overridden by more specific rules for el-menu) */
 .sidebar-nav a .el-icon,
 .sidebar-footer a .el-icon {
   margin-right: 15px;
-  font-size: 1.2em;
+  font-size: 1.2em; /* This will be overridden later for menu icons */
   color: #777;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; /* Prevent icon is shrinking */
+  flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -204,21 +234,21 @@ export default {
   padding: 0 20px 20px;
   border-bottom: 1px solid #eee;
   margin-bottom: 20px;
-  height: 60px;
-  box-sizing: border-box; /* Make sure the padding does not increase the height */
+  height: 60px; /* Cố định chiều cao header */
+  box-sizing: border-box;
   overflow: hidden;
+  flex-shrink: 0; /* Ngăn header bị co lại */
 }
 
-/* Wrapper cho logo để căn chỉnh dễ hơn */
 .logo-wrapper {
   display: flex;
   align-items: center;
-  flex-grow: 1; /* Cho phép logo chiếm không gian còn lại */
-  overflow: hidden; /* Đảm bảo nội dung không tràn ra ngoài khi thu nhỏ */
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .sidebar-logo {
-  height: 40px; /* Kích thước logo */
+  height: 40px;
   width: auto;
   object-fit: contain;
   max-width: 100%;
@@ -227,26 +257,26 @@ export default {
 }
 
 .sidebar.is-collapsed .sidebar-logo {
-  width: 40px; /* Kích thước logo khi thu gọn */
+  width: 40px;
   height: 40px;
-  margin-right: 0; /* Bỏ margin khi thu gọn */
+  margin-right: 0;
   cursor: pointer;
 }
 
 .sidebar.is-collapsed .company-name {
   opacity: 0;
   width: 0;
-  visibility: hidden; /* Ẩn hoàn toàn text khi thu gọn */
+  visibility: hidden;
 }
 
 .company-name {
-  font-size: 1.4em; /* Kích thước text company */
+  font-size: 1.4em;
   font-weight: bold;
   color: #333;
-  white-space: nowrap; /* Ngăn text xuống dòng */
-  overflow: hidden; /* Ẩn text nếu tràn */
+  white-space: nowrap;
+  overflow: hidden;
   transition: opacity 0.3s ease, width 0.3s ease;
-  max-width: 100%; /* Giới hạn chiều rộng của text */
+  max-width: 100%;
 }
 
 .sidebar-logo-icon {
@@ -257,16 +287,36 @@ export default {
 }
 
 .sidebar.is-collapsed .sidebar-logo-icon {
-  /* Hiển thị icon khi thu gọn */
   opacity: 1;
   display: block;
 }
 
-/* Ẩn icon khi không thu gọn (để chỉ hiển thị logo đầy đủ) */
 .sidebar:not(.is-collapsed) .sidebar-logo-icon {
   opacity: 0;
   width: 0;
   display: none;
+}
+
+.sidebar-nav {
+  flex-grow: 1; /* Quan trọng: sidebar-nav sẽ chiếm hết không gian còn lại */
+  overflow-y: auto; /* Thêm thanh cuộn cho sidebar-nav */
+  overflow-x: hidden;
+  /* Tùy chỉnh thanh cuộn cho sidebar-nav */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #c0c0c0 transparent; /* Firefox */
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 .sidebar-nav ul,
@@ -290,13 +340,13 @@ export default {
   text-decoration: none;
   font-weight: 500;
   transition: background-color 0.2s, color 0.2s, padding 0.3s ease;
-  border-left: 3px solid transparent; /* Cho hiệu ứng active */
+  border-left: 3px solid transparent;
 }
 
 .sidebar-nav a i,
 .sidebar-footer a i {
   margin-right: 15px;
-  font-size: 1.2em;
+  font-size: 1.2em; /* This will be overridden later for footer icons */
   color: #777;
 }
 
@@ -307,20 +357,21 @@ export default {
 }
 
 .sidebar-nav li.active a {
-  background-color: #e6f0ff; /* Màu nền active */
-  color: var(--estec-unique-color); /* Màu chữ active */
-  border-left-color: #007bff; /* Màu border active */
+  background-color: #e6f0ff;
+  color: var(--estec-unique-color);
+  border-left-color: #007bff;
   font-weight: bold;
 }
 
 .sidebar-nav li.active a i .el-icon {
-  color: var(--estec-unique-color); /* Màu icon active */
+  color: var(--estec-unique-color);
 }
 
 .sidebar-footer {
   margin-top: auto; /* Đẩy footer xuống dưới cùng */
   padding-top: 20px;
   border-top: 1px solid #eee;
+  flex-shrink: 0; /* Ngăn footer bị co lại */
 }
 
 .sidebar-nav a.router-link-exact-active .el-icon,
@@ -328,10 +379,9 @@ export default {
   color: #007bff;
 }
 
-/* Nút toggle */
 .toggle-button-wrapper {
-  flex-shrink: 0; /* Ngăn nút bị co lại */
-  margin-left: 10px; /* Khoảng cách giữa logo và nút */
+  flex-shrink: 0;
+  margin-left: 10px;
   display: flex;
   align-items: center;
 }
@@ -341,10 +391,10 @@ export default {
   border: none;
   color: #606266;
   font-size: 18px;
-  width: 32px; /* Kích thước nút nhỏ hơn */
-  height: 32px; /* Kích thước nút nhỏ hơn */
+  width: 32px;
+  height: 32px;
   transition: background-color 0.2s ease, color 0.2s ease;
-  padding: 0; /* Loại bỏ padding mặc định của el-button */
+  padding: 0;
   outline: none;
 }
 
@@ -353,12 +403,6 @@ export default {
   color: #409eff;
 }
 
-/* Ẩn nút toggle khi sidebar thu gọn (tùy chọn, nếu bạn muốn chỉ hiển thị nút khi phóng to) */
-/* .sidebar.is-collapsed .toggle-button-wrapper {
-  display: none;
-} */
-
-/* Ẩn text khi sidebar thu gọn */
 .sidebar.is-collapsed .sidebar-nav a span,
 .sidebar.is-collapsed .sidebar-footer a span {
   opacity: 0;
@@ -374,5 +418,151 @@ export default {
 
 .sidebar.is-collapsed .sidebar-footer a .el-icon {
   margin-right: 0;
+}
+
+/* Element Plus Menu Overrides */
+.el-menu {
+  border-right: none;
+  width: 100%;
+}
+
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 270px;
+}
+
+.el-menu-item,
+.el-sub-menu__title {
+  height: 52px;
+  line-height: 52px;
+  color: #555 !important;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: background-color 0.2s, color 0.2s, border-left-color 0.2s;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-align: start;
+  font-size: 15px;
+}
+
+.el-menu-item:hover,
+.el-sub-menu__title:hover {
+  background-color: #f0f0f0 !important;
+  color: #333 !important;
+}
+
+.el-menu-item.is-active,
+.el-menu-item.active {
+  background-color: #e6f0ff !important;
+  color: var(--estec-unique-color) !important;
+  border-left-color: #007bff !important;
+  font-weight: bold;
+}
+
+.el-sub-menu.is-active > .el-sub-menu__title,
+.el-sub-menu.active > .el-sub-menu__title {
+  background-color: #e6f0ff !important;
+  color: var(--estec-unique-color) !important;
+  border-left-color: #007bff !important;
+  font-weight: bold;
+}
+
+.el-menu-item .el-icon,
+.el-sub-menu__title .el-icon {
+  margin-right: 15px;
+  font-size: 18px;
+  color: #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.el-menu-item.is-active .el-icon,
+.el-menu-item.active .el-icon,
+.el-sub-menu.is-active > .el-sub-menu__title .el-icon,
+.el-sub-menu.active > .el-sub-menu__title .el-icon {
+  color: var(--estec-unique-color) !important;
+}
+
+/* Padding for nested levels */
+.el-menu-item,
+.el-sub-menu__title {
+  padding-left: 20px !important;
+}
+
+.el-menu--inline .el-menu-item,
+.el-menu--inline .el-sub-menu__title {
+  padding-left: 40px !important;
+}
+
+.el-menu--inline .el-menu--inline .el-menu-item,
+.el-menu--inline .el-menu--inline .el-sub-menu__title {
+  padding-left: 60px !important;
+}
+
+.el-menu--inline .el-menu--inline .el-menu--inline .el-menu-item,
+.el-menu--inline .el-menu--inline .el-menu--inline .el-sub-menu__title {
+  padding-left: 80px !important;
+}
+
+/* Text overflow for long labels */
+.el-menu-item span:not(.el-icon),
+.el-sub-menu__title span:not(.el-icon) {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: start;
+}
+
+/* Collapsed sidebar adjustments */
+.sidebar.is-collapsed .el-menu-item span:not(.el-icon),
+.sidebar.is-collapsed .el-sub-menu__title span:not(.el-icon) {
+  opacity: 0;
+  width: 0;
+  visibility: hidden;
+  display: none;
+}
+
+.sidebar.is-collapsed .el-sub-menu__icon-arrow {
+  display: none !important;
+}
+
+.sidebar.is-collapsed .el-menu-item {
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.sidebar.is-collapsed .el-menu-item .el-icon,
+.sidebar.is-collapsed .el-sub-menu__title .el-icon {
+  margin-right: 0;
+}
+
+.sidebar.is-collapsed .el-sub-menu__title {
+  justify-content: center;
+  padding: 0 !important;
+}
+
+/* === Quan trọng: Loại bỏ max-height và overflow-y khỏi .el-menu--inline === */
+/* Thay vào đó, áp dụng cho .sidebar-nav */
+.el-menu--inline {
+  background-color: #ffffff !important;
+  /* Giữ nguyên các padding-left, width, v.v. đã được thiết lập cho các cấp độ con */
+}
+
+/* Footer styles */
+.sidebar-footer a {
+  font-size: 15px;
+}
+
+.sidebar-footer a .el-icon {
+  font-size: 18px;
+}
+
+.el-sub-menu__title .el-sub-menu__icon-arrow {
+  position: absolute;
+  right: 20px;
+  margin-top: -7px;
 }
 </style>
