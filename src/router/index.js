@@ -14,7 +14,7 @@ import WmsxDashboard from "../views/WMSX/wmsxDashboard.vue";
 import QmsxDashboard from "../views/QMSX/qmsxDashboard.vue";
 import MmsxDashboard from "../views/MMSX/mmsxDashboard.vue";
 import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
-// import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
+import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
 
 const routes = [
   {
@@ -91,7 +91,7 @@ const routes = [
   {
     path: '/time-tracking',
     name: 'TimeTracking',
-    component: () => import('../views/NotFoundPage.vue'),
+    component: TimeTrackingPage,
     meta: { requiresAuth: true }
   },
   {
