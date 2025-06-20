@@ -90,7 +90,7 @@
       <ul>
         <li>
           <router-link :to="{ name: 'Settings' }">
-            <el-icon><Setting /></el-icon>
+            <el-icon><Tools /></el-icon>
             <span v-if="!isCollaped">Cài đặt</span>
           </router-link>
         </li>
@@ -108,7 +108,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { ref, watch } from "vue";
-import { Expand, Setting, SwitchButton } from "@element-plus/icons-vue";
+import { Expand, SwitchButton, Tools } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { MENU_ITEMS } from "../../constants/menuItems";
 
@@ -117,7 +117,7 @@ export default {
   emits: ["toggleSidebar"],
   components: {
     Expand,
-    Setting,
+    Tools,
     SwitchButton,
   },
   setup(props, { emit }) {
@@ -194,7 +194,7 @@ export default {
       confirmLogout,
       toggleSidebar,
       Expand,
-      Setting,
+      Tools,
       SwitchButton,
     };
   },
