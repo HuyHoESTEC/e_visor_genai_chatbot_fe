@@ -429,7 +429,10 @@ export default {
       };
       addError("Bắt đầu ghép nối tự động...", "info");
 
-      if (currentFiles.value.length < 2) {
+      // Lấy tất cả các minioObjectName của các file hiện có
+      const allFileObjectsToMerge = currentFiles.value.map(file => file.minioObjectName);
+
+      if (allFileObjectsToMerge.length < 2) {
         ElMessage.warning("Không đủ file để tự động ghép nối (cần ít nhất 2 file).");
         addError("Lỗi: Không đủ file để tự động ghép nối.", "warning");
         isMerging.value = false;
@@ -437,147 +440,112 @@ export default {
         return;
       }
 
-      let filesToMergeAuto = [...currentFiles.value]; // Bản sao để thao tác
-      let currentMergedFile = null;
-      let mergeCount = 0;
-
       abortController = new AbortController();
       const signal = abortController.signal;
 
-      while (filesToMergeAuto.length >= 2) {
-        const file1 = currentMergedFile || filesToMergeAuto[0];
-        const file2 = filesToMergeAuto[1];
-
-        // Loại bỏ file1 và file2 khỏi danh sách làm việc (nếu file1 không phải là file tổng cũ)
-        filesToMergeAuto = filesToMergeAuto.filter(
-          (f) => f.id !== file1.id && f.id !== file2.id
-        );
-
-        mergeProgress.value = 0;
-        mergeStatusText.value = `Đang ghép nối ${file1.name} và ${file2.name}...`;
-
-        // Giả lập tiến trình cho mỗi cặp ghép nối
-        let subProgress = 0;
-        clearInterval(mergeInterval); // Xóa interval cũ nếu có
-        mergeInterval = setInterval(() => {
-          subProgress += Math.floor(Math.random() * 8) + 5;
-          if (subProgress >= 95) {
-            subProgress = 95;
-            clearInterval(mergeInterval);
-          }
-          mergeProgress.value = subProgress;
-          mergeStatusText.value = `Đang ghép nối ${file1.name} và ${file2.name} (${subProgress}%)...`;
-        }, 200);
-
-        try {
-          const payload = {
-            request_id: "evisor-1234567890",
-            user_id: "hoanvlh",
-            start_time: new Date().toISOString(),
-            path_files: [
-              file1.minioObjectName,
-              file2.minioObjectName
-            ]
-          };
-
-          const response = await axios.post("http://192.168.54.39:8000/POD_TimeTracker", payload, {
-            signal,
-          });
-          const mergedFileData = response.data;
-
-          if (
-            !mergedFileData ||
-            !mergedFileData.output
-          ) {
-            throw new Error("Dữ liệu trả về từ API không hợp lệ cho ghép nối tự động.");
-          }
-
-          const newMergedFile = {
-            name: mergedFileData.name,
-            id:
-              mergedFileData.id ||
-              `merged_auto_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-            minioObjectName: mergedFileData.output,
-            isMergedResult: true,
-          };
-
-          currentMergedFile = newMergedFile; // Cập nhật file tổng hiện tại
-          filesToMergeAuto.unshift(newMergedFile); // Thêm file tổng mới vào đầu danh sách để tiếp tục ghép
-
-          mergeCount++;
-          ElMessage.success(
-            `Đã ghép thành công: ${file1.name} + ${file2.name} -> ${newMergedFile.minioObjectName}`
-          );
-          addError(
-            `Đã ghép thành công: ${file1.name} + ${file2.name} -> ${newMergedFile.minioObjectName}`,
-            "success"
-          );
-
-          clearInterval(mergeInterval); // Đảm bảo interval dừng sau mỗi lần ghép
-          mergeProgress.value = 100; // Hoàn tất 100% cho bước này
-          await new Promise((resolve) => setTimeout(resolve, 500)); // Thêm độ trễ nhỏ
-          if (filesToMergeAuto.length >= 2) {
-            mergeProgress.value = 0; // Reset progress cho cặp tiếp theo
-          }
-        } catch (error) {
+      // Giả lập tiến trình chung
+      let progress = 0;
+      clearInterval(mergeInterval); // Xóa interval cũ nếu có
+      mergeInterval = setInterval(() => {
+        progress += Math.floor(Math.random() * 5) + 3;
+        if (progress >= 95) {
+          progress = 95;
           clearInterval(mergeInterval);
-          mergeProgress.value = 0;
-          showMergeProgressBar.value = false;
-          isMerging.value = false;
-          if (axios.isCancel(error)) {
-            console.log("Yêu cầu ghép nối tự động đã bị hủy bỏ:", error.message);
-            mergeStatusText.value = "Đã hủy ghép nối tự động.";
-            mergeStatusMessage.value = {
-              type: "warning",
-              message: "Quá trình ghép nối tự động đã bị hủy.",
-            };
-            ElMessage.warning("Quá trình ghép nối tự động đã bị hủy.");
-            addError("Quá trình ghép nối tự động đã bị hủy.", "warning");
-          } else {
-            console.error("Lỗi khi gọi API ghép nối tự động:", error);
-            mergeStatusText.value = "Lỗi!";
-            const errorMessage =
-              error.response?.data?.message || error.message || "Không xác định";
-            mergeStatusMessage.value = {
-              type: "error",
-              message: `Lỗi ghép nối tự động: ${errorMessage}`,
-            };
-            ElMessage.error(mergeStatusMessage.value.message);
-            addError(`Lỗi ghép nối tự động: ${errorMessage}`, "error");
-          }
-          return; // Dừng toàn bộ quá trình auto merge nếu có lỗi
         }
-      }
+        mergeProgress.value = progress;
+        if (progress < 30) {
+          mergeStatusText.value = "Đang gửi tất cả file đến server...";
+        } else if (progress < 70) {
+          mergeStatusText.value = `Server đang xử lý ghép nối ${allFileObjectsToMerge.length} file...`;
+        } else {
+          mergeStatusText.value = "Gần hoàn tất quá trình tự động...";
+        }
+      }, 300);
 
-      // Khi tất cả các file đã được merge
-      currentFiles.value = currentMergedFile ? [currentMergedFile] : []; // Chỉ còn file tổng cuối cùng
-      mergeResultFile.value = currentMergedFile;
+      try {
+        const payload = {
+          request_id: "evisor-auto-merge-" + Date.now(), // ID request duy nhất
+          user_id: "hoanvlh",
+          start_time: new Date().toISOString(),
+          path_files: allFileObjectsToMerge // Gửi TẤT CẢ các đường dẫn file
+        };
 
-      if (mergeCount > 0) {
+        // GỌI API MERGE MỘT LẦN VỚI TẤT CẢ CÁC FILE
+        const response = await axios.post("http://192.168.54.39:8000/POD_TimeTracker", payload, {
+          signal,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        clearInterval(mergeInterval);
+        mergeProgress.value = 100;
+        mergeStatusText.value = "Hoàn tất ghép nối tự động!";
+
+        const mergedFileData = response.data;
+
+        if (!mergedFileData || !mergedFileData.output) {
+          throw new Error("Dữ liệu trả về từ API không hợp lệ cho ghép nối tự động.");
+        }
+
+        const newMergedFile = {
+          id: `merged_final_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+          minioObjectName: mergedFileData.output,
+          name: mergedFileData.output.split('/').pop(), // Lấy tên file từ path_object
+          isMergedResult: true,
+        };
+
+        mergeResultFile.value = newMergedFile;
+        currentFiles.value = [newMergedFile]; // Chỉ còn lại file tổng cuối cùng
+        
+        selectedFile1.value = null; 
+        selectedFile2.value = null; // Reset các lựa chọn file thủ công
+
         ElMessage.success(
-          `Tất cả ${mergeCount + 1} file đã được tự động ghép nối thành công!`
+          `Tất cả ${allFileObjectsToMerge.length} file đã được tự động ghép nối thành công!`
         );
         mergeStatusMessage.value = {
           type: "success",
           message: "Tất cả file đã được ghép nối tự động thành công!",
         };
         addError("Tất cả file đã được ghép nối tự động thành công!", "success");
-        emit("merge-completed", currentMergedFile); // Emit file cuối cùng
-        emit("all-file-merged");
-      } else {
-        ElMessage.info("Không có đủ file để thực hiện ghép nối tự động.");
-        mergeStatusMessage.value = {
-          type: "info",
-          message: "Không có đủ file để tự động ghép nối.",
-        };
-        addError("Không có đủ file để tự động ghép nối.", "info");
-      }
+        emit("merge-completed", newMergedFile); // Emit file cuối cùng
+        emit("all-file-merged"); // Có thể emit một sự kiện riêng cho chế độ tự động hoàn tất
 
-      setTimeout(() => {
+        setTimeout(() => {
+          showMergeProgressBar.value = false;
+        }, 1000);
+
+      } catch (error) {
+        clearInterval(mergeInterval);
+        mergeProgress.value = 0;
         showMergeProgressBar.value = false;
-      }, 1000);
-      isMerging.value = false;
-      abortController = null;
+
+        if (axios.isCancel(error)) {
+          console.log("Yêu cầu ghép nối tự động đã bị hủy bỏ:", error.message);
+          mergeStatusText.value = "Đã hủy ghép nối tự động.";
+          mergeStatusMessage.value = {
+            type: "warning",
+            message: "Quá trình ghép nối tự động đã bị hủy.",
+          };
+          ElMessage.warning("Quá trình ghép nối tự động đã bị hủy.");
+          addError("Quá trình ghép nối tự động đã bị hủy.", "warning");
+        } else {
+          console.error("Lỗi khi gọi API ghép nối tự động:", error);
+          mergeStatusText.value = "Lỗi!";
+          const errorMessage =
+            error.response?.data?.message || error.message || "Không xác định";
+          mergeStatusMessage.value = {
+            type: "error",
+            message: `Lỗi ghép nối tự động: ${errorMessage}`,
+          };
+          ElMessage.error(mergeStatusMessage.value.message);
+          addError(`Lỗi ghép nối tự động: ${errorMessage}`, "error");
+        }
+      } finally {
+        isMerging.value = false;
+        abortController = null;
+      }
     };
 
     const cancelMergeProcess = () => {

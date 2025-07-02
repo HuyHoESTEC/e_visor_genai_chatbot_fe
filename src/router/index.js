@@ -15,11 +15,12 @@ import QmsxDashboard from "../views/QMSX/qmsxDashboard.vue";
 import MmsxDashboard from "../views/MMSX/mmsxDashboard.vue";
 import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
 import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
+import SummaryDashboard from "../views/dashboard/SummaryDashboard.vue";
 
 const routes = [
   {
     path: '/',
-    redirect: '/chat',
+    redirect: '/summary-dashboard',
     meta: { requiresAuth: true } // Request login to access the default routes
   },
   {
@@ -33,12 +34,6 @@ const routes = [
     name: 'Register',
     component: RegisterPage,
     meta: { guestOnly: true } // Only allow guest (do not login) accept
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('../views/NotFoundPage.vue'),
-    meta: { requiresAuth: true }
   },
   {
     path: '/chat',
@@ -98,6 +93,12 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../views/NotFoundPage.vue') // Lazy load 404 page
+  },
+  {
+    path: '/summary-dashboard',
+    name: 'SummaryDashboard',
+    component: SummaryDashboard,
+    meta: { requiresAuth: true }
   }
 ];
 

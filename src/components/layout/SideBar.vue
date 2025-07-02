@@ -241,7 +241,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 20px 20px;
+  padding: 0 20px 10px;
   border-bottom: 1px solid #eee;
   margin-bottom: 20px;
   height: 60px; /* Cố định chiều cao header */
@@ -258,9 +258,9 @@ export default {
 }
 
 .sidebar-logo-no-collapsed {
-  height: 45px;
+  height: 60px;
   width: auto;
-  object-fit: contain;
+  object-fit: cover;
   max-width: 100%;
   transition: opacity 0.3s ease;
   flex-shrink: 0;

@@ -8,24 +8,17 @@
 
 const MENU_ITEMS = [
   {
-    name: "chat",
-    label: "Chat",
-    iconComponent: "ChatDotRound",
-    routeName: "Chat",
+    name: "summary-dashboard",
+    label: "Dashboard",
+    iconComponent: "Histogram",
+    routeName: "SummaryDashboard",
     isActive: false,
   },
   {
     name: "time-tracking",
-    label: "Time Tracking",
-    iconComponent: "Timer",
+    label: "Quản lý chấm công",
+    iconComponent: "List",
     routeName: "TimeTracking",
-    isActive: false,
-  },
-  {
-    name: "dashboard",
-    label: "Dashboard",
-    iconComponent: "TrendCharts",
-    routeName: "Dashboard",
     isActive: false,
   },
   // MESX
@@ -948,6 +941,13 @@ const MENU_ITEMS = [
         isActive: false,
       },
     ],
+  },
+  {
+    name: "chat",
+    label: "Đoạn Chat",
+    iconComponent: "ChatLineSquare",
+    routeName: "Chat",
+    isActive: false,
   },
 ];
 
