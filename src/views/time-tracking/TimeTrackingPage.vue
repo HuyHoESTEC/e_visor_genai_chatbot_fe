@@ -40,7 +40,7 @@
         </div>
       </div>
       <div
-        v-if="activeWorkflowStep === 1 || activeWorkflowStep === 2"
+        v-if="activeWorkflowStep === 1"
         class="merge-steps-wrapper"
       >
         <CombineFile
@@ -50,12 +50,12 @@
           @all-files-merged="handleAllFilesMerged"
         />
       </div>
-      <!-- <div v-if="activeWorkflowStep === 2" class="completion-step-wrapper">
+      <div v-if="activeWorkflowStep === 2" class="completion-step-wrapper">
         <CompletionStep 
           :final-file="finalMergedFile"
           @reset-workflow="resetWorkflow"
         />
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -286,7 +286,7 @@ export default {
   /* Điều chỉnh kích thước của chính TimeTrackingPage */
   width: 100%;
   min-width: 320px; /* Chiều rộng tối thiểu để đảm bảo đọc được trên màn hình nhỏ */
-  height: auto; /* Chiều cao tự động theo nội dung */
+  height: calc(100vh - 60px); /* Chiều cao tự động theo nội dung */
   min-height: 85vh; /* Chiều cao tối thiểu là 85% chiều cao của viewport */
   margin: 30px auto; /* Căn giữa theo chiều ngang, có khoảng cách trên dưới */
   display: flex; /* Sử dụng flexbox */

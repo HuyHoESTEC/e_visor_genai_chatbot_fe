@@ -55,7 +55,7 @@ export default {
 <style scoped>
 .main-container {
   display: flex;
-  min-height: 100vh;
+  height: calc(100vh - 60px);
   /* Sử dụng font tương tự thiết kế, ví dụ: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; */
   font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   color: var(--text-color); /* Sử dụng biến màu chữ chính */
