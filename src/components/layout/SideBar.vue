@@ -3,11 +3,17 @@
     <div class="sidebar-header">
       <div class="logo-wrapper" @click="isCollaped ? toggleSidebar() : null">
         <img
+          v-if="isCollaped"
           src="../../assets/img/estec-icon.png"
           alt="Company Logo"
           class="sidebar-logo"
         />
-        <span v-if="!isCollaped" class="company-name">ESTEC</span>
+        <img
+          v-if="!isCollaped"
+          src="../../assets/img/estec-sidebar-logo.png"
+          alt="Company Logo"
+          class="sidebar-logo-no-collapsed"
+        />
       </div>
       <div v-if="!isCollaped" class="toggle-button-outside-wrapper">
         <el-button
@@ -249,6 +255,15 @@ export default {
   align-items: center;
   flex-grow: 1;
   overflow: hidden;
+}
+
+.sidebar-logo-no-collapsed {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  max-width: 100%;
+  transition: opacity 0.3s ease;
+  flex-shrink: 0;
 }
 
 .sidebar-logo {

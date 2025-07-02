@@ -11,7 +11,7 @@
 - Project Manager: **Mr. Phu Tran Quang**
 - Counseling experts: **Mr. Tony Do, Mr. Toan Tan, Mr. Duc Thinh**
 - AI Engineer: **Mr. Hoan Vo Ly Hoang**
-- BA and Tester Engineer: **Mr. Thang Doan Ngoc Minh**
+- BA and Tester Engineer: **Mr. Thang Doan Ngoc Minh, Mr. Nguyen Hoang Tan**
 - Frontend and Backend Engineer: **Mr. Huy Ho Nhat**
 ## 4. Step by step: ➡️
 - Step 1: Run "**npm install**" to install all neccessary packages in package-lock
