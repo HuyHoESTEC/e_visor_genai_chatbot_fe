@@ -1,8 +1,9 @@
 <script setup>
 import { useAuthStore } from './stores/auth';
 import SideBar from './components/layout/SideBar.vue';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue'; // Import onMounted
 import AppHeader from './components/layout/AppHeader.vue';
+import CompanyLogo from './assets/img/estec-icon.png'; // Đường dẫn tới logo của bạn
 
 const authStore = useAuthStore();
 
@@ -15,31 +16,54 @@ const handleSidebarToggle = (collapsedStatus) => {
 
 const dynamicMarginLeft = computed(() => {
   if (authStore.isLoggedIn) {
-    return isSidebarCollapsed.value ? '10px' : '10px';
+    // Có vẻ như dynamicMarginLeft không thay đổi dựa trên collapsedStatus ở đây.
+    // Nếu bạn muốn sidebar thu gọn thì margin-left thay đổi, cần điều chỉnh logic này.
+    // Ví dụ: return isSidebarCollapsed.value ? '60px' : '200px'; // Giá trị giả định
+    return '10px';
   }
   return '0';
 });
 
 const currentYear = new Date().getFullYear();
+
+// --- Bổ sung cho hiệu ứng Spinner ---
+const isLoading = ref(true); // Trạng thái loading ban đầu là true
+
+onMounted(() => {
+  // Sau khi DOM của App.vue được gắn kết (mount), chúng ta có thể giả lập thời gian tải
+  // Trong ứng dụng thực tế, bạn sẽ tắt spinner sau khi tất cả dữ liệu ban đầu đã được tải
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 1500); // Giả lập 1.5 giây tải
+});
 </script>
 
 <template>
-  <div id="app" :class="{ 'app-layout': authStore.isLoggedIn, 'full-page-layout': !authStore.isLoggedIn }">
-    <SideBar v-if="authStore.isLoggedIn" @toggle-sidebar="handleSidebarToggle" />
-    <div
-      v-if="authStore.isLoggedIn" 
-      class="main-content-wrapper"
-      :style="{ marginLeft: dynamicMarginLeft }"
-    >
-      <AppHeader class="fixed-header" />
-      <div class="content-and-footer">
-        <router-view />
-        <footer class="app-footer">
-          Một sản phẩm của ESTEC Digital - Solution @{{ currentYear }}
-        </footer>
+  <div id="app">
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="spinner-container">
+        <img :src="CompanyLogo" alt="ESTEC Company" class="company-logo-spinner" />
+        <div class="spinner"></div>
       </div>
     </div>
-    <router-view v-else />
+
+    <div v-else :class="{ 'app-layout': authStore.isLoggedIn, 'full-page-layout': !authStore.isLoggedIn }">
+      <SideBar v-if="authStore.isLoggedIn" @toggle-sidebar="handleSidebarToggle" />
+      <div
+        v-if="authStore.isLoggedIn"
+        class="main-content-wrapper"
+        :style="{ marginLeft: dynamicMarginLeft }"
+      >
+        <AppHeader class="fixed-header" />
+        <div class="content-and-footer">
+          <router-view />
+          <footer class="app-footer">
+            Một sản phẩm của ESTEC Automation & Digitalization - ©{{ currentYear }}
+          </footer>
+        </div>
+      </div>
+      <router-view v-else />
+    </div>
   </div>
 </template>
 
@@ -65,32 +89,30 @@ const currentYear = new Date().getFullYear();
 .main-content-wrapper {
   flex-grow: 1;
   display: flex;
-  flex-direction: column; /* Sắp xếp các thành phần theo chiều dọc */
-  overflow: hidden; /* Ngăn chặn cuộn trên main-content-wrapper */
+  flex-direction: column;
+  overflow: hidden;
   transition: margin-left 0.3s ease;
   width: 100%;
 }
 
 .fixed-header {
-  position: sticky; /* Hoặc 'fixed' nếu bạn muốn nó luôn ở vị trí cố định trên viewport */
+  position: sticky;
   top: 0;
-  z-index: 1000; /* Đảm bảo header nằm trên các nội dung khác */
-  background-color: white; /* Đặt màu nền để che đi nội dung bên dưới khi cuộn */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tùy chọn: thêm đổ bóng */
-  width: 100%; /* Đảm bảo chiều rộng */
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
 .content-and-footer {
-  flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Cho phép cuộn nội dung chính */
+  overflow-y: auto;
 }
 
-/* Điều chỉnh lại router-view trong main-content-wrapper để chiếm hết không gian còn lại */
 .content-and-footer > :deep(.router-view) {
   flex-grow: 1;
-  /* padding: 20px; */ /* Thường thì mỗi trang sẽ có padding riêng */
 }
 
 .app-footer {
@@ -98,5 +120,53 @@ const currentYear = new Date().getFullYear();
   color: var(--estec-unique-color);
   font-size: 0.9em;
   font-weight: bold;
+  padding: 10px; /* Thêm padding để footer không bị dính sát đáy */
+}
+
+/* --- CSS cho hiệu ứng Spinner --- */
+.loading-overlay {
+  position: fixed; /* Hoặc absolute nếu muốn trong phạm vi cha */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9); /* Nền mờ trắng */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Đảm bảo nó nằm trên tất cả các thành phần khác */
+  transition: opacity 0.5s ease-in-out; /* Hiệu ứng mờ dần khi biến mất */
+}
+
+.spinner-container {
+  position: relative;
+  width: 120px; /* Kích thước tổng thể của spinner và logo */
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.company-logo-spinner {
+  width: 120px; /* Kích thước của logo */
+  height: 120px;
+  object-fit: contain; /* Đảm bảo logo không bị méo */
+  border-radius: 50%; /* Nếu logo là hình tròn hoặc muốn bo tròn */
+  z-index: 10; /* Đảm bảo logo nằm trên spinner */
+}
+
+.spinner {
+  position: absolute;
+  width: 140px; /* Kích thước vòng quay */
+  height: 140px;
+  border: 5px solid #f3f3f3; /* Light grey */
+  border-top: 5px solid var(--estec-unique-color); /* Blue or your company's primary color */
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite; /* Hiệu ứng xoay */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

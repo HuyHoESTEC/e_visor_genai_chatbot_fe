@@ -10,7 +10,7 @@
       :show-file-list="true"
       :on-change="handleChange"
       :on-remove="handleRemove"
-      :file-list="FileList"
+      :file-list="fileList"
       :limit="1"
       :on-exceed="handleExceed"
       accept=".xls,.xlsx"

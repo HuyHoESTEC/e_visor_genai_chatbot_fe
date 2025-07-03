@@ -1,0 +1,47 @@
+import axios from "axios";
+
+const API_BASE_URL = "http://192.168.54.39:8000";
+
+export const mergeFilesApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/POD_TimeTracker_Merge`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (err) {
+        if (axios.isCancel(err)) {
+            throw new Error("Yêu cầu API ghép nối đã bị hủy.");
+        }
+        // Resolve error from Server or Network
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`API ghép nối lỗi:: ${errorMessage}`);
+    }
+};
+
+export const getDownloadUrlApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/POD_TimeTracker_Download`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.data && response.data.url) {
+            return response.data.url;
+        }
+
+        if (typeof response.data === "string" && response.data.startsWith('http')) {
+            return response.data;
+        }
+        
+    } catch (err) {
+        if (axios.isCancel(err)) {
+            throw new Error("Yêu cầu API lấy URL tải xuống đã bị hủy bỏ.");
+        }
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định khi lấy URL tải xuống";
+        throw new Error(`API lấy URL tải xuống lỗi: ${errorMessage}`);
+    }
+};
