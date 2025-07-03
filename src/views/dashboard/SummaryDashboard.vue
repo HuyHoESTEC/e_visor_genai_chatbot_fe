@@ -32,13 +32,11 @@ export default {
 .summary-dashboard-container {
   padding: 20px;
   background-color: #f5f7fa;
-  min-height: calc(
-    100vh - var(--header-height, 60px) - var(--footer-height, 50px)
-  ); /* Điều chỉnh theo chiều cao header/footer thực tế */
   box-sizing: border-box; /* Bao gồm padding và border vào tổng chiều cao */
   display: flex;
   flex-direction: column;
-  /* height: calc(100vh - 60px); Removed this fixed height for better scrolling if content overflows */
+  height: calc(100vh - 60px);
+  overflow-y: auto;
   width: 100%;
 }
 

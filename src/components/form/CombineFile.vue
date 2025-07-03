@@ -23,7 +23,7 @@
 
     <div class="main-content-with-tracking">
       <div class="main-content">
-        <div v-if="!showMergeProgressBar && availableFilesToDisplay.length > 0 && !isAutoMergeMode" class="available-files-summary">
+        <div v-if="!showMergeProgressBar && availableFilesToDisplay.length > 0" class="available-files-summary">
           <p>Các file có sẵn để ghép nối:</p>
           <ul>
             <li v-for="(file, index) in availableFilesToDisplay" :key="file.id || index">
@@ -131,8 +131,10 @@
 
 <script>
 import { ElButton, ElSelect, ElOption, ElMessage, ElSwitch } from "element-plus";
-import { ref, computed, watch } from "vue";
-import axios from "axios";
+import { toRef } from "vue";
+import { useMergeFiles } from "../../composables/useMergeFiles";
+import { useTrackingAndMessages } from "../../composables/useTrackingAndMessages";
+import { useMergeProgressBar } from "../../composables/useMergeProgressBar";
 
 export default {
   name: "CombineFile",
@@ -150,433 +152,28 @@ export default {
   },
   emits: ["merge-completed", "reset-workflow", "all-file-merged"],
   setup(props, { emit }) {
-    const currentFiles = ref([]);
-    const selectedFile1 = ref(null);
-    const selectedFile2 = ref(null);
-    const mergeResultFile = ref(null);
-
-    const isMerging = ref(false);
-    const mergeStatusMessage = ref(null);
-    const mergeStatusType = ref(null);
-
-    // --- Biến trạng thái cho Progress Bar API Merge ---
-    const showMergeProgressBar = ref(false);
-    const mergeProgress = ref(0);
-    const mergeStatusText = ref("");
-    let mergeInterval = null;
-    let abortController = null;
-    // --- End Biến trạng thái ---
-
-    // --- Biến trạng thái cho Auto/Manual Mode ---
-    const isAutoMergeMode = ref(false);
-    // --- End Biến trạng thái ---
-
-    // --- Biến trạng thái cho Tracking Lỗi ---
-    const errorMessages = ref([]);
-    // --- End Biến trạng thái ---
-
-    // Hàm thêm lỗi vào Tracking Area
-    const addError = (message, type = "error") => {
-      errorMessages.value.push({
-        message,
-        type,
-        timestamp: new Date().toLocaleTimeString(),
-      });
-      // Giới hạn số lượng lỗi để tránh tràn bộ nhớ
-      if (errorMessages.value.length > 50) {
-        errorMessages.value.shift(); // Xóa lỗi cũ nhất
-      }
-    };
-
-    // Hàm xóa tất cả lỗi
-    const clearErrorMessages = () => {
-      errorMessages.value = [];
-    };
-
-    // Watcher cho initialFiles: Reset khi có files mới từ component cha
-    watch(
-      () => props.initialFiles,
-      (newVal) => {
-        if (newVal && newVal.length > 0) {
-          currentFiles.value = [...newVal];
-          mergeResultFile.value = null;
-          selectedFile1.value = null;
-          selectedFile2.value = null;
-          ElMessage.info("File mới đã sẵn sàng để ghép nối.");
-          clearErrorMessages(); // Xóa lỗi cũ khi có file mới
-        } else {
-          currentFiles.value = [];
-          mergeResultFile.value = null;
-          selectedFile1.value = null;
-          selectedFile2.value = null;
-          clearErrorMessages(); // Xóa lỗi cũ
-        }
-      },
-      { immediate: true, deep: true }
-    );
-
-    // Watcher cho isAutoMergeMode: Reset lựa chọn file khi đổi chế độ
-    watch(isAutoMergeMode, (newMode) => {
-      if (newMode) {
-        selectedFile1.value = null;
-        selectedFile2.value = null;
-      } else {
-        // Khi chuyển sang manual, nếu có file tổng, tự động chọn nó vào selectedFile2
-        if (mergeResultFile.value) {
-          selectedFile2.value = mergeResultFile.value.id;
-        }
-      }
-    });
-
-    // Computed: Danh sách file để hiển thị trong summary và cho các dropdown
-    const availableFilesToDisplay = computed(() => {
-      // Chỉ hiển thị các file chưa phải là file kết quả merge
-      return currentFiles.value.filter((file) => !file.isMergedResult);
-    });
-
-    // Computed: Danh sách file có thể chọn cho dropdown File 1 (chế độ Manual)
-    const filesForSelection1 = computed(() => {
-      if (mergeResultFile.value) {
-        // Nếu đã có file tổng, người dùng chỉ chọn file chưa merge để ghép với file tổng
-        return currentFiles.value.filter((file) => file.id !== mergeResultFile.value.id);
-      }
-      // Lần merge đầu tiên, hiển thị tất cả các file chưa phải là kết quả merge
-      return availableFilesToDisplay.value;
-    });
-
-    // Computed: Danh sách file có thể chọn cho dropdown File 2 (chế độ Manual)
-    const filesForSelection2 = computed(() => {
-      if (mergeResultFile.value) {
-        // Nếu đã có file tổng, file tổng luôn là file thứ 2
-        return [mergeResultFile.value];
-      }
-      // Lần merge đầu tiên, hiển thị tất cả các file chưa phải là kết quả merge
-      return availableFilesToDisplay.value;
-    });
-
-    // Computed: Kiểm tra xem có thể thực hiện merge không (cho cả Auto và Manual)
-    const canPerformMerge = computed(() => {
-      if (isMerging.value) return false;
-
-      if (isAutoMergeMode.value) {
-        // Chế độ Auto: cần ít nhất 2 file để ghép nối
-        return currentFiles.value.length >= 2;
-      } else {
-        // Chế độ Manual
-        if (mergeResultFile.value) {
-          // Đã có file tổng: cần chọn File 1 (file mới) và File 2 phải là file tổng
-          return (
-            selectedFile1.value !== null &&
-            selectedFile2.value === mergeResultFile.value.id
-          );
-        }
-        // Lần merge đầu tiên: cần chọn 2 file khác nhau và không rỗng
-        return (
-          selectedFile1.value !== null &&
-          selectedFile2.value !== null &&
-          selectedFile1.value !== selectedFile2.value
-        );
-      }
-    });
-
-    // Hàm gọi API ghép nối file (cho chế độ Manual)
-    const performMerge = async () => {
-      isMerging.value = true;
-      showMergeProgressBar.value = true;
-      mergeProgress.value = 0;
-      mergeStatusText.value = "Đang chuẩn bị ghép nối...";
-      mergeStatusMessage.value = {
-        type: "info",
-        message: "Đang tiến hành ghép nối thủ công...",
-      };
-      addError("Bắt đầu ghép nối thủ công...", "info");
-
-      abortController = new AbortController();
-      const signal = abortController.signal;
-
-      const file1Obj = currentFiles.value.find((f) => f.id === selectedFile1.value);
-      const file2Obj = currentFiles.value.find((f) => f.id === selectedFile2.value);
-
-      if (!file1Obj || !file2Obj) {
-        ElMessage.error("Vui lòng chọn đủ 2 file để ghép nối.");
-        addError("Lỗi: Không tìm thấy file đã chọn.", "error");
-        isMerging.value = false;
-        showMergeProgressBar.value = false;
-        return;
-      }
-
-      // Giả lập tiến trình upload
-      let progress = 0;
-      mergeInterval = setInterval(() => {
-        progress += Math.floor(Math.random() * 5) + 3; // Tăng ngẫu nhiên
-        if (progress >= 95) {
-          progress = 95;
-          clearInterval(mergeInterval);
-        }
-        mergeProgress.value = progress;
-        if (progress < 30) {
-          mergeStatusText.value = "Đang gửi yêu cầu đến server...";
-        } else if (progress < 70) {
-          mergeStatusText.value = `Server đang xử lý ghép nối ${file1Obj.name} và ${file2Obj.name}...`;
-        } else {
-          mergeStatusText.value = "Gần hoàn tất...";
-        }
-      }, 300);
-
-      try {
-        const payload = {
-          request_id: "evisor-1234567890",
-          user_id: "hoanvlh",
-          start_time: new Date().toISOString(),
-          path_files: [
-            file1Obj.minioObjectName,
-            file2Obj.minioObjectName
-          ]
-          // Có thể thêm các tham số khác nếu API yêu cầu
-        };
-
-        // Thay thế 'YOUR_MERGE_API_ENDPOINT' bằng endpoint API thực tế của bạn
-        const response = await axios.post("http://192.168.54.39:8000/POD_TimeTracker", payload, {
-          signal,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        clearInterval(mergeInterval);
-        mergeProgress.value = 100;
-        mergeStatusText.value = "Hoàn tất!";
-
-        const mergedFileData = response;
-        console.log("mergedFileData:", response);
-        
-
-        // Kiểm tra xem API có trả về đủ thông tin không
-        if (!mergedFileData || !mergedFileData.data.output) {
-          throw new Error("Dữ liệu trả về từ API không hợp lệ.");
-        }
-
-        const newMergedFile = {
-          id:
-            mergedFileData.id ||
-            `merged_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-          minioObjectName: mergedFileData.data.output,
-          isMergedResult: true, // Đánh dấu đây là file kết quả của quá trình merge
-        };
-        mergeResultFile.value = newMergedFile;
-        
-        // Cập nhật currentFiles: loại bỏ các file đã dùng và thêm file mới
-        const filesAfterRemoval = currentFiles.value.filter(
-          (f) => f.id !== file1Obj.id && f.id !== file2Obj.id
-        );
-        currentFiles.value = [...filesAfterRemoval, newMergedFile];
-
-        selectedFile1.value = null; // Reset file được chọn để tiếp tục ghép nối
-        selectedFile2.value = mergeResultFile.value.id; // Tự động chọn file tổng làm file thứ 2
-
-        mergeStatusMessage.value = {
-          type: "success",
-          message: `Ghép nối thành công! File "${newMergedFile.minioObjectName}" đã sẵn sàng.`,
-        };
-        ElMessage.success(mergeStatusMessage.value.message);
-        addError(`Ghép nối thành công: ${newMergedFile.minioObjectName}`, "success");
-        emit("merge-completed", newMergedFile);
-
-        setTimeout(() => {
-          showMergeProgressBar.value = false;
-        }, 1000);
-      } catch (error) {
-        clearInterval(mergeInterval);
-        mergeProgress.value = 0;
-        showMergeProgressBar.value = false;
-
-        if (axios.isCancel(error)) {
-          console.log("Yêu cầu ghép nối thủ công đã bị hủy bỏ:", error.message);
-          mergeStatusText.value = "Đã hủy ghép nối.";
-          mergeStatusMessage.value = {
-            type: "warning",
-            message: "Quá trình ghép nối đã bị hủy.",
-          };
-          ElMessage.warning("Quá trình ghép nối đã bị hủy.");
-          addError("Quá trình ghép nối thủ công đã bị hủy.", "warning");
-        } else {
-          console.error("Lỗi khi gọi API ghép nối thủ công:", error);
-          mergeStatusText.value = "Lỗi!";
-          const errorMessage =
-            error.response?.data?.message || error.message || "Không xác định";
-          mergeStatusMessage.value = {
-            type: "error",
-            message: `Lỗi ghép nối: ${errorMessage}`,
-          };
-          ElMessage.error(mergeStatusMessage.value.message);
-          addError(`Lỗi ghép nối thủ công: ${errorMessage}`, "error");
-        }
-      } finally {
-        isMerging.value = false;
-        abortController = null;
-      }
-    };
-
-    // Hàm gọi API ghép nối file (cho chế độ Auto)
-    const performAutoMerge = async () => {
-      isMerging.value = true;
-      showMergeProgressBar.value = true;
-      mergeProgress.value = 0;
-      mergeStatusText.value = "Đang bắt đầu ghép nối tự động...";
-      mergeStatusMessage.value = {
-        type: "info",
-        message: "Đang tiến hành ghép nối tự động tất cả các file...",
-      };
-      addError("Bắt đầu ghép nối tự động...", "info");
-
-      // Lấy tất cả các minioObjectName của các file hiện có
-      const allFileObjectsToMerge = currentFiles.value.map(file => file.minioObjectName);
-
-      if (allFileObjectsToMerge.length < 2) {
-        ElMessage.warning("Không đủ file để tự động ghép nối (cần ít nhất 2 file).");
-        addError("Lỗi: Không đủ file để tự động ghép nối.", "warning");
-        isMerging.value = false;
-        showMergeProgressBar.value = false;
-        return;
-      }
-
-      abortController = new AbortController();
-      const signal = abortController.signal;
-
-      // Giả lập tiến trình chung
-      let progress = 0;
-      clearInterval(mergeInterval); // Xóa interval cũ nếu có
-      mergeInterval = setInterval(() => {
-        progress += Math.floor(Math.random() * 5) + 3;
-        if (progress >= 95) {
-          progress = 95;
-          clearInterval(mergeInterval);
-        }
-        mergeProgress.value = progress;
-        if (progress < 30) {
-          mergeStatusText.value = "Đang gửi tất cả file đến server...";
-        } else if (progress < 70) {
-          mergeStatusText.value = `Server đang xử lý ghép nối ${allFileObjectsToMerge.length} file...`;
-        } else {
-          mergeStatusText.value = "Gần hoàn tất quá trình tự động...";
-        }
-      }, 300);
-
-      try {
-        const payload = {
-          request_id: "evisor-auto-merge-" + Date.now(), // ID request duy nhất
-          user_id: "hoanvlh",
-          start_time: new Date().toISOString(),
-          path_files: allFileObjectsToMerge // Gửi TẤT CẢ các đường dẫn file
-        };
-
-        // GỌI API MERGE MỘT LẦN VỚI TẤT CẢ CÁC FILE
-        const response = await axios.post("http://192.168.54.39:8000/POD_TimeTracker", payload, {
-          signal,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        clearInterval(mergeInterval);
-        mergeProgress.value = 100;
-        mergeStatusText.value = "Hoàn tất ghép nối tự động!";
-
-        const mergedFileData = response.data;
-
-        if (!mergedFileData || !mergedFileData.output) {
-          throw new Error("Dữ liệu trả về từ API không hợp lệ cho ghép nối tự động.");
-        }
-
-        const newMergedFile = {
-          id: `merged_final_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-          minioObjectName: mergedFileData.output,
-          name: mergedFileData.output.split('/').pop(), // Lấy tên file từ path_object
-          isMergedResult: true,
-        };
-
-        mergeResultFile.value = newMergedFile;
-        currentFiles.value = [newMergedFile]; // Chỉ còn lại file tổng cuối cùng
-        
-        selectedFile1.value = null; 
-        selectedFile2.value = null; // Reset các lựa chọn file thủ công
-
-        ElMessage.success(
-          `Tất cả ${allFileObjectsToMerge.length} file đã được tự động ghép nối thành công!`
-        );
-        mergeStatusMessage.value = {
-          type: "success",
-          message: "Tất cả file đã được ghép nối tự động thành công!",
-        };
-        addError("Tất cả file đã được ghép nối tự động thành công!", "success");
-        emit("merge-completed", newMergedFile); // Emit file cuối cùng
-        emit("all-file-merged"); // Có thể emit một sự kiện riêng cho chế độ tự động hoàn tất
-
-        setTimeout(() => {
-          showMergeProgressBar.value = false;
-        }, 1000);
-
-      } catch (error) {
-        clearInterval(mergeInterval);
-        mergeProgress.value = 0;
-        showMergeProgressBar.value = false;
-
-        if (axios.isCancel(error)) {
-          console.log("Yêu cầu ghép nối tự động đã bị hủy bỏ:", error.message);
-          mergeStatusText.value = "Đã hủy ghép nối tự động.";
-          mergeStatusMessage.value = {
-            type: "warning",
-            message: "Quá trình ghép nối tự động đã bị hủy.",
-          };
-          ElMessage.warning("Quá trình ghép nối tự động đã bị hủy.");
-          addError("Quá trình ghép nối tự động đã bị hủy.", "warning");
-        } else {
-          console.error("Lỗi khi gọi API ghép nối tự động:", error);
-          mergeStatusText.value = "Lỗi!";
-          const errorMessage =
-            error.response?.data?.message || error.message || "Không xác định";
-          mergeStatusMessage.value = {
-            type: "error",
-            message: `Lỗi ghép nối tự động: ${errorMessage}`,
-          };
-          ElMessage.error(mergeStatusMessage.value.message);
-          addError(`Lỗi ghép nối tự động: ${errorMessage}`, "error");
-        }
-      } finally {
-        isMerging.value = false;
-        abortController = null;
-      }
-    };
-
-    const cancelMergeProcess = () => {
-      if (abortController) {
-        abortController.abort();
-      }
-      clearInterval(mergeInterval);
-      isMerging.value = false;
-      showMergeProgressBar.value = false;
-      mergeProgress.value = 0;
-      mergeStatusText.value = "Đã hủy ghép nối.";
-      mergeStatusMessage.value = {
-        type: "warning",
-        message: "Quá trình ghép nối đã bị hủy.",
-      };
-      ElMessage.warning("Quá trình ghép nối đã bị hủy.");
-      addError("Quá trình ghép nối đã bị hủy bởi người dùng.", "warning");
-    };
-
-    const resetMergeProcess = () => {
-      cancelMergeProcess(); // Dừng mọi quá trình đang chạy
-      mergeResultFile.value = null;
-      selectedFile1.value = null;
-      selectedFile2.value = null;
-      mergeStatusMessage.value = null;
-      mergeStatusType.value = null;
-      errorMessages.value = []; // Xóa tất cả lỗi khi reset
-      currentFiles.value = [...props.initialFiles];
-      ElMessage.info("Đã đặt lại quá trình ghép nối. Vui lòng chọn file mới.");
-      emit("reset-workflow");
-    };
+    const initialFileRef = toRef(props, 'initialFiles');
+    const {
+      currentFiles,
+      selectedFile1,
+      selectedFile2,
+      mergeResultFile,
+      filesForSelection1,
+      filesForSelection2,
+      availableFilesToDisplay,
+      canPerformMerge,
+      isMerging,
+      performMerge,
+      performAutoMerge,
+      resetMergeProcess,
+      cancelMergeProcess,
+      showMergeProgressBar,
+      mergeProgress,
+      mergeStatusText,
+      isAutoMergeMode,
+      errorMessages,
+      clearErrorMessages
+    } = useMergeFiles(initialFileRef, emit);
 
     return {
       currentFiles,
@@ -585,24 +182,20 @@ export default {
       mergeResultFile,
       filesForSelection1,
       filesForSelection2,
-      availableFilesToDisplay, // Export mới
+      availableFilesToDisplay,
       canPerformMerge,
       isMerging,
-      mergeStatusMessage,
-      mergeStatusType,
       performMerge,
-      performAutoMerge, // Export hàm mới
+      performAutoMerge,
       resetMergeProcess,
-
+      cancelMergeProcess,
       showMergeProgressBar,
       mergeProgress,
       mergeStatusText,
-      cancelMergeProcess,
-
-      isAutoMergeMode, // Export biến toggle
-      errorMessages, // Export lỗi
-      clearErrorMessages, // Export hàm xóa lỗi
-    };
+      isAutoMergeMode,
+      errorMessages,
+      clearErrorMessages,
+    }
   },
 };
 </script>

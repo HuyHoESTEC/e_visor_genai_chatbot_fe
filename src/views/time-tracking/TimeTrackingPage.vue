@@ -50,7 +50,14 @@
           @all-files-merged="handleAllFilesMerged"
         />
       </div>
-      <div v-if="activeWorkflowStep === 2" class="completion-step-wrapper">
+      <div v-if="activeWorkflowStep === 2" class="overwork-review-wrapper">
+        <OverworkReviewStep 
+          :overwork-data="overworkResultData"
+          @review-completed="handleReviewCompleted"
+          @reset-workflow="resetWorkflow"
+        />
+      </div>
+      <div v-if="activeWorkflowStep === 3" class="completion-step-wrapper">
         <CompletionStep 
           :final-file="finalMergedFile"
           @reset-workflow="resetWorkflow"
@@ -68,6 +75,7 @@ import MultiFileUpload from "../../components/upload/MultiFileUpload.vue";
 import CombineFile from "../../components/form/CombineFile.vue";
 import axios from "axios";
 import CompletionStep from "../../components/form/CompletionStep.vue";
+import OverworkReviewStep from "../../components/form/OverworkReviewStep.vue";
 
 export default {
   name: "TimeTrackingPage",
@@ -79,9 +87,10 @@ export default {
     MultiFileUpload,
     CombineFile,
     CompletionStep,
+    OverworkReviewStep,
   },
   setup() {
-    const activeWorkflowStep = ref(0); // 0: Upload, 1: Merge, 2: Complete
+    const activeWorkflowStep = ref(0); // 0: Upload, 1: Merge, 2: Review Overwork, 3: Complete
     // Refs cho cac component upload
     const singleUploadRef = ref(null);
     const multiUploadRef = ref(null);
@@ -94,6 +103,7 @@ export default {
     const isUploading = ref(false); // Trang thai cho nut upload
 
     const finalMergedFile = ref(null);
+    const overworkResultData = ref([]);
 
     // Computed property de tinh tong so file da chon
     const totalFilesSelected = computed(() => {
@@ -162,8 +172,7 @@ export default {
       console.log("formData:", formData);
 
       try {
-        console.log(`Đang gửi ${filesCount} file lên http://192.168.54.39:8000/POD_Upload...`);
-        const response = await axios.post('http://192.168.54.39:8000/POD_Upload', formData, {
+        const response = await axios.post('http://192.168.54.39:8000/POD_TimeTracker_Upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data' // Quan trọng cho việc gửi file
           }
@@ -204,15 +213,24 @@ export default {
       }
     };
 
-    const handleMergeCompleted = () => {
+    const handleMergeCompleted = (mergedFileData) => {
+      // mergedFileData sẽ chứa { ..., downloadUrl, overwork: [...] }
+      finalMergedFile.value = mergedFileData;
+      // Lưu trữ dữ liệu overwork
+      overworkResultData.value = mergedFileData.overwork || [];
       activeWorkflowStep.value = 2; // Chuyen sang buoc hoan thanh
-      ElMessage.success("Quá trình ghép nối và xử lý file đã hoàn tất!");
+      ElMessage.success("Quá trình ghép nối đã hoàn tất. Vui lòng xem xét dữ liệu overwork.");
+    };
+
+    const handleReviewCompleted = () => {
+      activeWorkflowStep.value = 3; // Chuyển sang bước "Hoàn thành" cuối cùng
+      ElMessage.success("Đã hoàn tất xem xét dữ liệu Overwork. File đã sẵn sàng!");
     };
 
     const handleAllFilesMerged = (finalFileFromCombine) => {
-      activeWorkflowStep.value = 2; // Chuyển sang bước "Hoàn thành"
-      finalMergedFile.value = finalFileFromCombine;
-      ElMessage.success("Tất cả quá trình ghép nối đã hoàn tất. File đầu ra đã sẵn sàng!");
+      // activeWorkflowStep.value = 2; // Chuyển sang bước "Hoàn thành"
+      // finalMergedFile.value = finalFileFromCombine;
+      // ElMessage.success("Tất cả quá trình ghép nối đã hoàn tất. File đầu ra đã sẵn sàng!");
     };
 
     const handleAdvanceMergeStop = (step) => {
@@ -224,10 +242,10 @@ export default {
        * Khi activeStep của MergeStepsPage là 1, activeWorkflowStep là 1 (vẫn trong bước Merge/Phân tích)
        * Khi activeStep của MergeStepsPage là 2, activeWorkflowStep là 2 (Hoàn thành)
        */
-      if (step === 2) {
-        // Nếu MergeStepsPage hoàn thành bước cuối cùng (step 2)
-        activeWorkflowStep.value = 2;
-      }
+      // if (step === 2) {
+      //   // Nếu MergeStepsPage hoàn thành bước cuối cùng (step 2)
+      //   activeWorkflowStep.value = 2;
+      // }
     };
 
     const resetWorkflow = () => {
@@ -267,9 +285,11 @@ export default {
       handleMultiFileCleared,
       uploadAllFiles,
       handleMergeCompleted,
+      handleReviewCompleted,
       handleAllFilesMerged,
       handleAdvanceMergeStop,
       resetWorkflow,
+      overworkResultData,
     };
   },
 };
@@ -283,16 +303,14 @@ export default {
   background-color: #f0f2f5;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  /* Điều chỉnh kích thước của chính TimeTrackingPage */
   width: 100%;
-  min-width: 320px; /* Chiều rộng tối thiểu để đảm bảo đọc được trên màn hình nhỏ */
-  height: calc(100vh - 60px); /* Chiều cao tự động theo nội dung */
-  min-height: 85vh; /* Chiều cao tối thiểu là 85% chiều cao của viewport */
-  margin: 30px auto; /* Căn giữa theo chiều ngang, có khoảng cách trên dưới */
-  display: flex; /* Sử dụng flexbox */
-  flex-direction: column; /* Sắp xếp các phần tử con theo cột */
-  /* Loại bỏ align-items: center; ở đây nếu bạn muốn nội dung chính căn lề trái */
-  box-sizing: border-box; /* Đảm bảo padding không làm tăng tổng kích thước */
+  min-width: 320px;
+  height: calc(100vh - 60px);
+  min-height: 85vh;
+  margin: 30px auto;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .header-steps {
@@ -302,15 +320,14 @@ export default {
 }
 
 .main-content-area {
-  flex-grow: 1; /* Cho phép phần nội dung chính chiếm hết không gian còn lại theo chiều dọc */
+  flex-grow: 1;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  /* Đảm bảo chiều cao tối đa không vượt quá không gian còn lại */
-  overflow: auto; /* Thêm thanh cuộn nếu nội dung quá lớn */
+  overflow: auto;
 }
 
 .section-title {
@@ -334,7 +351,7 @@ export default {
   flex-direction: row;
   gap: 30px;
   flex-grow: 1;
-  margin-bottom: 30px; /* Khoảng cách với nút upload */
+  margin-bottom: 30px;
 }
 
 .action-bar-upload {
@@ -349,16 +366,15 @@ export default {
   padding: 15px 25px;
 }
 
-/* Quan trọng: Điều chỉnh cho merge-steps-wrapper */
-.merge-steps-wrapper {
-  flex-grow: 1; /* Cho phép nó chiếm hết không gian còn lại */
-  display: flex; /* Kích hoạt Flexbox để quản lý CombineFile */
-  justify-content: center; /* Căn giữa CombineFile theo chiều ngang */
-  align-items: flex-start; /* Căn CombineFile từ trên cùng theo chiều dọc */
-  /* Đảm bảo nó không vượt quá kích thước của main-content-area */
-  min-height: 0; /* Cho phép Flex item co lại nhỏ hơn nội dung của nó */
-  /* Nếu CombineFile có max-width riêng, nó sẽ không bị tràn */
-  width: 100%; /* Đảm bảo nó chiếm đủ chiều rộng */
+.merge-steps-wrapper,
+.overwork-review-wrapper, /* Thêm kiểu cho wrapper mới */
+.completion-step-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 0;
+  width: 100%;
 }
 
 
@@ -375,7 +391,7 @@ export default {
     padding: 15px;
     margin: 15px auto;
     width: 100%;
-    min-height: 90vh; /* Tăng chiều cao tối thiểu trên màn hình rất nhỏ */
+    min-height: 90vh;
     border-radius: 0;
   }
   .header-steps {

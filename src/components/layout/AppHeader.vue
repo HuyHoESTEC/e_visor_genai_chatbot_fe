@@ -14,6 +14,7 @@ import { useRoute } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { computed } from "vue";
 import defaultAvatar from "@/assets/img/default-profile-ava.png";
+import { MENU_ITEMS } from "../../constants/menuItems";
 
 export default {
   name: "AppHeader",
@@ -21,11 +22,42 @@ export default {
     const route = useRoute();
     const authStore = useAuthStore();
 
-    // Computed property to get current tab
+    // Hàm tìm kiếm label từ MENU_ITEMS dựa trên routeName
+    const findLabelByRouteName = (routeName, items) => {
+      for (const item of items) {
+        // Nếu item hiện tại có routeName trùng khớp, trả về label của nó
+        if (item.routeName === routeName) {
+          return item.label;
+        }
+        // Nếu item có children (là dropdown), đệ quy tìm kiếm trong children
+        if (item.isDropdown && item.children) {
+          const foundLabel = findLabelByRouteName(routeName, item.children);
+          if (foundLabel) {
+            return foundLabel;
+          }
+        }
+      }
+      return null; // Không tìm thấy label
+    };
+
+    // Computed property để lấy tên tab hiện tại
     const currentTabName = computed(() => {
-      // Priority Route.meta.title if any, if not, use route.name
-      return route.meta.title || route.name || "Chat";
+      // Ưu tiên Route.meta.title nếu có
+      if (route.meta.title) {
+        return route.meta.title;
+      }
+
+      // Sau đó, tìm label trong MENU_ITEMS dựa trên route.name
+      const foundLabel = findLabelByRouteName(route.name, MENU_ITEMS);
+      if (foundLabel) {
+        return foundLabel;
+      }
+
+      // Nếu không tìm thấy trong meta.title hoặc MENU_ITEMS, fallback về route.name
+      // hoặc một giá trị mặc định (ví dụ: "Chat")
+      return route.name || "Chat";
     });
+
     const userAvatar = computed(() => {
       return authStore.user?.avataUrl || defaultAvatar;
     });
@@ -41,6 +73,7 @@ export default {
 </script>
 
 <style scoped>
+/* (CSS giữ nguyên) */
 .app-header {
   display: flex;
   justify-content: space-between;
