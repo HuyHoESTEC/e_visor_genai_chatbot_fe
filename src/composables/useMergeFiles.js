@@ -5,13 +5,17 @@ import { computed, ref, watch } from "vue";
 
 export function useMergeFiles(initialFilesProp, emit) {
     const currentFiles = ref([]);
-    const selectedFile1 = ref(null);
-    const selectedFile2 = ref(null);
-    const mergeResultFile = ref(null); // File tổng hợp cuối cùng từ các lần merge
+    const selectedFile1 = ref(null); // File thành phần được chọn
+    const selectedFile2 = ref(null); // Chỉ dùng cho lần merge đầu tiên (nếu không có summaryFile)
+    const mergeResultFile = ref(null); // Đối tượng file kết quả merge cuối cùng (id, minioObjectName, etc.)
     const isMerging = ref(false);
     const abortController = ref(null);
 
     const isAutoMergeMode = ref(false);
+
+    // summaryFile sẽ lưu trữ minioObjectName của file TỔNG HỢP (kết quả merge trước đó)
+    // để gửi trong payload riêng biệt.
+    const summaryFile = ref(null);
 
     const { errorMessages, addMessage, clearErrorMessages } = useTrackingAndMessages();
     const {
@@ -29,9 +33,10 @@ export function useMergeFiles(initialFilesProp, emit) {
         (newVal) => {
             if (newVal && newVal.length > 0) {
                 currentFiles.value = [...newVal];
-                mergeResultFile.value = null; // Reset result file on new initial files
+                mergeResultFile.value = null;
                 selectedFile1.value = null;
                 selectedFile2.value = null;
+                summaryFile.value = null; // Reset summaryFile khi có file mới ban đầu
                 addMessage("File mới đã sẵn sàng ghép nối.", "info", "info");
                 clearErrorMessages();
             } else {
@@ -39,73 +44,82 @@ export function useMergeFiles(initialFilesProp, emit) {
                 mergeResultFile.value = null;
                 selectedFile1.value = null;
                 selectedFile2.value = null;
+                summaryFile.value = null;
                 clearErrorMessages();
             }
         },
         { immediate: true, deep: true }
     );
 
-    // Watcher for isAutoMergeMode: Reset file select after change mode
+    // Watcher for isAutoMergeMode: Reset file selection after changing mode
     watch(isAutoMergeMode, (newMode) => {
         if (newMode) {
             selectedFile1.value = null;
             selectedFile2.value = null;
+            summaryFile.value = null; // Clear summaryFile if switching to auto
         } else {
-            // When moving to manual, if there's a sum file, auto choose this file to selectedFile2
-            // This is an initial suggestion, but the user can change it.
+            // Khi chuyển sang chế độ thủ công, nếu có file kết quả merge trước đó,
+            // đặt nó làm summaryFile để sẵn sàng cho chuỗi merge.
             if (mergeResultFile.value) {
-                selectedFile2.value = mergeResultFile.value.id;
+                summaryFile.value = mergeResultFile.value.minioObjectName;
+                // Nếu UI vẫn sử dụng selectedFile2 cho việc hiển thị file tổng hợp,
+                // bạn có thể cập nhật nó ở đây. Tuy nhiên, logic merge sẽ không dùng nó.
+                // selectedFile2.value = mergeResultFile.value.id;
             }
         }
     });
 
-    // Computed: file list to display in summary and for dropdowns
-    const availableFilesToDisplay = computed(() => {
-        // Display all files that are not the current mergeResultFile
-        // This ensures the current result file is treated as a special "target" for the next merge
-        // and doesn't appear in the general selection if it's the target.
-        // However, if mergeResultFile is the only file left, it should still be in currentFiles.
-        return currentFiles.value;
-    });
-
-    // Computed: File list can be selected for Dropdown File 1 (Manual mode)
+    // Computed: Danh sách file để hiển thị trong dropdown cho File 1
     const filesForSelection1 = computed(() => {
-        // File 1 có thể là bất kỳ file nào trong currentFiles
-        // ngoại trừ file đang được chọn cho selectedFile2 (nếu có)
-        // và không phải là mergeResultFile (nếu mergeResultFile đã được chọn làm file thứ 2)
-        return currentFiles.value.filter(f =>
-            f.id !== selectedFile2.value // Không thể chọn cùng một file cho cả 2 dropdown
-        );
+        // Lọc ra file đang là summaryFile để tránh chọn lại chính nó làm file thành phần
+        // (Trừ khi summaryFile không còn trong currentFiles, nhưng logic dưới sẽ đảm bảo nó luôn có)
+        return currentFiles.value.filter(f => f.minioObjectName !== summaryFile.value);
     });
 
-    // Computed: File list can be selected for Dropdown File 2 (Manual mode)
+    // Computed: Danh sách file để hiển thị trong dropdown cho File 2 (chỉ cần thiết cho lần merge đầu)
     const filesForSelection2 = computed(() => {
-        // File 2 có thể là bất kỳ file nào trong currentFiles
-        // ngoại trừ file đang được chọn cho selectedFile1 (nếu có)
-        return currentFiles.value.filter(f =>
-            f.id !== selectedFile1.value // Không thể chọn cùng một file cho cả 2 dropdown
-        );
+        // Nếu đã có summaryFile, dropdown File 2 không cần thiết hoặc có thể tự động chọn file tổng hợp
+        // Nếu chưa có summaryFile (lần merge đầu), thì hiển thị tất cả các file còn lại trừ selectedFile1
+        if (summaryFile.value) {
+            // Có thể trả về rỗng nếu bạn không muốn dropdown 2 xuất hiện, hoặc
+            // trả về file summary để hiển thị cho người dùng biết nó đang được ghép nối với cái gì.
+            const summaryFileObj = currentFiles.value.find(f => f.minioObjectName === summaryFile.value);
+            return summaryFileObj ? [summaryFileObj] : [];
+        }
+        return currentFiles.value.filter(f => f.id !== selectedFile1.value);
     });
 
-
-    // Computed: Check if it is possible to perform Merge (for both Auto and Manual)
+    // Computed: Kiểm tra xem có thể thực hiện Merge hay không
     const canPerformMerge = computed(() => {
         if (isMerging.value) return false;
 
         if (isAutoMergeMode.value) {
-            return currentFiles.value.length >= 2;
+            // Auto merge requires at least 1 file to "process" (if backend supports 1-file processing)
+            // or 2 files for actual merging. For consistency with manual, let's allow 1.
+            return currentFiles.value.length >= 1; // Modified: allow 1 file for auto-merge as well
         } else {
-            // Manual mode:
-            // Need to select 2 different files
-            return (
-                selectedFile1.value !== null &&
-                selectedFile2.value !== null &&
-                selectedFile1.value !== selectedFile2.value
-            );
+            // Manual merge logic
+            if (summaryFile.value) {
+                // If there's an existing summary file, we need selectedFile1 to merge with it
+                const file1Obj = currentFiles.value.find(f => f.id === selectedFile1.value);
+                return selectedFile1.value !== null && file1Obj && file1Obj.minioObjectName !== summaryFile.value;
+            } else {
+                // First merge:
+                // Case 1: Only 1 file available in currentFiles. Allow "merging" it (processing it).
+                if (currentFiles.value.length === 1) {
+                    return selectedFile1.value !== null; // Just need to select the single file
+                }
+                // Case 2: More than 1 file available. Need 2 distinct files for actual merge.
+                return (
+                    selectedFile1.value !== null &&
+                    selectedFile2.value !== null &&
+                    selectedFile1.value !== selectedFile2.value
+                );
+            }
         }
     });
 
-    // Function call API merge file (for Manual mode)
+    // Hàm gọi API ghép nối file (chế độ thủ công)
     const performMerge = async () => {
         isMerging.value = true;
         startProgressBar("Đang chuẩn bị ghép nối thủ công...");
@@ -115,13 +129,53 @@ export function useMergeFiles(initialFilesProp, emit) {
         const signal = abortController.value.signal;
 
         const file1Obj = currentFiles.value.find((f) => f.id === selectedFile1.value);
-        const file2Obj = currentFiles.value.find((f) => f.id === selectedFile2.value);
+        let filesToMergeForRemoval = []; // Danh sách các file ID sẽ bị xóa khỏi currentFiles
 
-        if (!file1Obj || !file2Obj) {
-            addMessage("Vui lòng chọn đủ 2 file để ghép nối.", "error", "error");
+        // Xác định file thành phần cần ghép nối
+        if (!file1Obj) {
+            addMessage("Vui lòng chọn file thành phần để ghép nối.", "error", "error");
             isMerging.value = false;
             resetProgressBar();
             return;
+        }
+        filesToMergeForRemoval.push(file1Obj.id); // File này luôn bị xóa
+
+        // Xác định path_files và summary_file dựa trên trạng thái hiện tại
+        let pathFilesForApi = [];
+        let summaryFileForApi = null;
+
+        // Logic cũ cho lần merge tiếp theo (có summaryFile) vẫn giữ nguyên
+        if (summaryFile.value) {
+            pathFilesForApi = [file1Obj.minioObjectName];
+            summaryFileForApi = summaryFile.value;
+
+            const summaryFileObjInCurrent = currentFiles.value.find(f => f.minioObjectName === summaryFile.value);
+            if (summaryFileObjInCurrent) {
+                filesToMergeForRemoval.push(summaryFileObjInCurrent.id);
+            }
+            addMessage(`Ghép nối "${file1Obj.name}" với file tổng hợp hiện có...`, "info");
+        }
+        // THÊM TRƯỜNG HỢP MỚI: Chỉ có 1 file duy nhất và không có summaryFile
+        else if (currentFiles.value.length === 1 && selectedFile1.value === currentFiles.value[0].id) {
+            pathFilesForApi = [file1Obj.minioObjectName]; // Gửi chính nó vào path_files
+            summaryFileForApi = null; // Vẫn là null vì không có file tổng hợp trước đó
+            addMessage(`Đang xử lý file "${file1Obj.name}"...`, "info");
+            // filesToMergeForRemoval đã bao gồm file1Obj.id
+        }
+        // Logic cũ cho lần merge đầu tiên (nhiều hơn 1 file, không có summaryFile)
+        else {
+            const file2Obj = currentFiles.value.find((f) => f.id === selectedFile2.value);
+            if (!file2Obj) {
+                addMessage("Vui lòng chọn đủ 2 file để ghép nối lần đầu.", "error", "error");
+                isMerging.value = false;
+                resetProgressBar();
+                return;
+            }
+            pathFilesForApi = [file1Obj.minioObjectName, file2Obj.minioObjectName];
+            summaryFileForApi = null;
+
+            filesToMergeForRemoval.push(file2Obj.id);
+            addMessage(`Ghép nối "${file1Obj.name}" và "${file2Obj.name}"...`, "info");
         }
 
         try {
@@ -129,21 +183,18 @@ export function useMergeFiles(initialFilesProp, emit) {
                 request_id: "evisor-" + Date.now(),
                 user_id: "hoanvlh",
                 start_time: new Date().toISOString(),
-                path_files: [
-                    file1Obj.minioObjectName,
-                    file2Obj.minioObjectName
-                ]
+                path_files: pathFilesForApi,
+                summary_file: summaryFileForApi
             };
 
             const mergedData = await mergeFilesApi(payload, signal);
             completeProgressBar("Hoàn tất!");
 
             if (mergedData && mergedData.status === "error") {
-                // Nếu API trả về status "error", hiển thị message từ API
                 addMessage(`${mergedData.message || "Lỗi không xác định từ server."}`, "error", "error");
-                resetProgressBar(); // Reset progress bar on API error
-                isMerging.value = false; // Stop merging state
-                return; // Dừng hàm tại đây vì đã có lỗi
+                resetProgressBar();
+                isMerging.value = false;
+                return;
             }
 
             if (!mergedData || !mergedData.output) {
@@ -153,48 +204,46 @@ export function useMergeFiles(initialFilesProp, emit) {
             const newMergedFile = {
                 id: `merged_${Date.now()}_${Math.random().toString(36).substring(7)}`,
                 minioObjectName: mergedData.output,
-                name: mergedData.output.split('/').pop(), // Lấy tên file từ minioObjectName
-                isMergedResult: true, // Đánh dấu đây là file kết quả merge
+                name: mergedData.output.split('/').pop(),
+                isMergedResult: true,
             };
 
-            // Remove used files and add the new merged file to currentFiles
-            const filesAfterRemoval = currentFiles.value.filter(
-                (f) => f.id !== file1Obj.id && f.id !== file2Obj.id
+            // Cập nhật currentFiles: Xóa các file đã sử dụng và thêm file mới
+            currentFiles.value = currentFiles.value.filter(
+                (f) => !filesToMergeForRemoval.includes(f.id)
             );
-            currentFiles.value = [...filesAfterRemoval, newMergedFile];
+            currentFiles.value.push(newMergedFile);
 
-            // Update mergeResultFile to the latest merged file
+            // Cập nhật mergeResultFile và summaryFile với file kết quả mới nhất
             mergeResultFile.value = newMergedFile;
+            summaryFile.value = newMergedFile.minioObjectName;
 
-            // --- Reset selections for next merge (flexible approach) ---
-            selectedFile1.value = null; // Clear first selection
-            // If there are still files to merge, automatically select the new merged file for the next round
-            // Otherwise, clear second selection too
-            if (currentFiles.value.length > 1) { // If more than one file left (current merged + others)
-                 selectedFile2.value = newMergedFile.id; // Auto-select the newly merged file for file2
+            // Reset selectedFile1 và selectedFile2 (nếu cần cho UI)
+            selectedFile1.value = null;
+            // Tự động chọn file tổng hợp mới vào selectedFile2 nếu còn file để merge
+            if (currentFiles.value.length > 1) {
+                selectedFile2.value = newMergedFile.id;
             } else {
-                selectedFile2.value = null; // If only the merged file remains, clear both.
+                selectedFile2.value = null;
             }
 
+            addMessage(`Xử lý file thành công! File "${newMergedFile.name}" đã sẵn sàng.`, "success", "success");
 
-            addMessage(`Ghép nối thành công! File "${newMergedFile.name}" đã sẵn sàng.`, "success", "success");
-
-            // Emit the final merged file if only one file remains in currentFiles
-            // or if it's the last step for the user.
+            // Quyết định emit sự kiện hoàn tất hay tiếp tục
             if (currentFiles.value.length === 1 && currentFiles.value[0].id === newMergedFile.id) {
-                 emit("merge-completed", { ...newMergedFile, overwork: mergedData.overwork || [] });
+                emit("merge-completed", { ...newMergedFile, overwork: mergedData.overwork || [] });
+                addMessage("Tất cả các file đã được xử lý hoàn tất!", "success", "success");
             } else {
-                // If there are still files to merge, emit a signal that merge was successful
-                // and the process can continue.
                 emit("partial-merge-completed", { ...newMergedFile, overwork: mergedData.overwork || [] });
+                addMessage("Đã xử lý một phần. Vui lòng tiếp tục ghép nối các file còn lại.", "info", "info");
             }
 
         } catch (err) {
             resetProgressBar();
-            if (err.name === 'AbortError' || (err.message && err.message.includes("bị hủy bỏ"))) { // Check for AbortError
-                addMessage("Quá trình ghép nối đã bị hủy", "warning", "warning");
+            if (err.name === 'AbortError' || (err.message && err.message.includes("bị hủy bỏ"))) {
+                addMessage("Quá trình xử lý đã bị hủy", "warning", "warning");
             } else {
-                addMessage(`Lỗi ghép nối thủ công: ${err.message}`, "error", "error");
+                addMessage(`Lỗi xử lý file: ${err.message || 'Lỗi không xác định.'}`, "error", "error");
             }
         } finally {
             isMerging.value = false;
@@ -202,7 +251,7 @@ export function useMergeFiles(initialFilesProp, emit) {
         }
     };
 
-    // Function call API merge file (for Auto mode) - No changes here for this issue.
+    // performAutoMerge: Logic giữ nguyên
     const performAutoMerge = async () => {
         isMerging.value = true;
         startProgressBar("Đang bắt đầu ghép nối tự động...");
@@ -225,10 +274,18 @@ export function useMergeFiles(initialFilesProp, emit) {
                 request_id: "evisor-auto-merge-" + Date.now(),
                 user_id: "hoanvlh",
                 start_time: new Date().toISOString(),
-                path_files: allFileObjectsToMerge
+                path_files: allFileObjectsToMerge,
+                summary_file: null // Trong auto-merge, summary_file thường không cần thiết hoặc là null
             };
 
             const mergedData = await mergeFilesApi(payload, signal);
+
+            if (mergedData && mergedData.status === "error") {
+                addMessage(`${mergedData.message || "Lỗi không xác định từ server."}`, "error", "error");
+                resetProgressBar();
+                isMerging.value = false;
+                return;
+            }
 
             if (!mergedData || !mergedData.output) {
                 throw new Error("Dữ liệu trả về từ API ghép nối tự động không hợp lệ.");
@@ -242,7 +299,9 @@ export function useMergeFiles(initialFilesProp, emit) {
             };
 
             mergeResultFile.value = newMergedFile;
-            currentFiles.value = [newMergedFile]; // Only the final merged file remains
+            currentFiles.value = [newMergedFile];
+
+            summaryFile.value = newMergedFile.minioObjectName; // Cập nhật summaryFile sau auto-merge
 
             selectedFile1.value = null;
             selectedFile2.value = null;
@@ -251,13 +310,13 @@ export function useMergeFiles(initialFilesProp, emit) {
 
             completeProgressBar("Hoàn tất ghép nối tự động!");
             emit("merge-completed", { ...newMergedFile, overwork: mergedData.overwork || [] });
-            emit("all-file-merged"); // Indicate all initial files are merged
+            emit("all-file-merged");
         } catch (err) {
             resetProgressBar();
             if (err.name === 'AbortError' || (err.message && err.message.includes("bị hủy bỏ"))) {
                 addMessage("Quá trình ghép nối tự động đã bị hủy.", "warning", "warning");
             } else {
-                addMessage(`Lỗi ghép nối tự động: ${err.message}`, "error", "error");
+                addMessage(`Lỗi ghép nối tự động: ${err.message || 'Lỗi không xác định.'}`, "error", "error");
             }
         } finally {
             isMerging.value = false;
@@ -279,10 +338,11 @@ export function useMergeFiles(initialFilesProp, emit) {
         mergeResultFile.value = null;
         selectedFile1.value = null;
         selectedFile2.value = null;
+        summaryFile.value = null; // Reset summaryFile khi đặt lại quy trình
         clearErrorMessages();
-        currentFiles.value = [...initialFilesProp.value]; // reset to initialFiles default
+        currentFiles.value = [...initialFilesProp.value];
         addMessage("Đã đặt lại quá trình ghép nối. Vui lòng chọn file mới.", "info", "info");
-        emit("reset-workflow"); // Emit to parent to reset overall workflow if needed
+        emit("reset-workflow");
     };
 
     return {
@@ -292,7 +352,7 @@ export function useMergeFiles(initialFilesProp, emit) {
         mergeResultFile,
         filesForSelection1,
         filesForSelection2,
-        availableFilesToDisplay,
+        availableFilesToDisplay: currentFiles, // availableFilesToDisplay có thể đơn giản là currentFiles
         canPerformMerge,
         isMerging,
         performMerge,
