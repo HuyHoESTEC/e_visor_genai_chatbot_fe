@@ -58,7 +58,7 @@ onMounted(() => {
         <div class="content-and-footer">
           <router-view />
           <footer class="app-footer">
-            Một sản phẩm của ESTEC Automation & Digitalization - ©{{ currentYear }}
+            Một sản phẩm của ESTEC Automation & Digitalization - Research and Development Department ©{{ currentYear }}
           </footer>
         </div>
       </div>
@@ -99,7 +99,7 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: white;
+  background-color: white !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
 }
@@ -108,7 +108,7 @@ onMounted(() => {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .content-and-footer > :deep(.router-view) {
@@ -121,6 +121,7 @@ onMounted(() => {
   font-size: 0.9em;
   font-weight: bold;
   padding: 10px; /* Thêm padding để footer không bị dính sát đáy */
+  user-select: none;
 }
 
 /* --- CSS cho hiệu ứng Spinner --- */

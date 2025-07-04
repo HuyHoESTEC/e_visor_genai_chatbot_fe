@@ -10,12 +10,14 @@
         <span class="file-name">Tên file: <strong>{{ finalFile.name }}</strong></span>
         <el-button
           type="success"
-          icon="el-icon-download"
+          icon="download"
           class="download-button"
           @click="downloadFinalFile"
           :loading="isDownloading"
         >
-          <span v-if="!isDownloading">Tải xuống File</span>
+          <span v-if="!isDownloading">
+            Tải xuống File
+          </span>
           <span v-else>Đang tải...</span>
         </el-button>
       </div>
@@ -70,7 +72,7 @@ export default defineComponent({
         const payload = {
           request_id: "evisor-1234567890",
           user_id: "hoanvlh",
-          file_path: props.finalFile.minioObjectName
+          path_file: props.finalFile.minioObjectName
         };
 
         // Gọi API để lấy URL tải xuống

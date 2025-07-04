@@ -31,4 +31,7 @@
     --light-gray: #f8f8f8; /* Màu nền nhẹ */
     --icon-color: #666; /* Màu xám cho icon */
     --light-icon-color: #999; /* Màu xám nhạt cho icon */
+
+    --mes-sidebar-unique-color: #0050ae;
+    --mes-unique-color: #146bd0;
 }
