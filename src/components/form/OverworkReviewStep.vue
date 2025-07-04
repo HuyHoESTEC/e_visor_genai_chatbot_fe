@@ -4,7 +4,7 @@
 
     <div class="filter-controls">
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :span="24">
           <label for="name-filter" class="filter-label">Lọc theo Tên Nhân Sự:</label>
           <el-select
             id="name-filter"
@@ -23,52 +23,39 @@
             ></el-option>
           </el-select>
         </el-col>
-        <el-col :span="12">
-          <label for="date-filter" class="filter-label">Lọc theo Ngày:</label>
-          <el-date-picker
-            id="date-filter"
-            v-model="selectedDates"
-            type="daterange"
-            range-separator="Đến"
-            start-placeholder="Ngày bắt đầu"
-            end-placeholder="Ngày kết thúc"
-            class="filter-date-picker"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            clearable
-          ></el-date-picker>
-        </el-col>
-      </el-row>
+        </el-row>
       <el-button type="info" @click="resetFilters" class="reset-filters-button">Đặt lại Bộ lọc</el-button>
     </div>
     <div v-if="filteredOverworkData && filteredOverworkData.length > 0">
-      <el-table
-        :data="filteredOverworkData"
-        style="width: 100%"
-        border
-        class="overwork-table"
-        :header-cell-style="{ textAlign: 'center' }"
-        :cell-style="{ textAlign: 'center' }"
-      >
-        <el-table-column prop="tenNhanSu" label="Tên Nhân Sự" width="200" fixed></el-table-column>
-
-        <el-table-column
-          v-for="date in sortedUniqueDates"
-          :key="date"
-          :label="date"
-          :width="120"
+      <div class="table-wrapper">
+        <el-table
+          :data="filteredOverworkData"
+          style="width: 100%"
+          border
+          class="overwork-table"
+          :header-cell-style="{ textAlign: 'center' }"
+          :cell-style="{ textAlign: 'center' }"
         >
-          <template #default="scope">
-            <span v-if="scope.row.overworkDetails && scope.row.overworkDetails[date]">
-              {{ scope.row.overworkDetails[date] }}
-            </span>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
+          <el-table-column prop="tenNhanSu" label="Tên Nhân Sự" width="200" fixed></el-table-column>
 
-      </el-table>
+          <el-table-column
+            v-for="date in sortedUniqueDates"
+            :key="date"
+            :label="date"
+            :width="120"
+          >
+            <template #default="scope">
+              <span v-if="scope.row.overworkDetails && scope.row.overworkDetails[date]">
+                {{ scope.row.overworkDetails[date] }}
+              </span>
+              <span v-else>-</span>
+            </template>
+          </el-table-column>
+
+        </el-table>
+      </div>
       <div class="summary-info">
-        <p>Tổng số nhân sự có overwork hiển thị: <strong>{{ filteredOverworkData.length }}</strong></p>
+        <p>Tổng số nhân sự có khối lượng công việc hiển thị: <strong>{{ filteredOverworkData.length }}</strong></p>
       </div>
     </div>
     <div v-else class="no-data-message">
@@ -88,13 +75,13 @@ import {
   ElTableColumn,
   ElButton,
   ElEmpty,
-  ElSelect,     // Thêm ElSelect
-  ElOption,     // Thêm ElOption
-  ElDatePicker, // Thêm ElDatePicker
-  ElRow,        // Thêm ElRow
-  ElCol,        // Thêm ElCol
+  ElSelect,
+  ElOption,
+  // Loại bỏ ElDatePicker khỏi imports
+  ElRow,
+  ElCol,
 } from 'element-plus';
-import { computed, ref } from 'vue'; // Thêm ref
+import { computed, ref } from 'vue';
 
 export default {
   name: "OverworkReviewStep",
@@ -105,7 +92,7 @@ export default {
     ElEmpty,
     ElSelect,
     ElOption,
-    ElDatePicker,
+    // Loại bỏ ElDatePicker khỏi components
     ElRow,
     ElCol,
   },
@@ -118,8 +105,9 @@ export default {
   emits: ['review-completed', 'reset-workflow'],
   setup(props, { emit }) {
     // --- States cho Bộ lọc ---
-    const selectedNames = ref([]); // Mảng chứa các tên nhân sự được chọn
-    const selectedDates = ref([]); // Mảng chứa [ngày_bắt_đầu, ngày_kết_thúc]
+    const selectedNames = ref([]); // Mảng chứa các tên nhân sự được chọn (cho phép nhiều)
+    // Loại bỏ selectedDates ref
+    // const selectedDates = ref([]);
 
     // --- Lấy tất cả tên nhân sự duy nhất để hiển thị trong bộ lọc ---
     const allEmployeeNames = computed(() => {
@@ -127,65 +115,32 @@ export default {
       props.overworkData.forEach(item => {
         names.add(item["employee"]);
       });
-      return Array.from(names).sort(); // Sắp xếp theo ABC
+      return Array.from(names).sort();
     });
 
     // --- Format lại dữ liệu gốc thành dạng ngang cho bảng ---
+    // Phần này vẫn giữ nguyên vì đây là bước chuẩn bị dữ liệu cơ bản
     const formattedOverworkForHorizontalTable = computed(() => {
       return props.overworkData.map(item => {
         const overworkDetails = {};
         item.overwork.forEach(ow => {
-          // Lưu giờ overwork vào thuộc tính có tên là ngày
           overworkDetails[ow["date_val"]] = ow["hours"];
         });
         return {
           tenNhanSu: item["employee"],
-          overworkDetails: overworkDetails, // Đối tượng chứa { "YYYY-MM-DD": hours }
+          overworkDetails: overworkDetails,
         };
       });
     });
 
-    // Dữ liệu được lọc theo ngày riêng, dùng để xác định cột ngày
-    // Mục đích chính là làm rỗng các overworkDetails không nằm trong khoảng ngày
-    // mà không loại bỏ toàn bộ hàng nhân sự ngay lập tức.
-    const filteredOverworkDataForDateColumns = computed(() => {
-      let data = formattedOverworkForHorizontalTable.value;
-
-      if (selectedDates.value && selectedDates.value.length === 2) {
-        const [rawStartDate, rawEndDate] = selectedDates.value;
-        // Đảm bảo startDate là đầu ngày và endDate là cuối ngày
-        const startDate = new Date(rawStartDate + 'T00:00:00');
-        const endDate = new Date(rawEndDate + 'T23:59:59');
-
-        data = data.map(item => {
-          const newOverworkDetails = {};
-          for (const dateStr in item.overworkDetails) {
-            const currentDate = new Date(dateStr + 'T12:00:00'); // Dùng 12:00:00 để tránh lỗi múi giờ
-
-            // Kiểm tra xem ngày có nằm trong khoảng đã chọn không
-            if (currentDate >= startDate && currentDate <= endDate) {
-              newOverworkDetails[dateStr] = item.overworkDetails[dateStr];
-            }
-          }
-          // Trả về item với overworkDetails đã lọc.
-          // Tên nhân sự vẫn được giữ lại dù không có overwork nào khớp với ngày.
-          return { ...item, overworkDetails: newOverworkDetails };
-        });
-      }
-      return data;
-    });
-
-    // --- Lấy tất cả các ngày duy nhất từ dữ liệu đã lọc theo ngày và sắp xếp ---
-    // Chỉ các ngày có dữ liệu sau khi lọc ngày mới được hiển thị làm cột.
+    // --- sortedUniqueDates giờ sẽ lấy tất cả các ngày từ dữ liệu gốc đã format ---
+    // (trước đây có phụ thuộc vào filteredOverworkDataForDateColumns, giờ không còn nữa)
     const sortedUniqueDates = computed(() => {
       const dates = new Set();
-      filteredOverworkDataForDateColumns.value.forEach(item => {
+      formattedOverworkForHorizontalTable.value.forEach(item => {
         if (item.overworkDetails) {
           Object.keys(item.overworkDetails).forEach(dateStr => {
-            // Chỉ thêm ngày nếu có giờ overwork (không phải undefined sau khi lọc)
-            if (item.overworkDetails[dateStr] !== undefined) {
-              dates.add(dateStr);
-            }
+            dates.add(dateStr);
           });
         }
       });
@@ -193,16 +148,16 @@ export default {
     });
 
     // --- Dữ liệu đã lọc cuối cùng để hiển thị trong bảng ---
+    // Logic lọc theo ngày đã bị loại bỏ
     const filteredOverworkData = computed(() => {
-      let data = filteredOverworkDataForDateColumns.value; // Bắt đầu với dữ liệu đã được xử lý theo ngày
+      let data = formattedOverworkForHorizontalTable.value; // Bắt đầu với dữ liệu đã format
 
       // Lọc theo tên nhân sự
       if (selectedNames.value.length > 0) {
         data = data.filter(item => selectedNames.value.includes(item.tenNhanSu));
       }
 
-      // Cuối cùng, lọc bỏ những hàng không có overwork nào khớp sau khi áp dụng tất cả các bộ lọc.
-      // Điều này loại bỏ các hàng nhân sự mà không có overwork nào trong các cột hiển thị.
+      // Giữ lại bộ lọc này để loại bỏ các hàng không có overwork nào sau khi lọc theo tên
       data = data.filter(item => Object.keys(item.overworkDetails).length > 0);
 
       return data;
@@ -211,7 +166,7 @@ export default {
     // --- Reset Bộ lọc ---
     const resetFilters = () => {
       selectedNames.value = [];
-      selectedDates.value = [];
+      // Loại bỏ selectedDates.value = [];
     };
 
     const completeReview = () => {
@@ -223,12 +178,12 @@ export default {
     };
 
     return {
-      selectedNames,         // Cần trả về để template sử dụng
-      selectedDates,         // Cần trả về để template sử dụng
-      allEmployeeNames,      // Cần trả về để template sử dụng
-      sortedUniqueDates,     // Cần trả về để template sử dụng
-      filteredOverworkData,  // Cần trả về để template sử dụng
-      resetFilters,          // Cần trả về để template sử dụng
+      selectedNames,
+      // selectedDates không còn được trả về
+      allEmployeeNames,
+      sortedUniqueDates,
+      filteredOverworkData,
+      resetFilters,
       completeReview,
       resetWorkflow,
     };
@@ -239,7 +194,6 @@ export default {
 ---
 
 <style>
-/* CSS đã được tối ưu hóa cho dạng ngang, và có thêm styles cho phần filter controls */
 .overwork-review-container {
   padding: 20px;
   background-color: #fff;
@@ -266,10 +220,10 @@ export default {
   width: 100%;
 }
 
-/* --- New styles for Filter controls --- */
+/* --- Styles cho Bộ lọc --- */
 .filter-controls {
   width: 90%;
-  max-width: 960px; /* Giới hạn chiều rộng để bộ lọc không quá lớn */
+  max-width: 960px;
   margin-bottom: 20px;
   padding: 20px;
   border: 1px solid #ebeef5;
@@ -289,25 +243,39 @@ export default {
   text-align: left;
 }
 
-.filter-select,
-.filter-date-picker {
+.filter-select {
   width: 100%;
 }
+
+/* Loại bỏ .filter-date-picker */
+/* .filter-date-picker {
+  width: 100%;
+} */
 
 .el-row {
   width: 100%;
+  /* Điều chỉnh để el-col chỉ có một cái thì nó vẫn dàn ra */
+  justify-content: center; /* Căn giữa nếu chỉ có một cột */
 }
 
 .reset-filters-button {
-  align-self: flex-end; /* Đặt nút ở góc phải dưới của bộ lọc */
+  align-self: flex-end;
 }
 
-/* --- End new styles for Filter controls --- */
+/* --- End styles for Filter controls --- */
+
+.table-wrapper {
+  width: 90%;
+  max-width: 1200px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
 
 .overwork-table {
-  width: 90%; /* Ví dụ: chiếm 90% chiều rộng của container */
-  max-width: 1200px; /* Giới hạn chiều rộng tối đa */
-  margin-bottom: 20px;
+  width: 100%;
+  min-width: fit-content;
+  margin-bottom: 0;
 }
 
 .summary-info {
@@ -339,17 +307,18 @@ export default {
     padding: 15px;
   }
   .el-col {
-    width: 100%; /* Trên màn hình nhỏ, các cột lọc sẽ xếp chồng */
-    margin-bottom: 15px;
+    width: 100%; /* Giờ chỉ có một el-col, nó sẽ luôn chiếm 100% trên màn hình nhỏ */
+    margin-bottom: 0; /* Không cần margin-bottom nếu chỉ có một cột */
   }
-  .el-col:last-child {
+  /* Bỏ el-col:last-child vì giờ chỉ có 1 el-col*/
+  /* .el-col:last-child {
     margin-bottom: 0;
-  }
+  } */
   .reset-filters-button {
-    align-self: stretch; /* Nút kéo dài toàn bộ chiều rộng */
+    align-self: stretch;
   }
-  .overwork-table {
-    width: 100%; /* Trên màn hình nhỏ, bảng có thể chiếm toàn bộ chiều rộng */
+  .table-wrapper {
+    width: 100%;
   }
 }
 </style>

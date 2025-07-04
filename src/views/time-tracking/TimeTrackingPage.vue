@@ -299,18 +299,18 @@ export default {
 .time-tracking-container {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", Arial, sans-serif;
-  padding: 30px;
+  padding: 20px;
   background-color: #f0f2f5;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   width: 100%;
   min-width: 320px;
   height: calc(100vh - 60px);
-  min-height: 85vh;
   margin: 30px auto;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow-y: scroll;
 }
 
 .header-steps {
