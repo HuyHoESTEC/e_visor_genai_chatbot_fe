@@ -33,7 +33,7 @@
             :loading="isUploading"
           >
             <span v-if="!isUploading">
-              Tải lên tất cả file ({{ totalFilesSelected }} files)
+              Tải lên tất cả file
             </span>
             <span v-else>Đang tải lên...</span>
           </el-button>
@@ -108,7 +108,7 @@ export default {
     // Computed property de tinh tong so file da chon
     const totalFilesSelected = computed(() => {
       let count = 0;
-      if (selectedSingleFile.value) {
+      if (selectedSingleFile.value || selectedMultiFiles.value) {
         count++;
       }
       count += selectedMultiFiles.value.length;
