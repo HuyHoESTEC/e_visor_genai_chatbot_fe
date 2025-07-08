@@ -15,11 +15,21 @@ const MENU_ITEMS = [
     isActive: false,
   },
   {
-    name: "time-tracking",
-    label: "Quản lý chấm công",
-    iconComponent: "List",
-    routeName: "TimeTracking",
+    name: "HCNS",
+    label: "Hành chính nhân sự",
+    iconComponent: "UserFilled",
+    routeName: null,
     isActive: false,
+    isDropdown: true,
+    children: [
+      {
+        name: "time-tracking",
+        label: "Quản lý chấm công",
+        iconComponent: "List",
+        routeName: "TimeTracking",
+        isActive: false,
+      },
+    ]
   },
   // MESX
   {

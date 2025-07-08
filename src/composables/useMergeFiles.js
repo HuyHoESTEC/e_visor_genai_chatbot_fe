@@ -1,4 +1,4 @@
-import { mergeFilesApi, getDownloadUrlApi } from "../services/apiServices";
+import { mergeFilesApi, getDownloadUrlApi } from "../services/auth.service";
 import { useTrackingAndMessages } from "./useTrackingAndMessages";
 import { useMergeProgressBar } from "./useMergeProgressBar";
 import { computed, ref, watch } from "vue";

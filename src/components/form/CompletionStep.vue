@@ -36,7 +36,7 @@ import { defineComponent, ref, onUnmounted } from 'vue'; // Import ref và onUnm
 import { ElMessage, ElButton } from 'element-plus';
 import { DocumentChecked } from '@element-plus/icons-vue'; 
 import axios from 'axios'; // Import axios để tạo AbortController
-import { getDownloadUrlApi } from '../../services/apiServices';
+import { getDownloadUrlApi } from '../../services/auth.service';
 
 export default defineComponent({
   name: 'CompletionStep',

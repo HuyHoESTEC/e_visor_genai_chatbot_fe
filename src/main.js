@@ -27,14 +27,22 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 // Initialize store after Pinia was used
 const authStore = useAuthStore();
-authStore.initAuthListener(); // Call action to check and load auth store from localStorage
+// authStore.initAuthListener(); // Call action to check and load auth store from localStorage
 // authStore.checkAuth();
 /**
  * Make sure the Navigation Guards Router is waiting for Firebase Auth to be ready
  * (This is a sample to ensure Authready before navigation)
  */
-router.isReady().then(() => {
+router.isReady().then(async () => {
+  authStore.checkAuth();
   app.mount('#app');
+});
+
+router.beforeEach(async (to, from, next) => {
+  if (!authStore.authReady) {
+    await authStore.checkAuth();
+  }
+  next();
 });
 
 // Global properties (nếu cần, ví dụ: $socket, nhưng Composables được khuyến khích hơn)

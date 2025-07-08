@@ -133,27 +133,48 @@ const router = createRouter({
 // });
 
 // Global Navigation Guard
+// router.beforeEach(async (to, from, next) => {
+//   const authStore = useAuthStore();
+
+//   // Đợi cho trạng thái Firebase Auth được khởi tạo (onAuthStateChanged đã chạy lần đầu)
+//   if (!authStore.authReady) {
+//     // Nếu authReady là false, đợi một chút (hoặc sử dụng Promise)
+//     // Cách này không lý tưởng cho production nhưng đơn giản cho debug
+//     await new Promise(resolve => {
+//         const unsubscribe = onAuthStateChanged(auth, (user) => {
+//             unsubscribe(); // Ngừng lắng nghe sau khi trạng thái được xác định
+//             resolve();
+//         });
+//     });
+//   }
+
+//   const isLoggedIn = authStore.isLoggedIn; // Sau khi đợi, isLoggedIn sẽ chính xác
+
+//   if (to.meta.requiresAuth && !isLoggedIn) {
+//     next({ name: 'Login' });
+//   } else if (to.meta.guestOnly && isLoggedIn) {
+//     next({ name: 'Chat' });
+//   } else {
+//     next();
+//   }
+// });
+
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  // Đợi cho trạng thái Firebase Auth được khởi tạo (onAuthStateChanged đã chạy lần đầu)
+  // Đảm bảo authStore đã sẵn sàng. Nếu chưa, chạy checkAuth.
+  // Điều này cần thiết cho lần đầu tải trang hoặc khi refresh.
   if (!authStore.authReady) {
-    // Nếu authReady là false, đợi một chút (hoặc sử dụng Promise)
-    // Cách này không lý tưởng cho production nhưng đơn giản cho debug
-    await new Promise(resolve => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            unsubscribe(); // Ngừng lắng nghe sau khi trạng thái được xác định
-            resolve();
-        });
-    });
+    await authStore.checkAuth();
   }
 
-  const isLoggedIn = authStore.isLoggedIn; // Sau khi đợi, isLoggedIn sẽ chính xác
-
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    next({ name: 'Login' });
-  } else if (to.meta.guestOnly && isLoggedIn) {
-    next({ name: 'Chat' });
+  // Bây giờ, trạng thái authStore đã được khởi tạo, có thể kiểm tra.
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    console.log('Chưa đăng nhập, chuyển hướng về Login.');
+    next('/login');
+  } else if ((to.name === 'Login' || to.name === 'Register') && authStore.isLoggedIn) {
+    console.log('Đã đăng nhập, chuyển hướng từ Login/Register về Dashboard.');
+    next('/summary-dashboard');
   } else {
     next();
   }

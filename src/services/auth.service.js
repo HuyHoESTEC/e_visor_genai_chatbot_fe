@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://192.168.54.39:8000";
+// const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT;
+const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT;
 
 export const mergeFilesApi = async (payload, signal) => {
     try {
@@ -45,3 +46,33 @@ export const getDownloadUrlApi = async (payload, signal) => {
         throw new Error(`API lấy URL tải xuống lỗi: ${errorMessage}`);
     }
 };
+
+export const loginApi = async (payload, signal) => {
+    const response = await axios.post(`${API_BASE_URL}/Login`, payload, {
+        signal,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+export const logoutApi = async (payload, signal) => {
+    const response = await axios.post(`${API_BASE_URL}/Logout`, payload, {
+        signal,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+export const fileUploadApi = async (payload, signal) => {
+    const response = await axios.post(`${API_BASE_URL}/POD_TimeTracker_Upload`, payload, {
+        signal,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response;
+}
