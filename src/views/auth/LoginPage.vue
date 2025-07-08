@@ -1,45 +1,46 @@
 <template>
   <div class="auth-page">
     <div class="auth-card">
-      <h2>Đăng nhập</h2>
-      <el-form @submit.prevent="handleLogin">
-          <el-form-item label="Email">
-            <el-input v-model="email" type="email" placeholder="Vui lòng nhập email của bạn" />
-          </el-form-item>
-          <el-form-item label="Mật khẩu">
-            <el-input v-model="password" type="password" placeholder="Vui lòng nhập mật khẩu của bạn" show-password />
-          </el-form-item>
-          <el-alert v-if="authStore.error" type="error" :title="authStore.error" show-icon class="mb-3" />
-          <el-form-item>
-            <el-button type="success" native-type="submit" :loading="authStore.loading" class="full-width">Đăng nhập</el-button>
-          </el-form-item>
-      </el-form>
-      <p class="mt-3">
+      <div class="auth-header">
+        <img class="img-login" src="../../assets/img/estec-icon.png" />
+        <h2>Đăng nhập</h2>
+      </div>
+      <LoginForm 
+        :loading="authStore.loading"
+        :error="authStore.error"
+        @submit-login="handleLogin"
+      />
+      <!-- <p class="mt-3">
         Bạn chưa có tài khoản ? <router-link to="/register">Đăng ký tại đây</router-link>
-      </p>
+      </p> -->
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '../../stores/auth'; 
+import LoginForm from '../../components/auth/LoginForm.vue';
+import router from '../../router';
 
 export default {
   name: 'LoginPage',
+  components: {
+    LoginForm
+  },
   setup() {
     const authStore = useAuthStore();
-    const email = ref('');
-    const password = ref('');
 
-    const handleLogin = async () => {
-      await authStore.login({ email: email.value, password: password.value });
+    const handleLogin = async (credentials) => {
+      await authStore.login(credentials);
+      try {
+        router.push('/summary-dashboard');
+      } catch (err) {
+        alert('Login failed. Please check your credentials.');
+      }
     };
 
     return {
       authStore,
-      email,
-      password,
       handleLogin
     }
   }
@@ -58,7 +59,7 @@ export default {
       rgba(0, 0, 0, 0.6),   /* overlay bóng mờ màu đen 50% */
       rgba(0, 0, 0, 0.6)
     ),
-    url('../../assets/img/form_bg.jpg');
+    url('../../assets/img/estec-visor-bg.png');
   background-size: cover;
   background-position: center;
   width: 100vw;         
@@ -79,6 +80,19 @@ export default {
 .auth-card h2 {
   margin-bottom: 25px;
   color: #333;
+}
+
+.auth-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+}
+
+.img-login {
+  width: 80px;
+  height: 80px;
+  align-self: center;
 }
 
 .full-width {

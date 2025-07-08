@@ -76,6 +76,7 @@ import CombineFile from "../../components/form/CombineFile.vue";
 import axios from "axios";
 import CompletionStep from "../../components/form/CompletionStep.vue";
 import OverworkReviewStep from "../../components/form/OverworkReviewStep.vue";
+import { fileUploadApi } from "../../services/auth.service";
 
 export default {
   name: "TimeTrackingPage",
@@ -172,16 +173,7 @@ export default {
       console.log("formData:", formData);
 
       try {
-        const response = await axios.post('http://192.168.54.39:8000/POD_TimeTracker_Upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data' // Quan trọng cho việc gửi file
-          }
-        });
-
-        // const response = await axios.get('http://192.168.54.39:8000/');
-        // console.log('testsadasa', response);
-        
-
+        const response = await fileUploadApi(formData);
         console.log("Phản hồi từ server:", response.data);
 
         if (response.data.status === "success" && Array.isArray(response.data.path_files)) {

@@ -174,9 +174,10 @@ export default {
         type: "warning",
       })
         .then(async () => {
-          await authStore.logout();
+          const user_id = authStore.user ? authStore.user.id : null;
+          const logoutPayload = user_id ? { username: user_id } : {};
+          await authStore.logout(logoutPayload);
           ElMessage.success("Đã đăng xuất thành công!");
-          router.push({ name: "Login" }); // Redirect to login page
         })
         .catch(() => {
           ElMessage.info("Đã hủy đăng xuất.");

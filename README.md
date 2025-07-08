@@ -1,18 +1,18 @@
 # Project Description:
-## 1. Project name: 🚧 Estec Visor Assistant
+## 1. Project name: 🚧 Estec Visor EcoSystem
 ## 2. Technical use: 🔥
 - Frontend: **VueJS (Vue 3 + Vite)**
 - Backend: **NodeJS(Express)**
 - Deploy env: **AWS**
 - AI platform: **AWS Bedrock**
-- Database:
+- Database: **PostgreSQL**
 ## 3. Team member: ✋
 - Unit: **Estec Digital**
 - Project Manager: **Mr. Phu Tran Quang**
 - Counseling experts: **Mr. Tony Do, Mr. Toan Tan, Mr. Duc Thinh**
-- AI Engineer: **Mr. Hoan Vo Ly Hoang**
+- AI and Backend Engineer: **Mr. Hoan Vo Ly Hoang**
 - BA and Tester Engineer: **Mr. Thang Doan Ngoc Minh, Mr. Nguyen Hoang Tan**
-- Frontend and Backend Engineer: **Mr. Huy Ho Nhat**
+- Frontend Engineer: **Mr. Huy Ho Nhat**
 ## 4. Step by step: ➡️
 - Step 1: Run "**npm install**" to install all neccessary packages in package-lock
 - Step 2: Create ".env" file to config all variable

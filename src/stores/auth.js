@@ -1,14 +1,16 @@
 import { defineStore } from "pinia";
 // import { login, register, logout } from '../services/auth';
-import { 
-  auth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  onAuthStateChanged
-} from "../firebase";
+// import { 
+//   auth, 
+//   signInWithEmailAndPassword, 
+//   createUserWithEmailAndPassword,
+//   onAuthStateChanged
+// } from "../firebase";
 import router from "../router";
+import { loginApi, logoutApi } from "../services/auth.service";
 
-export const useAuthStore = defineStore('auth', {
+// export const useAuthStore = defineStore('auth', {
+
   // -- Turn on this code if database of project has created --
   // state: () => ({
   //   user: null,
@@ -93,225 +95,340 @@ export const useAuthStore = defineStore('auth', {
   // }
 
   // -- Turn on if this code if database is Firebase --
+  // state: () => ({
+  //   user: null, // User information Firebase
+  //   token: null, // Firebase ID Token
+  //   loading: false, // Loading status
+  //   error: null, // Error notification
+  //   authReady: false // Add this variable to know when Firebase Auth is ready
+  // }),
+  // getters: {
+  //   isLoggedIn: (state) => !!state.user && !!state.token, // Check both user and token
+  //   userDisplayName: (state) => state.user ? (state.user.displayName || state.user.email) : 'Guest'
+  // },
+  // actions: {
+  //   async register(credentials) {
+  //     this.loading = true;
+  //     this.error = null;
+  //     try {
+  //       // 1. Register new user with Firebase
+  //       const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+  //       // const user = userCredential.user;
+
+  //       // // After success register, automatic get ID Token (Optional)
+  //       // const idToken = await user.getIdToken();
+  //       // console.log('Firebase ID Token (After register): ', idToken);
+        
+  //       // // Save token and user information into store
+  //       // this.token = idToken;
+  //       // this.user = {
+  //       //   uid: user.uid,
+  //       //   email: user.email,  
+  //       //   displayName: user.displayName,
+  //       //   photoURL: user.photoURL
+  //       // };
+
+  //       // localStorage.setItem('firebaseIdToken', idToken);
+  //       // localStorage.setItem('firebaseUser', JSON.stringify(this.user));
+  //       /**
+  //        * (Optional) Call Backend to save more user information to your database if necessary
+  //        * await this.callBackendProtectedApi(idToken); // Or another API for registration if you need additional information
+  //        * Switch to the main page or Dashboard after successful registration
+  //        */
+  //       router.push('/login');
+  //     } catch (err) {
+  //       console.error('Error register:', err);
+  //       switch (err.code) {
+  //         case 'auth/email-already-in-use':
+  //           this.error = 'This email was existed.';
+  //           break;
+  //         case 'auth/invalid-email':
+  //           this.error = 'Email is invalid.';
+  //           break;
+  //         case 'auth/weak-password':
+  //           this.error = 'Password is too weak (at least 6 characters).';
+  //           break;
+  //         default:
+  //           this.error = `Error register: ${err.message}`;
+  //       }
+  //     } finally {
+  //       this.loading = false;
+  //     }
+  //   },
+  //   async login(credentials) {
+  //     this.loading = true;
+  //     this.error = null;
+  //     try {
+  //       // 1. Login with Firebase
+  //       const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+  //       // const user = userCredential.user;
+
+  //       // // 2. Get Firebase ID Token
+  //       // const idToken = await user.getIdToken();
+  //       // console.log('Firebase ID Token:', idToken);
+
+  //       // // Save token and user information into store
+  //       // this.token = idToken;
+  //       // this.user = {
+  //       //   uid: user.uid,
+  //       //   email: user.email,
+  //       //   displayName: user.displayName,
+  //       //   photoUrl: user.photoURL
+  //       // };
+
+  //       // // Save tokens to localstorage to maintain login status
+  //       // localStorage.setItem('firebaseIdToken', idToken);
+  //       // localStorage.setItem('firebaseUser', JSON.stringify(this.user)); // Save more user information
+
+  //       // // 3. (Optional) Call your API backend with this token
+  //       // await this.callBackendProtectedApi(idToken);
+
+  //       // Redirect after login success
+  //       router.push('/chat'); // Replace /chat with Route you want to move towards
+  //     } catch (err) {
+  //       console.error('Error login:', err);
+  //       // Resolve detail error firebase Auth
+  //       switch(err.code) {
+  //         case 'auth/user-not-found':
+  //         case 'auth/wrong-password':
+  //           this.error = 'Email or password incorrectly.';
+  //           break;
+  //         case 'auth/invalid-email':
+  //           this.error = 'Email is invalid';
+  //           break;
+  //         case 'auth/too-many-requests':
+  //           this.error = 'You have tried to login too many times. Please try again later.';
+  //           break;
+  //         default:
+  //           this.error = `Error: ${err.message}`;
+  //       }
+  //     } finally {
+  //       this.loading = false;
+  //     }
+  //   },
+
+  //   /**
+  //    * This function is very important to synchronize Firebase Auth status with Pinia Store
+  //    * and process when users refresh page
+  //    */
+  //   initAuthListener() {
+  //     onAuthStateChanged(auth, async (user) => {
+  //       if (user) {
+  //         // User is logging in
+  //         this.user = {
+  //           uid: user.uid,
+  //           email: user.email,
+  //           displayName: user.displayName,
+  //           photoURL: user.photoURL
+  //         };
+  //         this.token = await user.getIdToken(); // Get Token ID newest
+  //         /**
+  //          * Save to Localstorage (not required because the Firebase SDK has processed the session)
+  //          * But it is helpful to create early in main.js` if you want
+  //          */
+  //         localStorage.setItem('firebaseIdToken', this.token);
+  //         localStorage.setItem('firebaseUser', JSON.stringify(this.user));
+  //         /**
+  //          * If you have a backend API that needs authentication Firebase ID token, call here
+  //          * await this.callBackendProtectedApi(this.token);
+  //          */
+  //         console.log('Firebase Auth State Changed: User logged in.');
+  //       } else {
+  //         // User has been logged out
+  //         this.user = null;
+  //         this.token = null;
+  //         localStorage.removeItem('firebaseIdToken');
+  //         localStorage.removeItem('firebaseUser');
+  //         console.log('Firebase Auth State Changed: User logged out.');
+  //       }
+  //       this.authReady = true; // Mark that the authentication state has been first checked
+  //     });
+  //   },
+
+  //   // Function to call API backend was protected
+  //   async callBackendProtectedApi(token) {
+  //     this.loading = true;
+  //     this.error = null;
+  //     try {
+  //       const response = await fetch('http://localhost:3000/api/auth/profile', {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': `Bearer ${token}` // Send token in header Authoriztion
+  //         }
+  //       });
+
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         // If backend return error, maybe is token invalid, expire
+  //         throw new Error(errorData.message || 'Error when call API backend.');
+  //       }
+
+  //       const data = await response.json();
+  //       console.log('Data from Backend API (profile):', data);
+  //       /**
+  //        * You can update more user information from backend if needed
+  //        * Example: this.user = { ..this.user, ...data.user };
+  //        */
+  //     } catch (err) {
+  //       console.error('Error when call API Backend:', err);
+  //       this.error = 'Can not connect with Backend or token is invalid: ' + err.message;
+  //       /**
+  //        * If the backend refuses tokens, can be logged out
+  //        * await this.logout();
+  //        */
+  //     } finally {
+  //       this.loading = false;
+  //     }
+  //   },
+
+  //   // Function check and load token/user from localStorage when start app
+  //   initializeAuth() {
+  //     const storedToken = localStorage.getItem('firebaseIdToken');
+  //     const storedUser = localStorage.getItem('firebaseUser');
+  //     if (storedToken && storedUser) {
+  //       this.token = storedToken;
+  //       this.user = JSON.parse(storedUser);
+  //       console.log('Auth initialized from localStorage.');
+  //       /**
+  //        * (Optional) Call the backend to re -verify the token if you want higher security
+  //        * this.callBackendProtectedApi(storedToken);
+  //        */
+  //     }
+  //   },
+
+  //   async logout() {
+  //     this.loading = true;
+  //     this.error = null;
+  //     try {
+  //       await auth.signOut(); // Logout Firebase
+  //       // this.user = null;
+  //       // this.token = null;
+  //       // localStorage.removeItem('firebaseIdToken');
+  //       // localStorage.removeItem('firebaseUser');
+  //       // console.log('Log out.');
+  //       router.push('/login'); // Redirect to login page
+  //     } catch (err) {
+  //       console.error('Error when logout:', err);
+  //       this.error = `Logout error: ${err.message}`;
+  //     } finally {
+  //       this.loading = false;
+  //     }
+  //   }
+  // }
+// });
+export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null, // User information Firebase
-    token: null, // Firebase ID Token
-    loading: false, // Loading status
-    error: null, // Error notification
-    authReady: false // Add this variable to know when Firebase Auth is ready
+    user: null,
+    token: localStorage.getItem('token') || null,
+    loading: false,
+    error: null,
+    authReady: false,
   }),
   getters: {
-    isLoggedIn: (state) => !!state.user && !!state.token, // Check both user and token
-    userDisplayName: (state) => state.user ? (state.user.displayName || state.user.email) : 'Guest'
+    isLoggedIn: (state) => !!state.token,
+    userDisplayName: (state) => state.user ? (state.user.name) : 'Guest',
   },
   actions: {
-    async register(credentials) {
-      this.loading = true;
-      this.error = null;
-      try {
-        // 1. Register new user with Firebase
-        const userCredential = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
-        // const user = userCredential.user;
-
-        // // After success register, automatic get ID Token (Optional)
-        // const idToken = await user.getIdToken();
-        // console.log('Firebase ID Token (After register): ', idToken);
-        
-        // // Save token and user information into store
-        // this.token = idToken;
-        // this.user = {
-        //   uid: user.uid,
-        //   email: user.email,  
-        //   displayName: user.displayName,
-        //   photoURL: user.photoURL
-        // };
-
-        // localStorage.setItem('firebaseIdToken', idToken);
-        // localStorage.setItem('firebaseUser', JSON.stringify(this.user));
-        /**
-         * (Optional) Call Backend to save more user information to your database if necessary
-         * await this.callBackendProtectedApi(idToken); // Or another API for registration if you need additional information
-         * Switch to the main page or Dashboard after successful registration
-         */
-        router.push('/login');
-      } catch (err) {
-        console.error('Error register:', err);
-        switch (err.code) {
-          case 'auth/email-already-in-use':
-            this.error = 'This email was existed.';
-            break;
-          case 'auth/invalid-email':
-            this.error = 'Email is invalid.';
-            break;
-          case 'auth/weak-password':
-            this.error = 'Password is too weak (at least 6 characters).';
-            break;
-          default:
-            this.error = `Error register: ${err.message}`;
+      /**
+       * 
+       * @param {Object} credentials 
+       */
+      async login(credentials) {
+        this.loading = true;
+        this.error = null;
+        try {
+          const response = await loginApi(credentials);
+          console.log('response:', response);
+          
+          if (response && response.user_id && response.session_id) {
+            this.user = {
+              id: response.user_id,
+              name: response.full_name,
+            };
+            this.token = response.session_id;
+            localStorage.setItem('token', this.token);
+            localStorage.setItem('user', JSON.stringify(this.user));
+            router.push('/summary-dashboard');
+            return true;
+          } else {
+            this.error = 'Phản hồi đăng nhập không hợp lệ.'
+            return false;
+          }
+        } catch (err) {
+          console.error('Login failed:', err);
+          this.error = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+          return false;
+        } finally {
+          this.loading = false;
         }
-      } finally {
-        this.loading = false;
-      }
-    },
-    async login(credentials) {
-      this.loading = true;
-      this.error = null;
-      try {
-        // 1. Login with Firebase
-        const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
-        // const user = userCredential.user;
+      },
 
-        // // 2. Get Firebase ID Token
-        // const idToken = await user.getIdToken();
-        // console.log('Firebase ID Token:', idToken);
-
-        // // Save token and user information into store
-        // this.token = idToken;
-        // this.user = {
-        //   uid: user.uid,
-        //   email: user.email,
-        //   displayName: user.displayName,
-        //   photoUrl: user.photoURL
-        // };
-
-        // // Save tokens to localstorage to maintain login status
-        // localStorage.setItem('firebaseIdToken', idToken);
-        // localStorage.setItem('firebaseUser', JSON.stringify(this.user)); // Save more user information
-
-        // // 3. (Optional) Call your API backend with this token
-        // await this.callBackendProtectedApi(idToken);
-
-        // Redirect after login success
-        router.push('/chat'); // Replace /chat with Route you want to move towards
-      } catch (err) {
-        console.error('Error login:', err);
-        // Resolve detail error firebase Auth
-        switch(err.code) {
-          case 'auth/user-not-found':
-          case 'auth/wrong-password':
-            this.error = 'Email or password incorrectly.';
-            break;
-          case 'auth/invalid-email':
-            this.error = 'Email is invalid';
-            break;
-          case 'auth/too-many-requests':
-            this.error = 'You have tried to login too many times. Please try again later.';
-            break;
-          default:
-            this.error = `Error: ${err.message}`;
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    /**
-     * This function is very important to synchronize Firebase Auth status with Pinia Store
-     * and process when users refresh page
-     */
-    initAuthListener() {
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          // User is logging in
-          this.user = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL
-          };
-          this.token = await user.getIdToken(); // Get Token ID newest
-          /**
-           * Save to Localstorage (not required because the Firebase SDK has processed the session)
-           * But it is helpful to create early in main.js` if you want
-           */
-          localStorage.setItem('firebaseIdToken', this.token);
-          localStorage.setItem('firebaseUser', JSON.stringify(this.user));
-          /**
-           * If you have a backend API that needs authentication Firebase ID token, call here
-           * await this.callBackendProtectedApi(this.token);
-           */
-          console.log('Firebase Auth State Changed: User logged in.');
-        } else {
-          // User has been logged out
+      /**
+       * @param {Object} credential
+       */
+      async logout(credential = {}) {
+        this.loading = true;
+        this.error = null;
+        try {
+          await logoutApi(credential);
           this.user = null;
           this.token = null;
-          localStorage.removeItem('firebaseIdToken');
-          localStorage.removeItem('firebaseUser');
-          console.log('Firebase Auth State Changed: User logged out.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          router.push('/login');
+          return true;
+        } catch (err) {
+          console.error('Logout failed:', err);
+          this.error = err.response?.data?.message || 'Đã xảy ra lỗi khi đăng xuất.';
+          // Despite the API error, we should still delete local information to ensure safety 
+          this.user = null;
+          this.token = null;
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          router.push('/login');
+          return false;
+        } finally {
+          this.loading = false;
         }
-        this.authReady = true; // Mark that the authentication state has been first checked
-      });
-    },
+      },
 
-    // Function to call API backend was protected
-    async callBackendProtectedApi(token) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await fetch('http://localhost:3000/api/auth/profile', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // Send token in header Authoriztion
+      async checkAuth() {
+        if (this.authReady) return;
+
+        this.loading = true;
+        try {
+          const storedToken = localStorage.getItem('token');
+          const storedUser = localStorage.getItem('user');
+
+          if (storedToken && storedUser) {
+            this.token = storedToken;
+            try {
+              this.user = JSON.parse(storedUser);
+            } catch (e) {
+            console.error("Lỗi khi phân tích JSON user từ localStorage:", e);
+            this.user = null;
+            localStorage.removeItem('user');
           }
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          // If backend return error, maybe is token invalid, expire
-          throw new Error(errorData.message || 'Error when call API backend.');
+          console.log('Trạng thái xác thực được khỏi tạo từ localStorage.');
+        } else {
+          // If do not token/user valid, make sure store have been reset
+          this.user = null;
+          this.token = null;
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
         }
-
-        const data = await response.json();
-        console.log('Data from Backend API (profile):', data);
-        /**
-         * You can update more user information from backend if needed
-         * Example: this.user = { ..this.user, ...data.user };
-         */
-      } catch (err) {
-        console.error('Error when call API Backend:', err);
-        this.error = 'Can not connect with Backend or token is invalid: ' + err.message;
-        /**
-         * If the backend refuses tokens, can be logged out
-         * await this.logout();
-         */
+      } catch (error) {
+        console.error('Lỗi khi kiểm tra xác thực:', error);
+        // Xóa token nếu có lỗi trong quá trình kiểm tra (ví dụ: token hết hạn)
+        this.user = null;
+        this.token = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       } finally {
+        this.authReady = true; // Checkpoint that success check
         this.loading = false;
       }
     },
-
-    // Function check and load token/user from localStorage when start app
-    initializeAuth() {
-      const storedToken = localStorage.getItem('firebaseIdToken');
-      const storedUser = localStorage.getItem('firebaseUser');
-      if (storedToken && storedUser) {
-        this.token = storedToken;
-        this.user = JSON.parse(storedUser);
-        console.log('Auth initialized from localStorage.');
-        /**
-         * (Optional) Call the backend to re -verify the token if you want higher security
-         * this.callBackendProtectedApi(storedToken);
-         */
-      }
-    },
-
-    async logout() {
-      this.loading = true;
-      this.error = null;
-      try {
-        await auth.signOut(); // Logout Firebase
-        // this.user = null;
-        // this.token = null;
-        // localStorage.removeItem('firebaseIdToken');
-        // localStorage.removeItem('firebaseUser');
-        // console.log('Log out.');
-        router.push('/login'); // Redirect to login page
-      } catch (err) {
-        console.error('Error when logout:', err);
-        this.error = `Logout error: ${err.message}`;
-      } finally {
-        this.loading = false;
-      }
-    }
   }
 });
