@@ -1,6 +1,6 @@
 <template>
   <div class="overwork-review-container">
-    <h2 class="section-title">Xem và đánh giá dữ liệu của nhân sự sau khi ghép nối</h2>
+    <h2 class="section-title">Xem và đánh giá dữ liệu của nhân sự quá số giờ làm</h2>
 
     <div class="filter-controls">
       <el-row :gutter="20">
@@ -55,7 +55,7 @@
         </el-table>
       </div>
       <div class="summary-info">
-        <p>Tổng số nhân sự có khối lượng công việc hiển thị: <strong>{{ filteredOverworkData.length }}</strong></p>
+        <p>Tổng số nhân sự bị quá số giờ làm hiển thị: <strong>{{ filteredOverworkData.length }}</strong></p>
       </div>
     </div>
     <div v-else class="no-data-message">
@@ -265,8 +265,7 @@ export default {
 /* --- End styles for Filter controls --- */
 
 .table-wrapper {
-  width: 90%;
-  max-width: 1200px;
+  max-width: 1400px;
   overflow-x: auto;
   margin-bottom: 20px;
   box-sizing: border-box;

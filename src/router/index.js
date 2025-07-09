@@ -8,7 +8,7 @@ import ChatPage from "../views/main/ChatPage.vue";
 // import ContractsPage from "../views/main/ContractsPage.vue";
 // import SettingsPage from "../views/main/SettingsPage.vue";
 // import ProfilePage from '../views/profile/ProfilePage.vue';
-import { onAuthStateChanged, auth } from "../firebase";
+// import { onAuthStateChanged, auth } from "../firebase";
 import MesxDashboard from "../views/MESX/mesxDashboard.vue";
 import WmsxDashboard from "../views/WMSX/wmsxDashboard.vue";
 import QmsxDashboard from "../views/QMSX/qmsxDashboard.vue";
@@ -16,6 +16,7 @@ import MmsxDashboard from "../views/MMSX/mmsxDashboard.vue";
 import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
 import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
 import SummaryDashboard from "../views/dashboard/SummaryDashboard.vue";
+import { ElMessageBox } from "element-plus";
 
 const routes = [
   {
@@ -99,6 +100,12 @@ const routes = [
     name: 'SummaryDashboard',
     component: SummaryDashboard,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/workshop-summary-dashboard',
+    name: 'MESXDashboard',
+    component: SummaryDashboard,
+    meta: { requiresAuth: true }
   }
 ];
 
@@ -168,14 +175,39 @@ router.beforeEach(async (to, from, next) => {
     await authStore.checkAuth();
   }
 
-  // Bây giờ, trạng thái authStore đã được khởi tạo, có thể kiểm tra.
-  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    console.log('Chưa đăng nhập, chuyển hướng về Login.');
-    next('/login');
-  } else if ((to.name === 'Login' || to.name === 'Register') && authStore.isLoggedIn) {
-    console.log('Đã đăng nhập, chuyển hướng từ Login/Register về Dashboard.');
+  const isLoggedIn = authStore.isLoggedIn;
+  const isTokenStillValid = authStore.isTokenValid;
+
+  // 2. Xử lý các route yêu cầu xác thực
+  if (to.meta.requiresAuth) {
+    // Nếu không có token/user HOẶC token đã hết hạn
+    if (!isLoggedIn || !isTokenStillValid) {
+      console.log('Router Guard: Chưa đăng nhập hoặc token đã hết hạn. Chuyển hướng về Login.');
+      
+      // Chỉ hiển thị popup nếu đang không ở trang login
+      // và chưa có popup nào đang hiển thị
+      if (to.name !== 'Login' && !document.querySelector('.el-overlay-message-box')) {
+        await ElMessageBox.alert('Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.', 'Phiên làm việc hết hạn', {
+          confirmButtonText: 'Đăng nhập lại',
+        }).catch(() => { /* User closed the box, do nothing */ }); 
+      }
+      
+      authStore.clearAuthData(); // Xóa dữ liệu xác thực
+      next('/login'); // QUAN TRỌNG: Gọi next('/login') để router chuyển hướng
+    } else {
+      // Đã đăng nhập và token còn hạn, cho phép đi tiếp
+      console.log('Router Guard: Đã đăng nhập và token còn hạn. Cho phép truy cập.');
+      next();
+    }
+  } 
+  // 3. Xử lý các route đăng nhập/đăng ký nếu đã đăng nhập và token còn hạn
+  else if ((to.name === 'Login' || to.name === 'Register') && isLoggedIn && isTokenStillValid) {
+    console.log('Router Guard: Đã đăng nhập và token còn hạn. Chuyển hướng từ Login/Register về Dashboard.');
     next('/summary-dashboard');
-  } else {
+  } 
+  // 4. Các trường hợp còn lại (route không yêu cầu xác thực, hoặc đã xử lý ở trên)
+  else {
+    console.log('Router Guard: Cho phép truy cập route không yêu cầu xác thực hoặc đã xử lý.');
     next();
   }
 });
