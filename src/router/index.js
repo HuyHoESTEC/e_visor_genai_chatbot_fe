@@ -178,38 +178,33 @@ router.beforeEach(async (to, from, next) => {
   const isLoggedIn = authStore.isLoggedIn;
   const isTokenStillValid = authStore.isTokenValid;
 
-  // 2. Xử lý các route yêu cầu xác thực
+  // 1. Nếu route yêu cầu xác thực
   if (to.meta.requiresAuth) {
-    // Nếu không có token/user HOẶC token đã hết hạn
     if (!isLoggedIn || !isTokenStillValid) {
       console.log('Router Guard: Chưa đăng nhập hoặc token đã hết hạn. Chuyển hướng về Login.');
       
-      // Chỉ hiển thị popup nếu đang không ở trang login
-      // và chưa có popup nào đang hiển thị
-      if (to.name !== 'Login' && !document.querySelector('.el-overlay-message-box')) {
-        await ElMessageBox.alert('Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.', 'Phiên làm việc hết hạn', {
-          confirmButtonText: 'Đăng nhập lại',
-        }).catch(() => { /* User closed the box, do nothing */ }); 
-      }
+      // Gọi handleSessionExpired để hiển thị popup (nếu cần) và xóa dữ liệu
+      // handleSessionExpired đã có logic kiểm tra to.name !== 'Login' và .el-overlay-message-box
+      await authStore.handleSessionExpired(); 
       
-      authStore.clearAuthData(); // Xóa dữ liệu xác thực
-      next('/login'); // QUAN TRỌNG: Gọi next('/login') để router chuyển hướng
+      next('/login'); // Chắc chắn chuyển hướng về trang login
     } else {
       // Đã đăng nhập và token còn hạn, cho phép đi tiếp
       console.log('Router Guard: Đã đăng nhập và token còn hạn. Cho phép truy cập.');
       next();
     }
   } 
-  // 3. Xử lý các route đăng nhập/đăng ký nếu đã đăng nhập và token còn hạn
+  // 2. Nếu route là login/register và người dùng đã đăng nhập (và token còn hạn)
   else if ((to.name === 'Login' || to.name === 'Register') && isLoggedIn && isTokenStillValid) {
     console.log('Router Guard: Đã đăng nhập và token còn hạn. Chuyển hướng từ Login/Register về Dashboard.');
     next('/summary-dashboard');
   } 
-  // 4. Các trường hợp còn lại (route không yêu cầu xác thực, hoặc đã xử lý ở trên)
+  // 3. Các trường hợp còn lại (route không yêu cầu xác thực)
   else {
     console.log('Router Guard: Cho phép truy cập route không yêu cầu xác thực hoặc đã xử lý.');
     next();
   }
 });
+
 
 export default router;

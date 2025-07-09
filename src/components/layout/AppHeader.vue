@@ -7,7 +7,9 @@
       <span v-if="authStore.isLoggedIn" class="user-greeting">
         Xin chào <b>{{ authStore.user?.name }}</b>
       </span>
-      <img :src="userAvatar" alt="User Avatar" class="user-avatar" />
+      <el-avatar :size="45" :src="userAvatar" class="user-avatar-el">
+        <img :src="defaultAvatar" alt="Default Avatar" />
+      </el-avatar>
     </div>
   </header>
 </template>
@@ -16,23 +18,25 @@
 import { useRoute } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 import { computed } from "vue";
-import defaultAvatar from "@/assets/img/default-profile-ava.png";
+import defaultAvatar from "@/assets/img/default-user.png";
 import { MENU_ITEMS } from "../../constants/menuItems";
+import { ElAvatar } from "element-plus"; // Thêm dòng này
 
 export default {
   name: "AppHeader",
+  // Thêm ElAvatar vào components
+  components: {
+    ElAvatar,
+  },
   setup() {
     const route = useRoute();
     const authStore = useAuthStore();
 
-    // Hàm tìm kiếm label từ MENU_ITEMS dựa trên routeName
     const findLabelByRouteName = (routeName, items) => {
       for (const item of items) {
-        // Nếu item hiện tại có routeName trùng khớp, trả về label của nó
         if (item.routeName === routeName) {
           return item.label;
         }
-        // Nếu item có children (là dropdown), đệ quy tìm kiếm trong children
         if (item.isDropdown && item.children) {
           const foundLabel = findLabelByRouteName(routeName, item.children);
           if (foundLabel) {
@@ -40,31 +44,22 @@ export default {
           }
         }
       }
-      return null; // Không tìm thấy label
+      return null;
     };
 
-    // Computed property để lấy tên tab hiện tại
     const currentTabName = computed(() => {
-      // Ưu tiên Route.meta.title nếu có
       if (route.meta.title) {
         return route.meta.title;
       }
-
-      // Sau đó, tìm label trong MENU_ITEMS dựa trên route.name
       const foundLabel = findLabelByRouteName(route.name, MENU_ITEMS);
       if (foundLabel) {
         return foundLabel;
       }
-
-      // Nếu không tìm thấy trong meta.title hoặc MENU_ITEMS, fallback về route.name
-      // hoặc một giá trị mặc định (ví dụ: "Chat")
       return route.name || "Chat";
     });
 
     const userAvatar = computed(() => {
-      if (authStore.user && authStore.user.avatar) {
-        return authStore.user.avatar;
-      }
+      // Logic ưu tiên avatar từ store, nếu không có thì dùng defaultAvatar
       return authStore.user?.avatar || defaultAvatar;
     });
 
@@ -73,25 +68,25 @@ export default {
       authStore,
       currentTabName,
       userAvatar,
+      defaultAvatar, // Cần trả về defaultAvatar để sử dụng trong fallback của ElAvatar
     };
   },
 };
 </script>
 
 <style scoped>
-/* (CSS giữ nguyên) */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px; /* Padding chỉ ở hai bên */
+  padding: 0 20px;
   height: 60px;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   flex-shrink: 0;
-  width: 100%; /* Đảm bảo header chiếm toàn bộ chiều rộng của parent */
-  box-sizing: border-box; /* Quan trọng để padding không làm tăng chiều rộng */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-left .current-tab-name {
@@ -102,24 +97,74 @@ export default {
 }
 
 .header-right {
-  display: flex; /* Sử dụng flexbox để căn chỉnh tên và avatar */
-  align-items: center; /* Căn giữa theo chiều dọc */
-  gap: 10px; /* Khoảng cách giữa tên và avatar */
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .user-greeting {
   font-size: 1em;
   color: #333;
   font-weight: 500;
-  white-space: nowrap; /* Ngăn không cho chữ xuống dòng */
+  white-space: nowrap;
 }
 
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #e0e0e0;
+.user-avatar-el {
+  border: 2px solid var(--estec-unique-color);
   cursor: pointer;
+}
+
+/* --- Media Queries --- */
+
+/* For Tablets (e.g., width less than 768px or between 481px and 768px) */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 15px; /* Giảm padding ngang */
+    height: 55px; /* Giảm chiều cao header */
+  }
+
+  .header-left .current-tab-name {
+    font-size: 1.3em; /* Giảm kích thước font */
+  }
+
+  .user-greeting {
+    font-size: 0.9em; /* Giảm kích thước font */
+    gap: 8px; /* Giảm khoảng cách */
+  }
+
+  /* Đảm bảo ElAvatar vẫn giữ kích thước 45px, hoặc bạn có thể giảm xuống */
+  /* .user-avatar-el {
+    --el-avatar-size: 40px; /* Override Element Plus variable for size */
+  /* } */
+}
+
+/* For Mobile Phones (e.g., width less than 480px) */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0 10px; /* Giảm padding ngang nhiều hơn */
+    height: 50px; /* Chiều cao tối thiểu cho mobile */
+  }
+
+  .header-left .current-tab-name {
+    font-size: 1.1em; /* Giảm kích thước font đáng kể */
+    /* Có thể ẩn hoàn toàn nếu tên quá dài và không gian quá hẹp */
+    /* overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px; */
+  }
+
+  .header-right {
+    gap: 5px; /* Giảm khoảng cách giữa các phần tử */
+  }
+
+  .user-greeting {
+    display: none; /* ẨN HOÀN TOÀN TÊN NGƯỜI DÙNG TRÊN MOBILE */
+  }
+
+  /* Đảm bảo kích thước avatar nhỏ hơn trên mobile */
+  .user-avatar-el {
+    --el-avatar-size: 38px; /* Giảm kích thước avatar trên mobile */
+  }
 }
 </style>

@@ -34,8 +34,7 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
       /**
-       * 
-       * @param {Object} credentials 
+       * * @param {Object} credentials 
        */
       async login(credentials) {
         this.loading = true;
@@ -49,6 +48,7 @@ export const useAuthStore = defineStore('auth', {
             console.log('expirationTime:', expirationTime);
             if (isNaN(expirationTime)) {
               this.error = 'Thời gian hết hạn từ API không hợp lệ.';
+              ElMessage.error(this.error); // Hiển thị lỗi nếu thời gian hết hạn không hợp lệ
               return false;
             }
             this.user = {
@@ -62,20 +62,32 @@ export const useAuthStore = defineStore('auth', {
             localStorage.setItem('user', JSON.stringify(this.user));
             localStorage.setItem('expiresAt', this.expiresAt.toString());
 
-            // console.log('Token saved:', this.token);
-            // console.log('User saved:', this.user);
-            // console.log('Expires At (timestamp):', this.expiresAt);
-            // console.log('Expires At (Date object):', new Date(this.expiresAt));
             this.startSessionTimer();
             router.push('/summary-dashboard');
             return true;
           } else {
-            this.error = 'Phản hồi đăng nhập không hợp lệ.'
+            this.error = response.message;
+            ElMessage.error(this.error); // Hiển thị lỗi nếu phản hồi không hợp lệ
             return false;
           }
         } catch (err) {
           console.error('Login failed:', err);
-          this.error = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+          if (err.response && err.response.data) {
+            const errorData = err.response.data;
+            if (errorData.authentication === "failed" && errorData.message) {
+              this.error = errorData.message; 
+              ElMessage.error(this.error); // **Chỉ hiển thị ElMessage ở đây cho lỗi login sai**
+            } else if (errorData.message) {
+              this.error = errorData.message;
+              ElMessage.error(this.error);
+            } else {
+              this.error = 'Đăng nhập thất bại. Vui lòng thử lại sau.';
+              ElMessage.error(this.error);
+            }
+          } else {
+            this.error = 'Đăng nhập thất bại. Vui lòng kiểm tra kết nối mạng.';
+            ElMessage.error(this.error);
+          }
           return false;
         } finally {
           this.loading = false;
@@ -88,20 +100,20 @@ export const useAuthStore = defineStore('auth', {
       async logout(credential = {}) {
         this.loading = true;
         this.error = null;
-        // Stop timer while logout
         this.stopSessionTimer();
         try {
           await logoutApi(credential);
           this.user = null;
           this.token = null;
+          this.expiresAt = null; // Clear expiresAt on logout
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          localStorage.removeItem('expiresAt');
           router.push('/login');
           return true;
         } catch (err) {
           console.error('Logout failed:', err);
           this.error = err.response?.data?.message || 'Đã xảy ra lỗi khi đăng xuất.';
-          // Despite the API error, we should still delete local information to ensure safety 
           this.user = null;
           this.token = null;
           this.expiresAt = null;
@@ -128,97 +140,85 @@ export const useAuthStore = defineStore('auth', {
             this.token = storedToken;
             try {
               this.user = JSON.parse(storedUser);
-              this.expiresAt = parseInt(storedExpiresAt); // Chuyển đổi về số nguyên
+              this.expiresAt = parseInt(storedExpiresAt);
             } catch (e) {
-            console.error("Lỗi khi phân tích JSON user từ localStorage:", e);
-            this.clearAuthData(); // Delete data if parse error
-            // this.user = null;
-            this.loading = false
-            this.authReady = true;
-            // localStorage.removeItem('user');
-            return;
-          }
-          if (this.isTokenValid) {
-            console.log('Trạng thái xác thực được khỏi tạo từ localStorage.');
-            this.startSessionTimer();
+              console.error("Lỗi khi phân tích JSON user từ localStorage:", e);
+              this.clearAuthData();
+              this.loading = false
+              this.authReady = true;
+              return;
+            }
+            if (this.isTokenValid) {
+              console.log('Trạng thái xác thực được khởi tạo từ localStorage.');
+              this.startSessionTimer();
+            } else {
+              console.log('Token từ localStorage đã hết hạn.');
+              this.clearAuthData();
+              // Không gọi handleSessionExpired ở đây, để router guard hoặc timer xử lý
+            }
           } else {
-            console.log('Token từ localStorage đã hết hạn.');
+            console.log('Không tìm thấy thông tin xác thực trong localStorage.');
             this.clearAuthData();
           }
-        } else {
-          console.log('Không tìm thấy thông tin xác thực trong localStorage.');
-          this.clearAuthData(); // Make sure clean status
+        } catch (error) {
+          console.error('Lỗi khi kiểm tra xác thực:', error);
+          this.clearAuthData();
+        } finally {
+          this.authReady = true;
+          this.loading = false;
         }
-      } catch (error) {
-        console.error('Lỗi khi kiểm tra xác thực:', error);
-        this.clearAuthData();
-      } finally {
-        this.authReady = true; // Checkpoint that success check
-        this.loading = false;
-      }
-    },
+      },
 
-    async handleSessionExpired() {
-      this.stopSessionTimer();
-      this.clearAuthData();
-      if (router.currentRoute.value.name !== 'login' && !document.querySelector('.el-overlay-message-box')) {
-        await ElMessageBox.alert('Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.', 'Phiên làm việc hết hạn', {
-          confirmButtonText: 'Đăng nhập lại',
-          callback: (action) => {
-          },
-        }).catch(() => {});
-      }
-    },
+      async handleSessionExpired() {
+        this.stopSessionTimer();
+        this.clearAuthData(); // Xóa dữ liệu trước khi hiển thị popup
+        console.log('Phiên làm việc đã hết hạn. Đang kiểm tra để hiển thị popup...');
 
-    startSessionTimer() {
-      // Make sure do not timer running
-      this.stopSessionTimer();
-      sessionTimer = setInterval(() => {
-        if (!this.isLoggedIn || !this.isTokenValid) {
-          console.log('Session hết hạn hoặc không hợp lệ, yêu cầu đăng nhập lại.');
-          // this.stopSessionTimer();
-          this.handleSessionExpired();
+        // Chỉ hiển thị popup nếu đang không ở trang login
+        // và chưa có popup ElMessageBox nào đang hiển thị
+        if (router.currentRoute.value.name !== 'Login' && !document.querySelector('.el-overlay-message-box')) {
+          console.log('Hiển thị popup "Phiên làm việc hết hạn".');
+          await ElMessageBox.alert('Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.', 'Phiên làm việc hết hạn', {
+            confirmButtonText: 'Đăng nhập lại',
+            callback: (action) => {
+              // Có thể thêm logic gì đó sau khi người dùng bấm nút nếu cần
+              // Ví dụ: router.push('/login'); nhưng điều này đã được xử lý bởi router guard
+            },
+          }).catch(() => { /* Người dùng đã đóng box */ });
         } else {
+          console.log('Không hiển thị popup vì đang ở trang login hoặc popup đã hiển thị.');
         }
-      }, 5000);
-    },
-    /**
-     * Dừng timer kiểm tra session.
-     */
-    stopSessionTimer() {
-      if (sessionTimer) {
-        clearInterval(sessionTimer);
-        sessionTimer = null;
-        console.log('Session timer đã dừng.');
-      }
-    },
-    /**
-     * Xóa tất cả dữ liệu xác thực và chuyển hướng về trang đăng nhập.
-     */
-    clearAuthData() {
-      this.user = null;
-      this.token = null;
-      this.expiresAt = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('expiresAt');
-      this.stopSessionTimer();
-    },
-    /**
-     * Xóa dữ liệu và hiển thị popup yêu cầu đăng nhập lại.
-     */
-    // clearAuthDataAndPromptLogin() {
-    //   this.clearAuthData();
-    //   if (router.currentRoute.value.name !== 'login') {
-    //     ElMessageBox.alert('Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.', 'Phiên làm việc hết hạn', {
-    //       confirmButtonText: 'Đăng nhập lại',
-    //       callback: (action) => {
-    //         router.push('/login');
-    //       },
-    //     });
-    //   } else {
-    //     router.push('/login');
-    //   }
-    // }
+        // Lưu ý: Việc chuyển hướng đến /login nên được router guard xử lý sau khi gọi handleSessionExpired
+      },
+
+      startSessionTimer() {
+        this.stopSessionTimer();
+        sessionTimer = setInterval(() => {
+          if (!this.isLoggedIn || !this.isTokenValid) {
+            console.log('Session hết hạn hoặc không hợp lệ bởi Timer, yêu cầu đăng nhập lại.');
+            this.handleSessionExpired();
+          } else {
+            // console.log('Session timer: Token vẫn hợp lệ.');
+          }
+        }, 5000); // Kiểm tra mỗi 5 giây
+      },
+      
+      stopSessionTimer() {
+        if (sessionTimer) {
+          clearInterval(sessionTimer);
+          sessionTimer = null;
+          console.log('Session timer đã dừng.');
+        }
+      },
+      
+      clearAuthData() {
+        this.user = null;
+        this.token = null;
+        this.expiresAt = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('expiresAt');
+        this.stopSessionTimer();
+      },
   },
 });
