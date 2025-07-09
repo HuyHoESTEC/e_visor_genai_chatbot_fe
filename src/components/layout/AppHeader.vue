@@ -4,6 +4,9 @@
       <h1 class="current-tab-name">{{ currentTabName }}</h1>
     </div>
     <div class="header-right">
+      <span v-if="authStore.isLoggedIn" class="user-greeting">
+        Xin chào <b>{{ authStore.user?.name }}</b>
+      </span>
       <img :src="userAvatar" alt="User Avatar" class="user-avatar" />
     </div>
   </header>
@@ -59,7 +62,10 @@ export default {
     });
 
     const userAvatar = computed(() => {
-      return authStore.user?.avataUrl || defaultAvatar;
+      if (authStore.user && authStore.user.avatar) {
+        return authStore.user.avatar;
+      }
+      return authStore.user?.avatar || defaultAvatar;
     });
 
     return {
@@ -95,12 +101,25 @@ export default {
   margin: 0;
 }
 
-.header-right .user-avatar {
-  width: 40px; /* Kích thước avatar */
+.header-right {
+  display: flex; /* Sử dụng flexbox để căn chỉnh tên và avatar */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  gap: 10px; /* Khoảng cách giữa tên và avatar */
+}
+
+.user-greeting {
+  font-size: 1em;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap; /* Ngăn không cho chữ xuống dòng */
+}
+
+.user-avatar {
+  width: 40px;
   height: 40px;
-  border-radius: 50%; /* Làm cho avatar tròn */
-  object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng */
-  border: 2px solid #e0e0e0; /* Viền nhỏ quanh avatar (tùy chọn) */
-  cursor: pointer; /* Biểu tượng con trỏ khi di chuột qua */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
 }
 </style>

@@ -302,7 +302,7 @@ export default {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 
 .header-steps {
