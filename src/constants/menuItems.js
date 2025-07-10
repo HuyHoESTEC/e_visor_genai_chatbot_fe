@@ -9,7 +9,8 @@
 const MENU_ITEMS = [
   {
     name: "summary-dashboard",
-    label: "Dashboard",
+    label: "Thống kê",
+    labelKey: "SummaryDashboard",
     iconComponent: "Histogram",
     routeName: "SummaryDashboard",
     isActive: false,
@@ -17,6 +18,7 @@ const MENU_ITEMS = [
   {
     name: "KHTC",
     label: "Kế hoạch tổ chức",
+    labelKey: "OrganizationalPlan",
     iconComponent: "UserFilled",
     routeName: null,
     isActive: false,
@@ -25,8 +27,34 @@ const MENU_ITEMS = [
       {
         name: "time-tracking",
         label: "Quản lý chấm công",
+        labelKey: "TimekeepingManagement",
         iconComponent: "List",
         routeName: "TimeTracking",
+        isActive: false,
+      },
+    ]
+  },
+  {
+    name: "RND",
+    label: "Nghiên cứu và phát triển",
+    iconComponent: "Compass",
+    routeName: null,
+    isDropdown: true,
+    children: [
+      {
+        name: "rnd-dashboard",
+        label: "Thống kê",
+        labelKey: "workManagementTitle",
+        iconComponent: "Histogram",
+        routeName: "RndDashboard",
+        isActive: false,
+      },
+      {
+        name: "rnd-work-tracking",
+        label: "Quản lý công việc",
+        labelKey: "workManagementTitle",
+        iconComponent: "List",
+        routeName: "RndWorkTracking",
         isActive: false,
       },
     ]
@@ -34,7 +62,7 @@ const MENU_ITEMS = [
   // MESX
   {
     name: "WorkShop",
-    label: "Work Shop",
+    label: "WorkShop",
     iconComponent: "OfficeBuilding",
     routeName: "WorkShop",
     isActive: false,
@@ -42,7 +70,7 @@ const MENU_ITEMS = [
     children: [
       {
         name: "MESXDashboard",
-        label: "Work Shop Dashboard",
+        label: "WorkShop Dashboard",
         routeName: "MESXDashboard",
         iconComponent: "Platform",
         isActive: false,
@@ -954,7 +982,7 @@ const MENU_ITEMS = [
   // },
   {
     name: "chat",
-    label: "Đoạn Chat",
+    label: "ESTEC AI",
     iconComponent: "ChatLineSquare",
     routeName: "Chat",
     isActive: false,

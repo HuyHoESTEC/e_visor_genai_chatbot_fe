@@ -17,6 +17,8 @@ import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
 import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
 import SummaryDashboard from "../views/dashboard/SummaryDashboard.vue";
 import { ElMessageBox } from "element-plus";
+import RnDDashboard from "../views/RnD/RnDDashboard.vue";
+import RndWorkManagement from "../views/RnD/RndWorkManagement.vue";
 
 const routes = [
   {
@@ -99,12 +101,27 @@ const routes = [
     path: '/summary-dashboard',
     name: 'SummaryDashboard',
     component: SummaryDashboard,
-    meta: { requiresAuth: true }
+    meta: { 
+      requiresAuth: true,
+      titleKey: 'SummaryDashboard' 
+    }
   },
   {
     path: '/workshop-summary-dashboard',
     name: 'MESXDashboard',
     component: SummaryDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/rnd-dashboard',
+    name: 'RndDashboard',
+    component: RnDDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/rnd-work-tracking',
+    name: 'RndWorkTracking',
+    component: RndWorkManagement,
     meta: { requiresAuth: true }
   }
 ];

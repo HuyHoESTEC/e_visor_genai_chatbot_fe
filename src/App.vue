@@ -1,9 +1,9 @@
 <script setup>
-import { useAuthStore } from './stores/auth';
-import SideBar from './components/layout/SideBar.vue';
-import { computed, ref, onMounted } from 'vue'; // Import onMounted
-import AppHeader from './components/layout/AppHeader.vue';
-import CompanyLogo from './assets/img/estec-icon.png'; // Đường dẫn tới logo của bạn
+import { useAuthStore } from "./stores/auth";
+import SideBar from "./components/layout/SideBar.vue";
+import { computed, ref, onMounted } from "vue"; // Import onMounted
+import AppHeader from "./components/layout/AppHeader.vue";
+import CompanyLogo from "./assets/img/estec-icon.png"; // Đường dẫn tới logo của bạn
 
 const authStore = useAuthStore();
 
@@ -19,9 +19,9 @@ const dynamicMarginLeft = computed(() => {
     // Có vẻ như dynamicMarginLeft không thay đổi dựa trên collapsedStatus ở đây.
     // Nếu bạn muốn sidebar thu gọn thì margin-left thay đổi, cần điều chỉnh logic này.
     // Ví dụ: return isSidebarCollapsed.value ? '60px' : '200px'; // Giá trị giả định
-    return '10px';
+    return "5px";
   }
-  return '0';
+  return "0";
 });
 
 const currentYear = new Date().getFullYear();
@@ -58,7 +58,7 @@ onMounted(() => {
         <div class="content-and-footer">
           <router-view />
           <footer class="app-footer">
-            Một sản phẩm của ESTEC Automation & Digitalization - Research and Development Department ©{{ currentYear }}
+            Sản phẩm của ESTEC Automation & Digitalization - Research and Development Department ©{{ currentYear }}
           </footer>
         </div>
       </div>
@@ -118,8 +118,9 @@ onMounted(() => {
 .app-footer {
   text-align: center;
   color: var(--estec-unique-color);
-  font-size: 0.9em;
-  font-weight: bold;
+  background-color: white;
+  font-size: 0.7em;
+  font-weight: normal;
   padding: 10px; /* Thêm padding để footer không bị dính sát đáy */
   user-select: none;
 }
@@ -167,7 +168,11 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
