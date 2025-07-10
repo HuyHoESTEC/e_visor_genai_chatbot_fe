@@ -2,17 +2,16 @@
   <div class="time-tracking-container">
     <div class="header-steps">
       <el-steps :active="activeWorkflowStep" finish-status="success" align-center>
-        <el-step title="Tải lên File" description="Chọn các file cần xử lý"></el-step>
+        <el-step :title="langStore.t('FileUpload')"></el-step>
         <el-step
-          title="Ghép nối & Phân tích"
-          description="Ghép nối và xem xét cấu trúc file"
+          :title="langStore.t('PairingAndAnalysis')"
         ></el-step>
-        <el-step title="Hoàn thành" description="File đầu ra đã sẵn sàng"></el-step>
+        <el-step :title="langStore.t('StepSuccess')"></el-step>
       </el-steps>
     </div>
     <div class="main-content-area">
       <div v-if="activeWorkflowStep === 0" class="upload-step-content">
-        <h2 class="section-title">Chọn File để tải lên</h2>
+        <h2 class="section-title">{{ langStore.t('ChooseFileToUpload') }}</h2>
         <div class="upload-components-wrapper">
           <SingleFileUpload
             ref="singleUploadRef"
@@ -33,7 +32,7 @@
             :loading="isUploading"
           >
             <span v-if="!isUploading">
-              Tải lên tất cả file
+              {{ langStore.t('UploadAllFiles') }}
             </span>
             <span v-else>Đang tải lên...</span>
           </el-button>
@@ -77,6 +76,7 @@ import axios from "axios";
 import CompletionStep from "../../components/form/CompletionStep.vue";
 import OverworkReviewStep from "../../components/form/OverworkReviewStep.vue";
 import { fileUploadApi } from "../../services/auth.service";
+import { useLanguageStore } from "../../stores/language";
 
 export default {
   name: "TimeTrackingPage",
@@ -105,6 +105,8 @@ export default {
 
     const finalMergedFile = ref(null);
     const overworkResultData = ref([]);
+
+    const langStore = useLanguageStore();
 
     // Computed property de tinh tong so file da chon
     const totalFilesSelected = computed(() => {
@@ -282,6 +284,7 @@ export default {
       handleAdvanceMergeStop,
       resetWorkflow,
       overworkResultData,
+      langStore,
     };
   },
 };
@@ -293,12 +296,10 @@ export default {
     "Microsoft YaHei", Arial, sans-serif;
   padding: 20px;
   background-color: #f0f2f5;
-  border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   width: 100%;
   min-width: 320px;
   height: calc(100vh - 60px);
-  margin: 30px auto;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -324,7 +325,7 @@ export default {
 
 .section-title {
   text-align: center;
-  color: #409eff;
+  color: var(--estec-unique-color);
   margin-bottom: 30px;
   font-size: 1.8em;
   font-weight: 600;
@@ -368,7 +369,6 @@ export default {
   min-height: 0;
   width: 100%;
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 992px) {

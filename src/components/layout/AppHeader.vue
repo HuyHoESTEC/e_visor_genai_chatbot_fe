@@ -4,8 +4,26 @@
       <h1 class="current-tab-name">{{ currentTabName }}</h1>
     </div>
     <div class="header-right">
+      <el-select
+        v-model="selectedLanguage"
+        placeholder="Select Language"
+        style="width: 120px; margin-right: 15px;"
+        size="small"
+      >
+        <el-option
+          v-for="option in languageOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        >
+          <template #default>
+            <img :src="option.flag" :alt="option.label" class="flag-icon" />
+            <span>{{ option.label }}</span>
+          </template>
+        </el-option>
+      </el-select>
       <span v-if="authStore.isLoggedIn" class="user-greeting">
-        Xin chào <b>{{ authStore.user?.name }}</b>
+        {{ langStore.t('hi') }} <b>{{ authStore.user?.name }}</b>
       </span>
       <el-avatar :size="45" :src="userAvatar" class="user-avatar-el">
         <img :src="defaultAvatar" alt="Default Avatar" />
@@ -21,6 +39,10 @@ import { computed } from "vue";
 import defaultAvatar from "@/assets/img/default-user.png";
 import { MENU_ITEMS } from "../../constants/menuItems";
 import { ElAvatar } from "element-plus"; // Thêm dòng này
+import { useLanguageStore } from "../../stores/language";
+import vnFlag from "../../assets/flags/vietnam-flag.png";
+import enFlag from "../../assets/flags/usa-flag.png";
+import jpFlag from "../../assets/flags/jp-flag.png";
 
 export default {
   name: "AppHeader",
@@ -31,11 +53,23 @@ export default {
   setup() {
     const route = useRoute();
     const authStore = useAuthStore();
+    const langStore = useLanguageStore();
+
+    const languageOptions = [
+      { label: "Vietnamese", value: 'vn', flag: vnFlag },
+      { label: "English", value: 'en', flag: enFlag },
+      { label: "Japanese", value: 'jp', flag: jpFlag },
+    ];
+
+    const selectedLanguage = computed({
+      get: () => langStore.getLanguage,
+      set: (value) => langStore.setLanguage(value) 
+    });
 
     const findLabelByRouteName = (routeName, items) => {
       for (const item of items) {
         if (item.routeName === routeName) {
-          return item.label;
+          return langStore.t(item.labelKey);
         }
         if (item.isDropdown && item.children) {
           const foundLabel = findLabelByRouteName(routeName, item.children);
@@ -48,6 +82,9 @@ export default {
     };
 
     const currentTabName = computed(() => {
+      if (route.meta.titleKey) {
+        return langStore.t(route.meta.titleKey);
+      }
       if (route.meta.title) {
         return route.meta.title;
       }
@@ -55,7 +92,7 @@ export default {
       if (foundLabel) {
         return foundLabel;
       }
-      return route.name || "Chat";
+      return langStore.t(route.name || "dashboard");
     });
 
     const userAvatar = computed(() => {
@@ -66,6 +103,9 @@ export default {
     return {
       route,
       authStore,
+      langStore,
+      languageOptions,
+      selectedLanguage,
       currentTabName,
       userAvatar,
       defaultAvatar, // Cần trả về defaultAvatar để sử dụng trong fallback của ElAvatar
@@ -108,6 +148,22 @@ export default {
   font-weight: 500;
   white-space: nowrap;
 }
+
+.flag-icon {
+  width: 20px; /* Kích thước cờ */
+  height: 15px; /* Tỷ lệ khung hình của cờ */
+  margin-right: 8px; /* Khoảng cách giữa cờ và text */
+  vertical-align: middle; /* Căn chỉnh với text */
+  border: 1px solid #eee; /* Viền nhẹ cho cờ (tùy chọn) */
+  box-shadow: 0 0 2px rgba(0,0,0,0.1); /* Bóng nhẹ (tùy chọn) */
+}
+
+/* Điều chỉnh lại style cho .el-select nếu cần để phù hợp với icon */
+.el-select .el-input__inner {
+  display: flex !important;
+  align-items: center !important;
+}
+
 
 .user-avatar-el {
   border: 2px solid var(--estec-unique-color);

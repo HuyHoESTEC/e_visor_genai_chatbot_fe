@@ -1,7 +1,7 @@
 <template>
   <div class="multi-file-upload-container">
     <div class="header-section">
-      <h3 class="component-title">Tải lên các file thành phần</h3>
+      <h3 class="component-title">{{ langeStore.t("UploadComponentsFiles") }}</h3>
     </div>
     <el-upload
       class="upload-demo"
@@ -16,11 +16,12 @@
       accept=".xls, .xlsx"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text">Kéo thả file vào đây hoặc <em>click để chọn</em></div>
+      <div class="el-upload__text">
+        {{ langeStore.t("DragAndDropTheFileHereOr") }}
+        <em>{{ langeStore.t("ClickToChoose") }}</em>
+      </div>
       <template #tip>
-        <div class="el-upload__tip">
-          Chỉ chấp nhận các file .xls, .xlsx và kích thước mỗi file nhỏ hơn 500MB.
-        </div>
+        <div class="el-upload__tip">{{ langeStore.t("OnlyAcceptFile") }}.</div>
       </template>
     </el-upload>
   </div>
@@ -30,6 +31,7 @@
 import { ElMessage, ElUpload, ElIcon } from "element-plus";
 import { UploadFilled } from "@element-plus/icons-vue";
 import { ref } from "vue";
+import { useLanguageStore } from "../../stores/language";
 
 export default {
   name: "MultiFileUpload",
@@ -41,6 +43,7 @@ export default {
   emits: ["files-selected", "file-cleared"], // files-selected cho nhiều file, file-cleared cho 1 file cụ thể
   setup(_, { emit }) {
     const fileList = ref([]); // List current file in ElUpload
+    const langeStore = useLanguageStore();
 
     const handleChange = (file, newFileList) => {
       // Check file size
@@ -88,6 +91,7 @@ export default {
 
     return {
       fileList,
+      langeStore,
       handleChange,
       handleRemove,
       getFiles,
@@ -115,7 +119,7 @@ export default {
 }
 
 .component-title {
-  color: #409eff;
+  color: var(--estec-unique-color);
   font-size: 1.5em;
   margin-top: 0;
   margin-bottom: 10px;

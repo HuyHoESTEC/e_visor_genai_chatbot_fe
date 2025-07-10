@@ -1,7 +1,7 @@
 <template>
   <div class="single-file-upload-container">
     <div class="header-section">
-      <h3 class="component-title">Tải lên file tổng hợp</h3>
+      <h3 class="component-title">{{ langStore.t('UploadSummaryFile') }}</h3>
     </div>
     <el-upload
       class="upload-demo"
@@ -16,10 +16,13 @@
       accept=".xls,.xlsx"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text">Kéo thả file vào đây hoặc <em>click để chọn</em></div>
+      <div class="el-upload__text">
+        {{ langStore.t("DragAndDropTheFileHereOr") }}
+        <em>{{ langStore.t("ClickToChoose") }}</em>
+      </div>
       <template #tip>
         <div class="el-upload__tip">
-          Chỉ chấp nhận các file .xls, .xlsx và kích thước nhỏ hơn 500MB.
+          {{ langStore.t("OnlyAcceptFile") }}.
         </div>
       </template>
     </el-upload>
@@ -30,6 +33,7 @@
 import { ElMessage, ElUpload, ElIcon } from "element-plus";
 import { UploadFilled } from "@element-plus/icons-vue";
 import { ref } from "vue";
+import { useLanguageStore } from "../../stores/language";
 export default {
   name: "SingleFileUpload",
   components: {
@@ -40,6 +44,7 @@ export default {
   emits: ["file-selected", "file-cleared"],
   setup(_, { emit }) {
     const fileList = ref([]);
+    const langStore = useLanguageStore();
 
     const handleChange = (file, newFileList) => {
       // Khi 1 file duoc chon (hoac thay doi)
@@ -79,6 +84,7 @@ export default {
 
     return {
       fileList,
+      langStore,
       handleChange,
       handleRemove,
       handleExceed,
@@ -107,7 +113,7 @@ export default {
 }
 
 .component-title {
-  color: #409eff;
+  color: var(--estec-unique-color);
   font-size: 1.5em;
   margin-top: 0;
   margin-bottom: 10px;
