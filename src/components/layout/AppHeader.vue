@@ -43,6 +43,9 @@ import { useLanguageStore } from "../../stores/language";
 import vnFlag from "../../assets/flags/vietnam-flag.png";
 import enFlag from "../../assets/flags/usa-flag.png";
 import jpFlag from "../../assets/flags/jp-flag.png";
+import frFlag from "../../assets/flags/fr-flag.png";
+import rsFlag from "../../assets/flags/russian-flag.png";
+import chFlag from "../../assets/flags/china-flag.png";
 
 export default {
   name: "AppHeader",
@@ -59,6 +62,9 @@ export default {
       { label: "Vietnamese", value: 'vn', flag: vnFlag },
       { label: "English", value: 'en', flag: enFlag },
       { label: "Japanese", value: 'jp', flag: jpFlag },
+      { label: "France", value: 'fr', flag: frFlag },
+      { label: "Russian", value: 'rs', flag: rsFlag },
+      { label: "China", value: 'ch', flag: chFlag },
     ];
 
     const selectedLanguage = computed({

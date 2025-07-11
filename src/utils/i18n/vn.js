@@ -65,4 +65,11 @@ export default {
   deleteConfirmTitle: 'Xác nhận xóa',
   taskDeletedMessage: 'Đã xóa công việc thành công!',
   deleteCanceledMessage: 'Đã hủy thao tác xóa.',
+
+  // Messages Merge
+  TheNewFileIsTeadyToJoin: 'File mới đã sẵn sàng ghép nối',
+  PreparingManualTransplantation: 'Đang chuẩn bị ghép nối thủ công',
+  StartManualConnection: 'Bắt đầu ghép nối thủ công',
+  PleaseSelectTheComponentFileToConnect: 'Vui lòng chọn file thành phần để ghép nối',
+  ConnectTheCurrentSyntheticFileWithTheFile: 'Ghép nối file tổng hợp hiện có với file'
 };

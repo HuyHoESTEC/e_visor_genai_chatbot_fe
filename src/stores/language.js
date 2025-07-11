@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 import en from "../utils/i18n/en";
 import vn from "../utils/i18n/vn";
 import jp from "../utils/i18n/jp";
+import fr from "../utils/i18n/fr";
+import rs from "../utils/i18n/rs";
+import ch from "../utils/i18n/ch";
 
 export const useLanguageStore = defineStore('language', {
     state: () => ({
@@ -10,6 +13,9 @@ export const useLanguageStore = defineStore('language', {
             en: en,
             vn: vn,
             jp: jp,
+            fr: fr,
+            rs: rs,
+            ch: ch,
         },
     }),
     getters: {

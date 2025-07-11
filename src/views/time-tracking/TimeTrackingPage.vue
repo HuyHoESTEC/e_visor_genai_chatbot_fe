@@ -26,10 +26,10 @@
         </div>
         <div class="action-bar-upload">
           <el-button
-            type="primary"
             :disabled="!canUploadFiles"
             v-on:click="uploadAllFiles"
             :loading="isUploading"
+            color="#2c2c6a"
           >
             <span v-if="!isUploading">
               {{ langStore.t('UploadAllFiles') }}
@@ -72,7 +72,6 @@ import { ElMessage, ElSteps, ElStep, ElButton } from "element-plus";
 import SingleFileUpload from "../../components/upload/SingleFileUpload.vue";
 import MultiFileUpload from "../../components/upload/MultiFileUpload.vue";
 import CombineFile from "../../components/form/CombineFile.vue";
-import axios from "axios";
 import CompletionStep from "../../components/form/CompletionStep.vue";
 import OverworkReviewStep from "../../components/form/OverworkReviewStep.vue";
 import { fileUploadApi } from "../../services/auth.service";
