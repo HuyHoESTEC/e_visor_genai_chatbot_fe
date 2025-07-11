@@ -1,8 +1,8 @@
 export const dummyUsers = [
-  { id: 1, name: 'Nguyễn Văn A' },
-  { id: 2, name: 'Trần Thị B' },
-  { id: 3, name: 'Lê Văn C' },
-  { id: 4, name: 'Phạm Thị D' },
+  { id: 1, name: 'Võ Lý Hoàng Hoan' },
+  { id: 2, name: 'Hoàng Tấn Nguyên' },
+  { id: 3, name: 'Đoàn Ngọc Minh Thắng' },
+  { id: 4, name: 'Hồ Nhật Huy' },
 ];
 
 // Dữ liệu giả định trạng thái công việc
