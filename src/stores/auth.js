@@ -109,7 +109,7 @@ export const useAuthStore = defineStore('auth', {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           localStorage.removeItem('expiresAt');
-          router.push('/login');
+          router.push({ name: "Login" });
           return true;
         } catch (err) {
           console.error('Logout failed:', err);
@@ -183,6 +183,7 @@ export const useAuthStore = defineStore('auth', {
             callback: (action) => {
               // Có thể thêm logic gì đó sau khi người dùng bấm nút nếu cần
               // Ví dụ: router.push('/login'); nhưng điều này đã được xử lý bởi router guard
+              router.push({ name: "Login" });
             },
           }).catch(() => { /* Người dùng đã đóng box */ });
         } else {
