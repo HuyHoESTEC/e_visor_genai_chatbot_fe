@@ -46,6 +46,7 @@ import jpFlag from "../../assets/flags/jp-flag.png";
 import frFlag from "../../assets/flags/fr-flag.png";
 import rsFlag from "../../assets/flags/russian-flag.png";
 import chFlag from "../../assets/flags/china-flag.png";
+import koreFlag from "../../assets/flags/korea-flag.png";
 
 export default {
   name: "AppHeader",
@@ -65,6 +66,7 @@ export default {
       { label: "France", value: 'fr', flag: frFlag },
       { label: "Russian", value: 'rs', flag: rsFlag },
       { label: "China", value: 'ch', flag: chFlag },
+      { label: "Korea", value: 'kr', flag: koreFlag },
     ];
 
     const selectedLanguage = computed({

@@ -5,6 +5,7 @@ import jp from "../utils/i18n/jp";
 import fr from "../utils/i18n/fr";
 import rs from "../utils/i18n/rs";
 import ch from "../utils/i18n/ch";
+import kr from "../utils/i18n/kr";
 
 export const useLanguageStore = defineStore('language', {
     state: () => ({
@@ -16,6 +17,7 @@ export const useLanguageStore = defineStore('language', {
             fr: fr,
             rs: rs,
             ch: ch,
+            kr: kr,
         },
     }),
     getters: {
