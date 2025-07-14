@@ -76,3 +76,18 @@ export const fileUploadApi = async (payload, signal) => {
     });
     return response;
 }
+
+export const changePassword = async (payload, signal) => {
+    try{
+        const response = await axios.post(`${API_BASE_URL}/ChangePassword`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}

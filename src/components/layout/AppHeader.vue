@@ -25,20 +25,58 @@
       <span v-if="authStore.isLoggedIn" class="user-greeting">
         {{ langStore.t('hi') }} <b>{{ authStore.user?.name }}</b>
       </span>
-      <el-avatar :size="45" :src="userAvatar" class="user-avatar-el">
-        <img :src="defaultAvatar" alt="Default Avatar" />
-      </el-avatar>
+      <el-dropdown trigger="click" @command="handleCommand">
+        <el-avatar :size="45" :src="userAvatar" class="user-avatar-el">
+          <img :src="defaultAvatar" alt="Default Avatar" />
+        </el-avatar>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="change-password">
+              <Lock style="width: 1em; height: 1em; margin-right: 8px" /> Đổi mật khẩu
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
+
+    <el-dialog
+      title="Đổi mật khẩu"
+      v-model="showChangePasswordDialog"
+      width="400px"
+    >
+      <el-form
+        :model="passwordForm"
+        :rules="passwordRules"
+        ref="passwordFormRef"
+        label-width="160px"
+      >
+        <el-form-item label="Mật khẩu cũ" prop="old_password">
+          <el-input v-model="passwordForm.old_password" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="Mật khẩu mới" prop="new_password">
+          <el-input v-model="passwordForm.new_password" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="Xác nhận mật khẩu" prop="confirm_password">
+          <el-input v-model="passwordForm.confirm_password" type="password" show-password />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showChangePasswordDialog = false">Hủy</el-button>
+          <el-button type="primary" @click="handleChangePassword">Lưu</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </header>
 </template>
 
 <script>
 import { useRoute } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
-import { computed } from "vue";
+import { computed, reactive, ref } from "vue";
 import defaultAvatar from "@/assets/img/default-user.png";
 import { MENU_ITEMS } from "../../constants/menuItems";
-import { ElAvatar } from "element-plus"; // Thêm dòng này
+import { ElAvatar, ElMessage } from "element-plus"; // Thêm dòng này
 import { useLanguageStore } from "../../stores/language";
 import vnFlag from "../../assets/flags/vietnam-flag.png";
 import enFlag from "../../assets/flags/usa-flag.png";
@@ -47,6 +85,8 @@ import frFlag from "../../assets/flags/fr-flag.png";
 import rsFlag from "../../assets/flags/russian-flag.png";
 import chFlag from "../../assets/flags/china-flag.png";
 import koreFlag from "../../assets/flags/korea-flag.png";
+import { changePassword }  from "../../services/auth.service";
+import { Lock } from "@element-plus/icons-vue";
 
 export default {
   name: "AppHeader",
@@ -58,6 +98,82 @@ export default {
     const route = useRoute();
     const authStore = useAuthStore();
     const langStore = useLanguageStore();
+
+    const showChangePasswordDialog = ref(false);
+    const passwordForm = reactive({
+      old_password: '',
+      new_password: '',
+      confirm_password: ''
+    });
+    const passwordFormRef = ref(null);
+    
+    const handleCommand = (command) => {
+      if (command === 'change-password') {
+        showChangePasswordDialog.value = true;
+        if (passwordFormRef.value) {
+          passwordFormRef.value.resetFields();
+        }
+      }
+    };
+
+    const validateConfirmPassword = (rule, value, callback) => {
+      if (value === '' ) {
+        callback(new Error('Vui lòng xác nhận mật khẩu mới'));
+      } else if (value !== passwordForm.new_password) {
+        callback(new Error('Mật khẩu xác nhận không khớp với mật khẩu mới'));
+      } else {
+        callback();
+      }
+    };
+
+    // Validate rule for change password form
+    const passwordRules = {
+      old_password: [
+        { required: true, message: 'Vui lòng nhập mật khẩu cũ', trigger: 'blur' }
+      ],
+      new_password: [
+        { required: true, message: 'Vui lòng nhập mật khẩu mới', trigger: 'blur' },
+        { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự', trigger: 'blur' }
+      ],
+      confirm_password: [
+        { required: true, message: 'Vui lòng xác nhận mật khẩu mới', trigger: 'blur' },
+        { validator: validateConfirmPassword, trigger: 'blur' }
+      ]
+    };
+
+    const handleChangePassword = async () => {
+      const valid = await passwordFormRef.value.validate();
+      if (valid) {
+        try {
+          const payload = {
+            username: authStore.user?.id,
+            password: passwordForm.old_password,
+            newpassword: passwordForm.new_password
+          };
+
+          const response = await changePassword(payload);
+          if (response.data.status === 'success') {
+            ElMessage({
+            message: response.data.message,
+              type: 'success'
+            });
+            showChangePasswordDialog.value = false;
+            passwordFormRef.value.resetFields();
+          } else if (response.data.status === 'error') {
+            ElMessage({
+            message: response.data.message,
+              type: 'error'
+            });
+          }
+        } catch (err) {
+          console.error('Lỗi đổi mật khẩu', err);
+          ElMessage.error('Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu cũ.');
+        }
+      } else {
+        ElMessage.error('Vui lòng điền đầy dủ và chính xác các trường.');
+        return false;
+      }
+    };
 
     const languageOptions = [
       { label: "Vietnamese", value: 'vn', flag: vnFlag },
@@ -112,6 +228,13 @@ export default {
       route,
       authStore,
       langStore,
+      showChangePasswordDialog,
+      passwordForm,
+      passwordFormRef,
+      handleCommand,
+      validateConfirmPassword,
+      handleChangePassword,
+      passwordRules,
       languageOptions,
       selectedLanguage,
       currentTabName,

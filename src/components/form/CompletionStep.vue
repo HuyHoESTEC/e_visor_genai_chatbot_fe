@@ -37,6 +37,7 @@ import { ElMessage, ElButton } from 'element-plus';
 import { DocumentChecked } from '@element-plus/icons-vue'; 
 import axios from 'axios'; // Import axios để tạo AbortController
 import { getDownloadUrlApi } from '../../services/auth.service';
+import { useAuthStore } from '../../stores/auth';
 
 export default defineComponent({
   name: 'CompletionStep',
@@ -55,6 +56,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const isDownloading = ref(false); // Trạng thái loading cho nút tải xuống
     let abortController = null; // Để quản lý việc hủy request API
+    const authStore = useAuthStore();
+    const loggedInUserId = authStore.user?.id;
 
     const downloadFinalFile = async () => {
       if (!props.finalFile || !props.finalFile.minioObjectName) {
@@ -71,7 +74,7 @@ export default defineComponent({
         // với 'file_path' là minioObjectName.
         const payload = {
           request_id: "evisor-1234567890",
-          user_id: "hoanvlh",
+          user_id: loggedInUserId,
           path_file: props.finalFile.minioObjectName
         };
 
@@ -120,6 +123,8 @@ export default defineComponent({
       downloadFinalFile,
       emitResetWorkflow,
       isDownloading, // Trả về trạng thái loading
+      authStore,
+      loggedInUserId
     };
   },
 });
