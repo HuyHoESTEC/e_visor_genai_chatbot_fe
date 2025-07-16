@@ -73,15 +73,13 @@
               placeholder="Chọn File 2 để merge"
               class="file-select"
               clearable
-              :disabled="!!mergeResultFile || isAutoMergeMode"
-            >
+              :disabled="isAutoMergeMode || !selectedFile1" >
               <el-option
                 v-for="file in filesForSelection2"
                 :key="file.id || file.name"
                 :label="file.name"
                 :value="file.id"
-                :disabled="selectedFile1 === file.id || (mergeResultFile && file.id !== mergeResultFile.id)"
-              ></el-option>
+                :disabled="selectedFile1 === file.id" ></el-option>
             </el-select>
 
             <el-button
@@ -133,8 +131,6 @@
 import { ElButton, ElSelect, ElOption, ElMessage, ElSwitch } from "element-plus";
 import { toRef } from "vue";
 import { useMergeFiles } from "../../composables/useMergeFiles";
-import { useTrackingAndMessages } from "../../composables/useTrackingAndMessages";
-import { useMergeProgressBar } from "../../composables/useMergeProgressBar";
 
 export default {
   name: "CombineFile",
@@ -149,10 +145,15 @@ export default {
       type: Array,
       default: () => [],
     },
+    summaryFile: {
+      type: Object,
+      default: () => {},
+    }
   },
-  emits: ["merge-completed", "reset-workflow", "all-file-merged"],
+  emits: ["merge-completed", "reset-workflow", "all-file-merged", "partial-merge-completed"],
   setup(props, { emit }) {
     const initialFileRef = toRef(props, 'initialFiles');
+    const sumFileRef = toRef(props, 'summaryFile');
     const {
       currentFiles,
       selectedFile1,
@@ -173,8 +174,8 @@ export default {
       isAutoMergeMode,
       errorMessages,
       clearErrorMessages
-    } = useMergeFiles(initialFileRef, emit);
-
+    } = useMergeFiles(initialFileRef, sumFileRef, emit);
+    
     return {
       currentFiles,
       selectedFile1,

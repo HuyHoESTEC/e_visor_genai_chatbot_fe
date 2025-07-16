@@ -3,15 +3,13 @@
     <div class="header-steps">
       <el-steps :active="activeWorkflowStep" finish-status="success" align-center>
         <el-step :title="langStore.t('FileUpload')"></el-step>
-        <el-step
-          :title="langStore.t('PairingAndAnalysis')"
-        ></el-step>
+        <el-step :title="langStore.t('PairingAndAnalysis')"></el-step>
         <el-step :title="langStore.t('StepSuccess')"></el-step>
       </el-steps>
     </div>
     <div class="main-content-area">
       <div v-if="activeWorkflowStep === 0" class="upload-step-content">
-        <h2 class="section-title">{{ langStore.t('ChooseFileToUpload') }}</h2>
+        <h2 class="section-title">{{ langStore.t("ChooseFileToUpload") }}</h2>
         <div class="upload-components-wrapper">
           <SingleFileUpload
             ref="singleUploadRef"
@@ -32,35 +30,30 @@
             color="#2c2c6a"
           >
             <span v-if="!isUploading">
-              {{ langStore.t('UploadAllFiles') }}
+              {{ langStore.t("UploadAllFiles") }}
             </span>
             <span v-else>Đang tải lên...</span>
           </el-button>
         </div>
       </div>
-      <div
-        v-if="activeWorkflowStep === 1"
-        class="merge-steps-wrapper"
-      >
+      <div v-if="activeWorkflowStep === 1" class="merge-steps-wrapper">
         <CombineFile
           :initial-files="uploadedFilesForMerge"
+          :summary-file="summaryFileForMerge"
           @merge-completed="handleMergeCompleted"
           @reset-workflow="resetWorkflow"
           @all-files-merged="handleAllFilesMerged"
         />
       </div>
       <div v-if="activeWorkflowStep === 2" class="overwork-review-wrapper">
-        <OverworkReviewStep 
+        <OverworkReviewStep
           :overwork-data="overworkResultData"
           @review-completed="handleReviewCompleted"
           @reset-workflow="resetWorkflow"
         />
       </div>
       <div v-if="activeWorkflowStep === 3" class="completion-step-wrapper">
-        <CompletionStep 
-          :final-file="finalMergedFile"
-          @reset-workflow="resetWorkflow"
-        />
+        <CompletionStep :final-file="finalMergedFile" @reset-workflow="resetWorkflow" />
       </div>
     </div>
   </div>
@@ -99,6 +92,7 @@ export default {
     const selectedSingleFile = ref(null);
     const selectedMultiFiles = ref([]);
     const uploadedFilesForMerge = ref(null); // Danh sach cac file se truyen cho MergeStepsPage
+    const summaryFileForMerge = ref(null);
 
     const isUploading = ref(false); // Trang thai cho nut upload
 
@@ -151,7 +145,7 @@ export default {
         const file = singleUploadRef.value.getFiles();
         console.log("File từ SingleFileUpload (trước khi xử lý):", file);
         if (file) {
-          formData.append('files', file); // 'files' là tên trường mà server mong đợi
+          formData.append("files", file); // 'files' là tên trường mà server mong đợi
           filesCount++;
         }
       }
@@ -159,8 +153,8 @@ export default {
       if (multiUploadRef.value) {
         const files = multiUploadRef.value.getFiles();
         console.log("File từ MultiFileUpload (trước khi xử lý):", files);
-        files.forEach(file => {
-          formData.append('files', file); // 'files' là tên trường mà server mong đợi
+        files.forEach((file) => {
+          formData.append("files", file); // 'files' là tên trường mà server mong đợi
           filesCount++;
         });
       }
@@ -176,12 +170,16 @@ export default {
       try {
         const response = await fileUploadApi(formData);
         console.log("Phản hồi từ server:", response.data);
-
-        if (response.data.status === "success" && Array.isArray(response.data.path_files)) {
+        const summaryFileUploaded = response.data.summary_file;
+        
+        if (
+          response.data.status === "success" &&
+          Array.isArray(response.data.path_files)
+        ) {
           // Chuyển đổi path_files thành định dạng mà CombineFile mong đợi
           // CombineFile mong đợi các đối tượng có { name, id, minioObjectName }
           const processedFiles = response.data.path_files.map((filePath, index) => {
-            const fileName = filePath.split('/').pop(); // Lấy tên file từ đường dẫn
+            const fileName = filePath.split("/").pop(); // Lấy tên file từ đường dẫn
             return {
               name: fileName,
               id: `uploaded_${index}_${Date.now()}`, // Tạo ID duy nhất
@@ -190,16 +188,34 @@ export default {
           });
 
           uploadedFilesForMerge.value = processedFiles;
+
+          if (typeof summaryFileUploaded === 'string' && summaryFileUploaded) {
+            const fileName = summaryFileUploaded.split("/").pop(); // Lấy tên file từ đường dẫn
+
+            const sumProcessedFile = {
+              name: fileName,
+              id: `uploaded_summary_0_${Date.now()}`, // Tạo ID duy nhất
+              minioObjectName: summaryFileUploaded,
+            };
+
+            summaryFileForMerge.value = sumProcessedFile;
+          }
+
           ElMessage.success(`Đã tải lên thành công ${filesCount} file.`);
           activeWorkflowStep.value = 1; // Chuyển sang bước Merge & Phân tích
-
         } else {
-          ElMessage.error(`Tải lên thất bại: ${response.data.message || 'Phản hồi không hợp lệ từ server.'}`);
+          ElMessage.error(
+            `Tải lên thất bại: ${
+              response.data.message || "Phản hồi không hợp lệ từ server."
+            }`
+          );
         }
       } catch (error) {
         console.error("Lỗi khi tải lên file:", error.response?.data || error.message);
         ElMessage.error(
-          `Có lỗi xảy ra khi tải file lên: ${error.response?.data?.message || error.message || "Không xác định"}`
+          `Có lỗi xảy ra khi tải file lên: ${
+            error.response?.data?.message || error.message || "Không xác định"
+          }`
         );
       } finally {
         isUploading.value = false;
@@ -212,7 +228,9 @@ export default {
       // Lưu trữ dữ liệu overwork
       overworkResultData.value = mergedFileData.overwork || [];
       activeWorkflowStep.value = 2; // Chuyen sang buoc hoan thanh
-      ElMessage.success("Quá trình ghép nối đã hoàn tất. Vui lòng xem xét dữ liệu overwork.");
+      ElMessage.success(
+        "Quá trình ghép nối đã hoàn tất. Vui lòng xem xét dữ liệu overwork."
+      );
     };
 
     const handleReviewCompleted = () => {
@@ -268,6 +286,7 @@ export default {
       selectedSingleFile,
       selectedMultiFiles,
       uploadedFilesForMerge,
+      summaryFileForMerge,
       isUploading,
       finalMergedFile,
       totalFilesSelected,
