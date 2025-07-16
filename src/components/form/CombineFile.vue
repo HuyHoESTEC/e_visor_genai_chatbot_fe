@@ -52,22 +52,33 @@
               <span>File tổng hiện tại: <strong style="word-wrap: break-word">{{ mergeResultFile.minioObjectName }}</strong></span>
             </div>
 
-            <el-select
-              v-model="selectedFile1"
-              placeholder="Chọn File 1 để merge"
-              class="file-select"
-              clearable
-              :disabled="isAutoMergeMode"
-            >
-              <el-option
-                v-for="file in filesForSelection1"
-                :key="file.id || file.name"
-                :label="file.name"
-                :value="file.id"
-                :disabled="selectedFile2 === file.id"
-              ></el-option>
-            </el-select>
-
+            <div class="file-select-with-download">
+              <el-select
+                v-model="selectedFile1"
+                placeholder="Chọn File 1 để merge"
+                class="file-select"
+                clearable
+                :disabled="isAutoMergeMode"
+              >
+                <el-option
+                  v-for="file in filesForSelection1"
+                  :key="file.id || file.name"
+                  :label="file.name"
+                  :value="file.id"
+                  :disabled="selectedFile2 === file.id"
+                ></el-option>
+              </el-select>
+              <el-button
+                v-if="selectedFile1"
+                @click="downloadSelectedFile1"
+                :disabled="isMerging || !selectedFile1"
+                circle
+                size="small"
+                class="download-button"
+              >
+                <el-icon><Download /></el-icon>
+              </el-button>
+            </div>
             <el-select
               v-model="selectedFile2"
               placeholder="Chọn File 2 để merge"
@@ -128,9 +139,11 @@
 </template>
 
 <script>
-import { ElButton, ElSelect, ElOption, ElMessage, ElSwitch } from "element-plus";
+import { ElButton, ElSelect, ElOption, ElMessage, ElSwitch, ElIcon } from "element-plus"; // Thêm ElIcon
+import { Download } from '@element-plus/icons-vue'; // Import icon Download
 import { toRef } from "vue";
 import { useMergeFiles } from "../../composables/useMergeFiles";
+import { useLanguageStore } from "../../stores/language"; // Import useLanguageStore nếu chưa có
 
 export default {
   name: "CombineFile",
@@ -139,6 +152,8 @@ export default {
     ElSelect,
     ElOption,
     ElSwitch,
+    ElIcon, // Thêm ElIcon vào components
+    Download // Thêm icon Download vào components (nếu muốn dùng như component)
   },
   props: {
     initialFiles: {
@@ -154,6 +169,8 @@ export default {
   setup(props, { emit }) {
     const initialFileRef = toRef(props, 'initialFiles');
     const sumFileRef = toRef(props, 'summaryFile');
+    const langStore = useLanguageStore(); // Khởi tạo langStore
+
     const {
       currentFiles,
       selectedFile1,
@@ -173,7 +190,8 @@ export default {
       mergeStatusText,
       isAutoMergeMode,
       errorMessages,
-      clearErrorMessages
+      clearErrorMessages,
+      downloadSelectedFile1, // Destructure hàm downloadSelectedFile1
     } = useMergeFiles(initialFileRef, sumFileRef, emit);
     
     return {
@@ -196,12 +214,46 @@ export default {
       isAutoMergeMode,
       errorMessages,
       clearErrorMessages,
+      downloadSelectedFile1, // Trả về hàm để template có thể sử dụng
+      langStore // Trả về langStore để template có thể sử dụng
     }
   },
 };
 </script>
 
-<style>
+<style scoped>
+/* Thêm CSS mới để căn chỉnh nút download */
+.file-select-with-download {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Khoảng cách giữa select box và nút download */
+  width: 100%; /* Đảm bảo nó chiếm đủ chiều rộng */
+}
+
+.file-select-with-download .el-select {
+  flex-grow: 1; /* Cho phép select box mở rộng để chiếm không gian */
+}
+
+.file-select-with-download .download-button {
+  flex-shrink: 0; /* Ngăn nút bị thu nhỏ */
+  width: 32px; /* Kích thước cố định cho nút tròn */
+  height: 32px; /* Kích thước cố định cho nút tròn */
+  padding: 0; /* Xóa padding mặc định để icon vừa vặn */
+  display: flex; /* Dùng flexbox để căn icon giữa */
+  justify-content: center;
+  align-items: center;
+  border-color: green;
+}
+
+.download-button > span {
+  color: green;
+}
+
+.file-select-with-download .download-button .el-icon {
+  font-size: 16px; /* Kích thước icon */
+}
+
+/* --- Giữ nguyên các style hiện có của bạn --- */
 .merge-steps-container {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", Arial, sans-serif;
@@ -223,8 +275,6 @@ h2 {
   text-align: left; /* Đặt lại căn lề trái cho tiêu đề */
 }
 
-/* Các phần tử như merge-mode-selection, progress-bar-section, available-files-summary
-   và step-content có thể giữ nguyên hoặc điều chỉnh text-align: left nếu cần */
 .merge-mode-selection {
   display: flex;
   justify-content: center;
@@ -285,17 +335,16 @@ h2 {
   margin-bottom: 15px;
 }
 
-/* --- ĐIỀU CHỈNH CHÍNH CHO BỐ CỤC BÊN PHẢI --- */
 .main-content-with-tracking {
-  display: flex; /* Kích hoạt Flexbox */
-  gap: 30px; /* Khoảng cách giữa nội dung chính và tracking */
-  align-items: flex-start; /* Căn chỉnh các item con từ trên xuống */
-  margin-top: 30px; /* Khoảng cách với phần tử phía trên */
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  margin-top: 30px;
 }
 
 .main-content {
-  flex: 1; /* Cho phép phần nội dung chính chiếm hết không gian còn lại */
-  text-align: left; /* Đảm bảo nội dung bên trong main-content được căn lề trái */
+  flex: 1;
+  text-align: left;
 }
 
 .available-files-summary {
@@ -342,7 +391,7 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* Căn chỉnh nội dung của step-content sang trái */
+  align-items: flex-start;
   gap: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
@@ -427,16 +476,15 @@ h2 {
   border: 1px solid #faecd8;
 }
 
-/* --- Styles cho Tracking Area (đặt bên phải) --- */
 .tracking-area {
-  flex-shrink: 0; /* Đảm bảo khu vực này không bị co lại khi không gian hẹp */
-  width: 350px; /* Đặt chiều rộng cố định cho khu vực tracking */
+  flex-shrink: 0;
+  width: 350px;
   padding: 25px;
   background-color: #fefefe;
   border: 1px solid #dcdfe6;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  text-align: left; /* Đảm bảo nội dung tracking căn lề trái */
+  text-align: left;
   flex: 1;
 }
 
@@ -447,7 +495,7 @@ h2 {
   padding-bottom: 10px;
   font-weight: 600;
   font-size: 1.5em;
-  text-align: center; /* Căn giữa tiêu đề của tracking */
+  text-align: center;
 }
 
 .tracking-area .no-errors {
@@ -461,8 +509,8 @@ h2 {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 300px; /* Tăng chiều cao tối đa cho danh sách lỗi */
-  overflow-y: auto; /* Thêm thanh cuộn nếu danh sách quá dài */
+  max-height: 300px;
+  overflow-y: auto;
   border: 1px solid #ebeef5;
   border-radius: 5px;
   background-color: #fff;
@@ -503,21 +551,20 @@ h2 {
 
 .tracking-area .clear-errors-button {
   margin-top: 20px;
-  width: 100%; /* Nút xóa lỗi sẽ kéo dài hết chiều rộng của tracking area */
+  width: 100%;
 }
 
-/* Điều chỉnh Responsive */
 @media (max-width: 1200px) {
   .merge-steps-container {
-    max-width: 95%; /* Tăng chiều rộng trên màn hình nhỏ hơn */
+    max-width: 95%;
   }
   .main-content-with-tracking {
-    flex-direction: column; /* Chuyển sang bố cục cột trên màn hình nhỏ */
+    flex-direction: column;
     gap: 20px;
   }
   .tracking-area {
-    width: 100%; /* Tracking area chiếm toàn bộ chiều rộng */
-    margin-top: 20px; /* Thêm khoảng cách nếu chuyển xuống dưới */
+    width: 100%;
+    margin-top: 20px;
   }
 }
 

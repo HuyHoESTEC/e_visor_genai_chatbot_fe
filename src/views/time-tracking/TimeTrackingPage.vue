@@ -199,6 +199,8 @@ export default {
             };
 
             summaryFileForMerge.value = sumProcessedFile;
+          } else {
+            summaryFileForMerge.value = null;
           }
 
           ElMessage.success(`Đã tải lên thành công ${filesCount} file.`);
