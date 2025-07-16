@@ -26,7 +26,7 @@ const MENU_ITEMS = [
     children: [
       {
         name: "time-tracking",
-        label: "Quản lý chấm công",
+        label: "Quản lý kế hoạch làm việc",
         labelKey: "TimekeepingManagement",
         iconComponent: "List",
         routeName: "TimeTracking",
