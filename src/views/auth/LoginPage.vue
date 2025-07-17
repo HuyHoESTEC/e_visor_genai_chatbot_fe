@@ -58,7 +58,7 @@ export default {
       rgba(0, 0, 0, 0.6),   /* overlay bóng mờ màu đen 50% */
       rgba(0, 0, 0, 0.6)
     ),
-    url('../../assets/img/estec-tbd-img.JPG');
+    url('../../assets/img/estec-tbd-img.png');
   background-size: cover;
   background-position: center;
   width: 100vw;         
