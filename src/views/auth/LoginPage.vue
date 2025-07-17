@@ -2,8 +2,7 @@
   <div class="auth-page">
     <div class="auth-card">
       <div class="auth-header">
-        <img class="img-login" src="../../assets/img/estec-icon.png" />
-        <h2>Đăng nhập</h2>
+        <img class="img-login" src="../../assets/img/estec-img-login.png" />
       </div>
       <LoginForm 
         :loading="authStore.loading"
@@ -59,7 +58,7 @@ export default {
       rgba(0, 0, 0, 0.6),   /* overlay bóng mờ màu đen 50% */
       rgba(0, 0, 0, 0.6)
     ),
-    url('../../assets/img/estec-visor-bg.png');
+    url('../../assets/img/estec-tbd-img.JPG');
   background-size: cover;
   background-position: center;
   width: 100vw;         
@@ -90,9 +89,10 @@ export default {
 }
 
 .img-login {
-  width: 80px;
-  height: 80px;
+  width: 150px;
+  height: 62px;
   align-self: center;
+  padding-bottom: 12px;
 }
 
 .full-width {
