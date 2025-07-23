@@ -24,6 +24,7 @@ export default {
   OnlyAcceptFile: "承認されるファイルは.xls、.xlsx形式で、各ファイルのサイズは500MB未満です。",
   UploadAllFiles: "すべてのファイルをアップロード",
   // Work Management Page
+  workManagementDashboard: '「作業管理ダッシュボード」',
   workManagementTitle: 'タスク管理',
   searchPlaceholder: 'タイトル、説明、担当者で検索...',
   searchButton: '検索',
@@ -65,4 +66,6 @@ export default {
   deleteConfirmTitle: '削除の確認',
   taskDeletedMessage: 'タスクが正常に削除されました！',
   deleteCanceledMessage: '削除はキャンセルされました。',
+
+  KHTCWorkManagement: '「作業管理ダッシュボード」'
 };

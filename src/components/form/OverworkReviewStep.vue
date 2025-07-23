@@ -32,11 +32,10 @@
           :data="filteredOverworkData"
           style="width: 100%"
           border
-          class="overwork-table"
           :header-cell-style="{ textAlign: 'center' }"
           :cell-style="{ textAlign: 'center' }"
         >
-          <el-table-column prop="tenNhanSu" label="Tên Nhân Sự" width="200" fixed></el-table-column>
+          <el-table-column prop="tenNhanSu" label="Tên Nhân Sự" width="200" fixed/>
 
           <el-table-column
             v-for="date in sortedUniqueDates"
@@ -247,14 +246,8 @@ export default {
   width: 100%;
 }
 
-/* Loại bỏ .filter-date-picker */
-/* .filter-date-picker {
-  width: 100%;
-} */
-
 .el-row {
   width: 100%;
-  /* Điều chỉnh để el-col chỉ có một cái thì nó vẫn dàn ra */
   justify-content: center; /* Căn giữa nếu chỉ có một cột */
 }
 
@@ -265,16 +258,11 @@ export default {
 /* --- End styles for Filter controls --- */
 
 .table-wrapper {
-  max-width: 1400px;
+  width: calc(100vw - 440px);
+  /* max-width: 1400px; */
   overflow-x: auto;
   margin-bottom: 20px;
   box-sizing: border-box;
-}
-
-.overwork-table {
-  width: 100%;
-  min-width: fit-content;
-  margin-bottom: 0;
 }
 
 .summary-info {

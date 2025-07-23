@@ -24,6 +24,7 @@ export default {
   OnlyAcceptFile: "Chỉ chấp nhận các file .xls, .xlsx và kích thước mỗi file nhỏ hơn 500MB",
   UploadAllFiles: "Tải lên tất cả file",
   // Work Management Page
+  workManagementDashboard: 'Thống kê công việc',
   workManagementTitle: 'Quản lý công việc',
   searchPlaceholder: 'Tìm kiếm theo tiêu đề, mô tả, người giao việc...',
   searchButton: 'Tìm kiếm',
@@ -71,5 +72,8 @@ export default {
   PreparingManualTransplantation: 'Đang chuẩn bị ghép nối thủ công',
   StartManualConnection: 'Bắt đầu ghép nối thủ công',
   PleaseSelectTheComponentFileToConnect: 'Vui lòng chọn file thành phần để ghép nối',
-  ConnectTheCurrentSyntheticFileWithTheFile: 'Ghép nối file tổng hợp hiện có với file'
+  ConnectTheCurrentSyntheticFileWithTheFile: 'Ghép nối file tổng hợp hiện có với file',
+
+
+  KHTCWorkManagement: 'Quản lý công việc (Kế hoạch tổ chức)'
 };
