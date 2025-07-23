@@ -24,6 +24,7 @@ export default {
   OnlyAcceptFile: "Only accept .xls, .xlsx files and each file size smaller than 500MB",
   UploadAllFiles: "Upload All Files",
   // Work Management Page
+  workManagementDashboard: 'Work Management Dashboard',
   workManagementTitle: 'Work Management',
   searchPlaceholder: 'Search by title, description, assignee...',
   searchButton: 'Search',
@@ -65,4 +66,12 @@ export default {
   deleteConfirmTitle: 'Confirm Deletion',
   taskDeletedMessage: 'Task deleted successfully!',
   deleteCanceledMessage: 'Deletion canceled.',
+
+  TheNewFileIsTeadyToJoin: 'The new file is ready for pairing',
+  PreparingManualTransplantation: 'Preparing manual pairing',
+  StartManualConnection: 'Start manual pairing',
+  PleaseSelectTheComponentFileToConnect: 'Please select the component file to pair',
+  ConnectTheCurrentSyntheticFileWithTheFile: 'Pair the current synthetic file with the file',
+  
+  KHTCWorkManagement: 'Work Management (Organizational Plan)'
 };

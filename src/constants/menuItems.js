@@ -32,6 +32,14 @@ const MENU_ITEMS = [
         routeName: "TimeTracking",
         isActive: false,
       },
+      {
+        name: "khtc-work-management",
+        label: "Quản lý công việc",
+        labelKey: "KHTCWorkManagement",
+        iconComponent: "Briefcase",
+        routeName: "KHTCWorkManagement",
+        isActive: false,
+      }
     ]
   },
   {
@@ -44,7 +52,7 @@ const MENU_ITEMS = [
       {
         name: "rnd-dashboard",
         label: "Thống kê",
-        labelKey: "workManagementTitle",
+        labelKey: "workManagementDashboard",
         iconComponent: "Histogram",
         routeName: "RndDashboard",
         isActive: false,

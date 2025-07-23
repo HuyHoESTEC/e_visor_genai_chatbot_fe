@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT;
 const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT;
 
 export const mergeFilesApi = async (payload, signal) => {
@@ -80,6 +79,65 @@ export const fileUploadApi = async (payload, signal) => {
 export const changePassword = async (payload, signal) => {
     try{
         const response = await axios.post(`${API_BASE_URL}/ChangePassword`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const loadWorkManagementKHTCApi = async (payload) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WorkManagement_View`, payload, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (e) {
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const filterWorkManagementKHTCApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WorkManagement_Filter`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (e) {
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const uploadWorkManagementKHTCApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WorkManagement_Processing`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (e) {
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const editWorkManagementKHTCApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/Edit_WorkManagement`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'

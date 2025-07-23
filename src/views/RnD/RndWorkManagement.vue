@@ -1,7 +1,5 @@
 <template>
   <div class="work-management-container">
-    <h1 class="page-title">{{ langStore.t("workManagementTitle") }}</h1>
-
     <div class="filter-section">
       <el-input
         v-model="searchQuery"

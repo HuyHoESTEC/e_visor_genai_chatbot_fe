@@ -19,6 +19,7 @@ import SummaryDashboard from "../views/dashboard/SummaryDashboard.vue";
 import { ElMessageBox } from "element-plus";
 import RnDDashboard from "../views/RnD/RnDDashboard.vue";
 import RndWorkManagement from "../views/RnD/RndWorkManagement.vue";
+import WorkManagementKHTC from "../views/time-tracking/WorkManagementKHTC.vue";
 
 const routes = [
   {
@@ -122,6 +123,12 @@ const routes = [
     path: '/rnd-work-tracking',
     name: 'RndWorkTracking',
     component: RndWorkManagement,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/work-management-khtc',
+    name: 'KHTCWorkManagement',
+    component: WorkManagementKHTC,
     meta: { requiresAuth: true }
   }
 ];
