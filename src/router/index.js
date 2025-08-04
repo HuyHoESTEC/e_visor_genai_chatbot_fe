@@ -20,6 +20,8 @@ import { ElMessageBox } from "element-plus";
 import RnDDashboard from "../views/RnD/RnDDashboard.vue";
 import RndWorkManagement from "../views/RnD/RndWorkManagement.vue";
 import WorkManagementKHTC from "../views/time-tracking/WorkManagementKHTC.vue";
+import CreateProdutionOrdersProjects from "../views/MESX/CreateProdutionOrdersProjects.vue";
+import RndWorkReport from "../views/RnD/RndWorkReport.vue";
 
 const routes = [
   {
@@ -109,7 +111,7 @@ const routes = [
   },
   {
     path: '/workshop-summary-dashboard',
-    name: 'MESXDashboard',
+    name: 'WorkshopDashboard',
     component: SummaryDashboard,
     meta: { requiresAuth: true }
   },
@@ -126,11 +128,23 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/create-production-orders-project',
+    name: 'CreateProdutionOrdersProjects',
+    component: CreateProdutionOrdersProjects,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/work-management-khtc',
     name: 'KHTCWorkManagement',
     component: WorkManagementKHTC,
     meta: { requiresAuth: true }
-  }
+  },
+  {
+    path: '/rnd-work-report',
+    name: 'RndWorkReport',
+    component: RndWorkReport,
+    meta: { requiresAuth: true }
+  },
 ];
 
 const router = createRouter({

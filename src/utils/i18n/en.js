@@ -73,5 +73,7 @@ export default {
   PleaseSelectTheComponentFileToConnect: 'Please select the component file to pair',
   ConnectTheCurrentSyntheticFileWithTheFile: 'Pair the current synthetic file with the file',
   
-  KHTCWorkManagement: 'Work Management (Organizational Plan)'
+  KHTCWorkManagement: 'Work Management (Organizational Plan)',
+  CreateProdutionOrdersProjects: 'Create Prodution Orders Projects',
+  workReport: 'Work Report'
 };

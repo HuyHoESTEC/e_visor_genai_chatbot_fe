@@ -75,5 +75,7 @@ export default {
   ConnectTheCurrentSyntheticFileWithTheFile: 'Ghép nối file tổng hợp hiện có với file',
 
 
-  KHTCWorkManagement: 'Quản lý công việc (Kế hoạch tổ chức)'
+  KHTCWorkManagement: 'Quản lý công việc (Kế hoạch tổ chức)',
+  CreateProdutionOrdersProjects: 'Tạo lệnh sản xuất/dự án',
+  workReport: 'Báo cáo công việc'
 };
