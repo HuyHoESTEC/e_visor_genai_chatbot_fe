@@ -120,19 +120,12 @@ const MENU_ITEMS = [
             isActive: false,
           },
           {
-            name: "QuanLyNangLucThiCong",
-            label: "Quản lý năng lực thi công",
-            routeName: "QuanLyNangLucThiCong",
+            name: "ProductionStageManagement",
+            label: "Quản lý công đoạn sản xuất",
+            routeName: "ProductionStageManagement",
             iconComponent: "BottomRight",
             isActive: false,
-          },
-          // {
-          //   name: "QuyTrinh",
-          //   label: "Quy trình",
-          //   routeName: "QuyTrinh",
-          //   iconComponent: "BottomRight",
-          //   isActive: false,
-          // },
+          }
         ],
       },
       // {

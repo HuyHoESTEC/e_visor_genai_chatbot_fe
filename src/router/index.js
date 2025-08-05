@@ -22,6 +22,7 @@ import RndWorkManagement from "../views/RnD/RndWorkManagement.vue";
 import WorkManagementKHTC from "../views/time-tracking/WorkManagementKHTC.vue";
 import CreateProdutionOrdersProjects from "../views/MESX/CreateProdutionOrdersProjects.vue";
 import RndWorkReport from "../views/RnD/RndWorkReport.vue";
+import ProductionStageManagement from "../views/MESX/ProductionStageManagement.vue";
 
 const routes = [
   {
@@ -145,6 +146,12 @@ const routes = [
     component: RndWorkReport,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/production-stage-management',
+    name: 'ProductionStageManagement',
+    component: ProductionStageManagement,
+    meta: { requiresAuth: true }
+  }
 ];
 
 const router = createRouter({
