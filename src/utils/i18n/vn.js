@@ -77,5 +77,6 @@ export default {
 
   KHTCWorkManagement: 'Quản lý công việc (Kế hoạch tổ chức)',
   CreateProdutionOrdersProjects: 'Tạo lệnh sản xuất/dự án',
-  workReport: 'Báo cáo công việc'
+  workReport: 'Báo cáo công việc',
+  ProductionStageManagement: 'Quản lý công đoạn sản xuất'
 };

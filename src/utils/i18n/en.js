@@ -75,5 +75,6 @@ export default {
   
   KHTCWorkManagement: 'Work Management (Organizational Plan)',
   CreateProdutionOrdersProjects: 'Create Prodution Orders Projects',
-  workReport: 'Work Report'
+  workReport: 'Work Report',
+  ProductionStageManagement: 'Production Stage Management'
 };
