@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "Загрузить в файлы компонентов",
   DragAndDropTheFileHereOr: "Перетащите файл сюда или",
   ClickToChoose: "Нажмите, чтобы выбрать",
-  OnlyAcceptFile: "Принимаются только файлы .xls, .xlsx, размер каждого файла не должен превышать 500 МБ",
+  OnlyAcceptFile: "Принимаются только файлы .xls, .xlsx, .mpp размер каждого файла не должен превышать 500 МБ",
   UploadAllFiles: "Загрузить все файлы",
   // Work Management Page
   workManagementTitle: 'Управление задачами',

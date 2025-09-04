@@ -40,6 +40,7 @@
         <CombineFile
           :initial-files="uploadedFilesForMerge"
           :summary-file="summaryFileForMerge"
+          :duplicate-file-code="duplicateFileCode"
           @merge-completed="handleMergeCompleted"
           @reset-workflow="resetWorkflow"
           @all-files-merged="handleAllFilesMerged"
@@ -56,12 +57,27 @@
         <CompletionStep :final-file="finalMergedFile" @reset-workflow="resetWorkflow" />
       </div>
     </div>
+    <el-dialog
+      v-model="dialogVisible"
+      title="Thông báo"
+      width="400px"
+      destroy-on-close
+      :show-close="false"
+    >
+      <span>{{ dialogMessage }}</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="danger" v-on:click="handleExit">{{ langStore.t("Exit") }}</el-button>
+          <el-button type="primary" v-on:click="handleContinue">{{ langStore.t("Continue") }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { computed, ref } from "vue";
-import { ElMessage, ElSteps, ElStep, ElButton } from "element-plus";
+import { ElMessage, ElSteps, ElStep, ElButton, ElDialog } from "element-plus";
 import SingleFileUpload from "../../components/upload/SingleFileUpload.vue";
 import MultiFileUpload from "../../components/upload/MultiFileUpload.vue";
 import CombineFile from "../../components/form/CombineFile.vue";
@@ -81,6 +97,7 @@ export default {
     CombineFile,
     CompletionStep,
     OverworkReviewStep,
+    ElDialog
   },
   setup() {
     const activeWorkflowStep = ref(0); // 0: Upload, 1: Merge, 2: Review Overwork, 3: Complete
@@ -98,6 +115,11 @@ export default {
 
     const finalMergedFile = ref(null);
     const overworkResultData = ref([]);
+
+    const dialogVisible = ref(false);
+    const dialogMessage = ref("");
+    const duplicateFileCode = ref(null);
+    const continueCallback = ref(null); // Store callback for continue button
 
     const langStore = useLanguageStore();
 
@@ -143,7 +165,7 @@ export default {
       // Lấy file từ SingleFileUpload
       if (singleUploadRef.value) {
         const file = singleUploadRef.value.getFiles();
-        console.log("File từ SingleFileUpload (trước khi xử lý):", file);
+        // console.log("File từ SingleFileUpload (trước khi xử lý):", file);
         if (file) {
           formData.append("files", file); // 'files' là tên trường mà server mong đợi
           filesCount++;
@@ -152,7 +174,7 @@ export default {
       // Lấy file từ MultiFileUpload
       if (multiUploadRef.value) {
         const files = multiUploadRef.value.getFiles();
-        console.log("File từ MultiFileUpload (trước khi xử lý):", files);
+        // console.log("File từ MultiFileUpload (trước khi xử lý):", files);
         files.forEach((file) => {
           formData.append("files", file); // 'files' là tên trường mà server mong đợi
           filesCount++;
@@ -169,10 +191,43 @@ export default {
 
       try {
         const response = await fileUploadApi(formData);
-        console.log("Phản hồi từ server:", response.data);
+        // console.log("Phản hồi từ server:", response.data);
         const summaryFileUploaded = response.data.summary_file;
+        duplicateFileCode.value = response.data.duplicate;
         
-        if (
+        if (duplicateFileCode.value.length > 0) {
+          dialogMessage.value = `Mã dự án ${duplicateFileCode.value} đã bị trùng. Bạn có muốn tiếp tục không ?`;
+          dialogVisible.value = true;
+          continueCallback.value = () => {
+            const processedFiles = response.data.path_files.map((filePath, index) => {
+              const fileName = filePath.split("/").pop(); // Lấy tên file từ đường dẫn
+              return {
+                name: fileName,
+                id: `uploaded_${index}_${Date.now()}`, // Tạo ID duy nhất
+                minioObjectName: filePath, // Dùng path_file làm minioObjectName để truyền cho CombineFile
+              };
+            });
+
+            uploadedFilesForMerge.value = processedFiles;
+
+            if (typeof summaryFileUploaded === 'string' && summaryFileUploaded) {
+              const fileName = summaryFileUploaded.split("/").pop(); // Lấy tên file từ đường dẫn
+
+              const sumProcessedFile = {
+                name: fileName,
+                id: `uploaded_summary_0_${Date.now()}`, // Tạo ID duy nhất
+                minioObjectName: summaryFileUploaded,
+              };
+
+              summaryFileForMerge.value = sumProcessedFile;
+            } else {
+              summaryFileForMerge.value = null;
+            }
+
+            ElMessage.success(`Đã tải lên thành công ${filesCount} file.`);
+            activeWorkflowStep.value = 1; // Chuyển sang bước Merge & Phân tích
+          }
+        } else if (
           response.data.status === "success" &&
           Array.isArray(response.data.path_files)
         ) {
@@ -281,6 +336,19 @@ export default {
       ElMessage.info("Đã đặt lại quy trình. Vui lòng tải lên file mới.");
     };
 
+    const handleExit = () => {
+      dialogVisible.value = false;
+      // Stop workflow and keep current step
+    };
+
+    const handleContinue = () => {
+      dialogVisible.value = false;
+      // Run callback to continue the next step
+      if (continueCallback.value) {
+        continueCallback.value();
+      }
+    };
+
     return {
       activeWorkflowStep,
       singleUploadRef,
@@ -305,6 +373,12 @@ export default {
       resetWorkflow,
       overworkResultData,
       langStore,
+      dialogVisible,
+      dialogMessage,
+      duplicateFileCode,
+      continueCallback,
+      handleExit,
+      handleContinue
     };
   },
 };

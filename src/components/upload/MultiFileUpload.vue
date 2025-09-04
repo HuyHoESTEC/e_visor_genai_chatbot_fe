@@ -13,7 +13,7 @@
       :on-remove="handleRemove"
       :limit="10"
       :file-list="fileList"
-      accept=".xls, .xlsx"
+      accept=".xls, .xlsx, .mpp"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
       <div class="el-upload__text">

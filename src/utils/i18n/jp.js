@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "コンポーネントファイルにアップロード",
   DragAndDropTheFileHereOr: "ここにファイルをドラッグ＆ドロップするか、",
   ClickToChoose: "クリックして選択",
-  OnlyAcceptFile: "承認されるファイルは.xls、.xlsx形式で、各ファイルのサイズは500MB未満です。",
+  OnlyAcceptFile: "承認されるファイルは.xls、.xlsx, .mpp形式で、各ファイルのサイズは500MB未満です。",
   UploadAllFiles: "すべてのファイルをアップロード",
   // Work Management Page
   workManagementDashboard: '「作業管理ダッシュボード」',

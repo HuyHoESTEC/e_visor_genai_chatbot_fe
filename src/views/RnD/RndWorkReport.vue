@@ -77,7 +77,7 @@ export default {
       let report = `Em xin phép gửi anh báo cáo công việc với những công việc đã làm trong tuần và kế hoạch công việc trong tuần tới như sau:\n`;
 
       if (oldWeek.value) {
-        report += `I. Báo cáo công vuệc tuần ${oldWeek.value}:\n`;
+        report += `I. Báo cáo công việc tuần ${oldWeek.value}:\n`;
         oldWeekTasks.value.forEach((task, index) => {
           if (task.trim() !== "") {
             report += ` ${index + 1}. ${task.trim()}\n`;

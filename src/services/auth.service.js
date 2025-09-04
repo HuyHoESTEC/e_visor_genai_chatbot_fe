@@ -67,13 +67,18 @@ export const logoutApi = async (payload, signal) => {
 }
 
 export const fileUploadApi = async (payload, signal) => {
-    const response = await axios.post(`${API_BASE_URL}/POD_TimeTracker_Upload`, payload, {
-        signal,
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-    return response;
+    try {
+        const response = await axios.post(`${API_BASE_URL}/POD_TimeTracker_Upload`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
 }
 
 export const changePassword = async (payload, signal) => {

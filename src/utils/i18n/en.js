@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "Upload To Components Files",
   DragAndDropTheFileHereOr: "Drag and drop the file here or",
   ClickToChoose: "Click to choose",
-  OnlyAcceptFile: "Only accept .xls, .xlsx files and each file size smaller than 500MB",
+  OnlyAcceptFile: "Only accept .xls, .xlsx, .mpp files and each file size smaller than 500MB",
   UploadAllFiles: "Upload All Files",
   // Work Management Page
   workManagementDashboard: 'Work Management Dashboard',

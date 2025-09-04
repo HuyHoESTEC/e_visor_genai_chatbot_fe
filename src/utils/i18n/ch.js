@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "上传到组件文件",
   DragAndDropTheFileHereOr: "将文件拖放到此处或",
   ClickToChoose: "点击选择",
-  OnlyAcceptFile: "仅接受 .xls, .xlsx 文件，且每个文件大小小于 500MB",
+  OnlyAcceptFile: "仅接受 .xls, .xlsx, .mpp 文件，且每个文件大小小于 500MB",
   UploadAllFiles: "上传所有文件",
   // Work Management Page
   workManagementTitle: '工作管理',
