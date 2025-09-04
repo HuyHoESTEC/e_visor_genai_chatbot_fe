@@ -163,6 +163,10 @@ export default {
     summaryFile: {
       type: Object,
       default: () => {},
+    },
+    duplicateFileCode: {
+      type: Array,
+      default: () => []
     }
   },
   emits: ["merge-completed", "reset-workflow", "all-file-merged", "partial-merge-completed"],
@@ -170,6 +174,7 @@ export default {
     const initialFileRef = toRef(props, 'initialFiles');
     const sumFileRef = toRef(props, 'summaryFile');
     const langStore = useLanguageStore(); // Khởi tạo langStore
+    const duplicateFileCode = toRef(props, 'duplicateFileCode');
 
     const {
       currentFiles,
@@ -192,7 +197,7 @@ export default {
       errorMessages,
       clearErrorMessages,
       downloadSelectedFile1, // Destructure hàm downloadSelectedFile1
-    } = useMergeFiles(initialFileRef, sumFileRef, emit);
+    } = useMergeFiles(initialFileRef, sumFileRef, duplicateFileCode, emit);
     
     return {
       currentFiles,
@@ -215,7 +220,8 @@ export default {
       errorMessages,
       clearErrorMessages,
       downloadSelectedFile1, // Trả về hàm để template có thể sử dụng
-      langStore // Trả về langStore để template có thể sử dụng
+      langStore, // Trả về langStore để template có thể sử dụng
+      duplicateFileCode
     }
   },
 };

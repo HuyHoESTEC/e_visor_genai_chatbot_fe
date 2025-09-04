@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "Tải lên các File thành phần",
   DragAndDropTheFileHereOr: "Kéo thả file vào đây hoặc",
   ClickToChoose: "click để chọn",
-  OnlyAcceptFile: "Chỉ chấp nhận các file .xls, .xlsx và kích thước mỗi file nhỏ hơn 500MB",
+  OnlyAcceptFile: "Chỉ chấp nhận các file .xls, .xlsx, .mpp và kích thước mỗi file nhỏ hơn 500MB",
   UploadAllFiles: "Tải lên tất cả file",
   // Work Management Page
   workManagementDashboard: 'Thống kê công việc',
@@ -78,5 +78,7 @@ export default {
   KHTCWorkManagement: 'Quản lý công việc (Kế hoạch tổ chức)',
   CreateProdutionOrdersProjects: 'Tạo lệnh sản xuất/dự án',
   workReport: 'Báo cáo công việc',
-  ProductionStageManagement: 'Quản lý công đoạn sản xuất'
+  ProductionStageManagement: 'Quản lý công đoạn sản xuất',
+  Exit: 'Thoát',
+  Continue: 'Tiếp tục'
 };

@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "구성 요소 파일에 업로드",
   DragAndDropTheFileHereOr: "여기에 파일을 끌어다 놓거나",
   ClickToChoose: "클릭하여 선택",
-  OnlyAcceptFile: ".xls, .xlsx 파일만 허용하며, 각 파일 크기는 500MB 미만이어야 합니다.",
+  OnlyAcceptFile: ".xls, .xlsx, .mpp 파일만 허용하며, 각 파일 크기는 500MB 미만이어야 합니다.",
   UploadAllFiles: "모든 파일 업로드",
   // Work Management Page
   workManagementTitle: '업무 관리',

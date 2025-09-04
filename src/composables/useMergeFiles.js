@@ -4,7 +4,7 @@ import { useMergeProgressBar } from "./useMergeProgressBar";
 import { computed, ref, watch } from "vue";
 import { useAuthStore } from "../stores/auth";
 
-export function useMergeFiles(initialFilesProp, sumInitFileProp, emit) {
+export function useMergeFiles(initialFilesProp, sumInitFileProp, duplicateFileCodeProp, emit) {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
 
@@ -167,6 +167,7 @@ export function useMergeFiles(initialFilesProp, sumInitFileProp, emit) {
         let pathFilesForApi = [];
         let summaryFileForApi = null;
         let filesToMergeForRemoval = []; // Cả 2 file được chọn đều sẽ bị xóa
+        let duplicateFileCodeVal = duplicateFileCodeProp.value
 
         // Case: Chỉ có 1 file được tải lên và file đó là một initialFile
         if (currentFiles.value.length === 1 && file1Obj && file1Obj.isInitialFile) {
@@ -205,7 +206,8 @@ export function useMergeFiles(initialFilesProp, sumInitFileProp, emit) {
                 user_id: loggedInUserId,
                 start_time: new Date().toISOString(),
                 path_files: pathFilesForApi,
-                summary_file: summaryFileForApi
+                summary_file: summaryFileForApi,
+                duplicate: duplicateFileCodeVal
             };
 
             const mergedData = await mergeFilesApi(payload, signal);
@@ -281,6 +283,7 @@ export function useMergeFiles(initialFilesProp, sumInitFileProp, emit) {
         let summaryFileForApi = summaryFile.value; // summaryFile.value giờ sẽ chứa giá trị từ sumInitFileProp hoặc mergeResultFile
         let mergeMessage = "";
         let filesToMergeForRemoval = []; // Danh sách các file ID sẽ bị xóa khỏi currentFiles
+        let duplicateFileCodeVal = duplicateFileCodeProp.value
 
         // Nếu có summaryFile (từ prop hoặc kết quả merge trước đó)
         if (summaryFileForApi) {
@@ -346,7 +349,8 @@ export function useMergeFiles(initialFilesProp, sumInitFileProp, emit) {
                 user_id: loggedInUserId,
                 start_time: new Date().toISOString(),
                 path_files: pathFilesForApi,
-                summary_file: summaryFileForApi
+                summary_file: summaryFileForApi,
+                duplicate: duplicateFileCodeVal
             };
 
             const mergedData = await mergeFilesApi(payload, signal);

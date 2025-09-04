@@ -13,7 +13,7 @@
       :file-list="fileList"
       :limit="1"
       :on-exceed="handleExceed"
-      accept=".xls,.xlsx"
+      accept=".xls,.xlsx, .mpp"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
       <div class="el-upload__text">
@@ -36,7 +36,7 @@ import { ref } from "vue";
 import { useLanguageStore } from "../../stores/language";
 export default {
   name: "SingleFileUpload",
-  components: {
+  components: { 
     ElUpload,
     ElIcon,
     UploadFilled,

@@ -21,7 +21,7 @@ export default {
   UploadComponentsFiles: "Télécharger vers les fichiers des composants",
   DragAndDropTheFileHereOr: "Faites glisser et déposez le fichier ici ou",
   ClickToChoose: "Cliquez pour choisir",
-  OnlyAcceptFile: "N'accepte que les fichiers .xls, .xlsx et la taille de chaque fichier doit être inférieure à 500 Mo",
+  OnlyAcceptFile: "N'accepte que les fichiers .xls, .xlsx, .mpp et la taille de chaque fichier doit être inférieure à 500 Mo",
   UploadAllFiles: "Télécharger tous les fichiers",
   // Work Management Page
   workManagementTitle: 'Gestion des tâches',
