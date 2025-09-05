@@ -47,7 +47,7 @@
               <span v-if="scope.row.overworkDetails && scope.row.overworkDetails[date]">
                 {{ scope.row.overworkDetails[date] }}
               </span>
-              <span v-else>-</span>
+              <span v-else>0</span>
             </template>
           </el-table-column>
 
@@ -258,8 +258,8 @@ export default {
 /* --- End styles for Filter controls --- */
 
 .table-wrapper {
-  width: calc(100vw - 440px);
-  /* max-width: 1400px; */
+  /* width: calc(100vw - 440px); */
+  max-width: 1400px;
   overflow-x: auto;
   margin-bottom: 20px;
   box-sizing: border-box;

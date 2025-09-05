@@ -123,6 +123,32 @@ export default {
 
     const langStore = useLanguageStore();
 
+    const handleSuccessfullUpload = (path_files, summary_file, filesCount) => {
+      const processedFiles = path_files.map((filePath, index) => {
+        const fileName = filePath.split("/").pop();
+        return {
+          name: fileName,
+          id: `uploaded_${index}_${Date.now()}`,
+          minioObjectName: filePath,
+        };
+      });
+      uploadedFilesForMerge.value = processedFiles;
+
+      if (typeof summary_file === 'string' && summary_file) {
+        const fileName = summary_file.split("/").pop();
+        const sumProcessedFile = {
+          name: fileName,
+          id: `uploaded_summary_0_${Date.now()}`,
+          minioObjectName: summary_file,
+        };
+        summaryFileForMerge.value = sumProcessedFile;
+      } else {
+        summaryFileForMerge.value = null;
+      }
+      ElMessage.success(`Đã tải lên thành công ${filesCount} file.`);
+      activeWorkflowStep.value = 1;
+    };
+
     // Computed property de tinh tong so file da chon
     const totalFilesSelected = computed(() => {
       let count = 0;
@@ -191,75 +217,20 @@ export default {
 
       try {
         const response = await fileUploadApi(formData);
-        // console.log("Phản hồi từ server:", response.data);
-        const summaryFileUploaded = response.data.summary_file;
-        duplicateFileCode.value = response.data.duplicate;
+        const { path_files, summary_file, duplicate } = response.data;
+        duplicateFileCode.value = duplicate;
         
         if (duplicateFileCode.value.length > 0) {
           dialogMessage.value = `Mã dự án ${duplicateFileCode.value} đã bị trùng. Bạn có muốn tiếp tục không ?`;
           dialogVisible.value = true;
           continueCallback.value = () => {
-            const processedFiles = response.data.path_files.map((filePath, index) => {
-              const fileName = filePath.split("/").pop(); // Lấy tên file từ đường dẫn
-              return {
-                name: fileName,
-                id: `uploaded_${index}_${Date.now()}`, // Tạo ID duy nhất
-                minioObjectName: filePath, // Dùng path_file làm minioObjectName để truyền cho CombineFile
-              };
-            });
-
-            uploadedFilesForMerge.value = processedFiles;
-
-            if (typeof summaryFileUploaded === 'string' && summaryFileUploaded) {
-              const fileName = summaryFileUploaded.split("/").pop(); // Lấy tên file từ đường dẫn
-
-              const sumProcessedFile = {
-                name: fileName,
-                id: `uploaded_summary_0_${Date.now()}`, // Tạo ID duy nhất
-                minioObjectName: summaryFileUploaded,
-              };
-
-              summaryFileForMerge.value = sumProcessedFile;
-            } else {
-              summaryFileForMerge.value = null;
-            }
-
-            ElMessage.success(`Đã tải lên thành công ${filesCount} file.`);
-            activeWorkflowStep.value = 1; // Chuyển sang bước Merge & Phân tích
+            handleSuccessfullUpload(path_files, summary_file, filesCount);
           }
         } else if (
           response.data.status === "success" &&
           Array.isArray(response.data.path_files)
         ) {
-          // Chuyển đổi path_files thành định dạng mà CombineFile mong đợi
-          // CombineFile mong đợi các đối tượng có { name, id, minioObjectName }
-          const processedFiles = response.data.path_files.map((filePath, index) => {
-            const fileName = filePath.split("/").pop(); // Lấy tên file từ đường dẫn
-            return {
-              name: fileName,
-              id: `uploaded_${index}_${Date.now()}`, // Tạo ID duy nhất
-              minioObjectName: filePath, // Dùng path_file làm minioObjectName để truyền cho CombineFile
-            };
-          });
-
-          uploadedFilesForMerge.value = processedFiles;
-
-          if (typeof summaryFileUploaded === 'string' && summaryFileUploaded) {
-            const fileName = summaryFileUploaded.split("/").pop(); // Lấy tên file từ đường dẫn
-
-            const sumProcessedFile = {
-              name: fileName,
-              id: `uploaded_summary_0_${Date.now()}`, // Tạo ID duy nhất
-              minioObjectName: summaryFileUploaded,
-            };
-
-            summaryFileForMerge.value = sumProcessedFile;
-          } else {
-            summaryFileForMerge.value = null;
-          }
-
-          ElMessage.success(`Đã tải lên thành công ${filesCount} file.`);
-          activeWorkflowStep.value = 1; // Chuyển sang bước Merge & Phân tích
+          handleSuccessfullUpload(path_files, summary_file, filesCount);
         } else {
           ElMessage.error(
             `Tải lên thất bại: ${
@@ -378,7 +349,8 @@ export default {
       duplicateFileCode,
       continueCallback,
       handleExit,
-      handleContinue
+      handleContinue,
+      handleSuccessfullUpload
     };
   },
 };
