@@ -1,19 +1,19 @@
 <template>
   <div class="work-management-khtc-container">
     <div v-if="isLoading" class="loading-message">
-      Đang tải dữ liệu...
+      {{ langStore.t('DataUploading') }}
     </div>
     <div v-else class="table-data">
       <div class="filter-section">
         <div class="action-area">
-          <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">Tải File lên</el-button>
-          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">Thêm công việc</el-button>
-          <el-button type="warning" v-on:click="exportTask" class="add-task-button" :icon="Printer">Xuất File</el-button>
+          <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
+          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
+          <el-button type="warning" v-on:click="exportTask" class="add-task-button" :icon="Printer">{{ langStore.t('FileExport') }}</el-button>
         </div>
         
         <el-select
           v-model="selectedUser"
-          placeholder="Lọc theo người thực hiện"
+          :placeholder="langStore.t('FilterBasedOnAssign')"
           clearable
           @change="applyFilters"
           class="user-select"
@@ -28,7 +28,7 @@
 
         <el-select
           v-model="selectedProjectCode"
-          placeholder="Lọc theo mã dự án"
+          :placeholder="langStore.t('FilterBasedOnProjectCode')"
           clearable
           @change="applyFilters"
           class="project-code-select"
@@ -43,7 +43,7 @@
 
         <el-select
           v-model="selectedStatus"
-          placeholder="Lọc theo trạng thái"
+          :placeholder="langStore.t('FilterBasedOnStatus')"
           clearable
           @change="applyFilters"
           class="status-select"
@@ -64,39 +64,40 @@
         stripe
         class="tasks-table"
         v-loading="isLoading"
-        element-loading-text="Đang tải công việc..."
+        :element-loading-text="langStore.t('WorkUploading')"
       >
         <template #empty>
           <div v-if="emptyData" class="empty-data-message">
-            <el-empty description="Không có dữ liệu" />
+            <el-empty :description="langStore.t('NoData')" />
           </div>
         </template>
-        <el-table-column prop="task_id" label="Mã công việc" width="140" sortable></el-table-column>
-        <el-table-column prop="description" label="Mô tả"></el-table-column>
-        <el-table-column prop="full_name" label="Người thực hiện" width="180" sortable></el-table-column>
-        <el-table-column prop="project_code" label="Mã dự án" width="120" sortable></el-table-column>
-        <el-table-column prop="start_date" label="Ngày bắt đầu" width="150" sortable>
+        <el-table-column prop="task_id" :label="langStore.t('JobCode')" sortable></el-table-column>
+        <el-table-column prop="description" :label="langStore.t('JobDescription')"></el-table-column>
+        <el-table-column prop="full_name" :label="langStore.t('HandlePerson')" width="180" sortable></el-table-column>
+        <el-table-column prop="project_code" :label="langStore.t('ProjectCode')" sortable></el-table-column>
+        <el-table-column prop="start_date" :label="langStore.t('StartDate')" width="150" sortable>
           <template #default="{ row }">
             {{ formatDate(row.start_date) }}
           </template>
         </el-table-column>
-        <el-table-column prop="end_date" label="Ngày kết thúc" width="150" sortable>
+        <el-table-column prop="end_date" :label="langStore.t('EndDate')" width="150" sortable>
           <template #default="{ row }">
             {{ formatDate(row.end_date) }}
           </template>
         </el-table-column>
-        <el-table-column prop="QTY" label="Số lượng" width="120" sortable></el-table-column>
-        <el-table-column prop="status" label="Trạng thái" width="120" sortable>
+        <el-table-column prop="QTY" :label="langStore.t('JobHours')" width="120" sortable></el-table-column>
+        <el-table-column prop="status" :label="langStore.t('JobStatus')" width="120" sortable>
           <template #default="{ row }">
             <el-tag :type="getStatusTagType(row.status)">
               {{ getTranslatedStatusLabel(row.status, taskStatuses) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Hành động" width="180">
+        <el-table-column prop="site" :label="langStore.t('JobArea')" width="120" sortable />
+        <el-table-column :label="langStore.t('JobAction')">
           <template #default="{ row }">
-            <el-button size="small" @click="editTask(row)" :icon="EditPen">Sửa</el-button>
-            <el-button size="small" type="danger" @click="confirmDeleteTask(row)" :icon="Delete">Xóa</el-button>
+            <el-button size="small" @click="editTask(row)" :icon="EditPen">{{ langStore.t('EditAct') }}</el-button>
+            <el-button size="small" type="danger" @click="confirmDeleteTask(row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -122,6 +123,10 @@
         @close="closeDialog"
       />
     </div>
+    <FileUploadDialog 
+      v-model="uploadDialogVisible"
+      @uploadSuccess="handleUploadSuccess"
+    />
   </div>
 </template>
 
@@ -130,11 +135,15 @@ import { Plus, UploadFilled, Search, EditPen, Delete, Printer } from "@element-p
 import TaskFormDialog from "../../components/dialog/TaskFormDialog.vue";
 import { useTaskData } from "../../composables/KHTC/useTaskData"; 
 import { useTaskActions } from "../../composables/KHTC/useTaskActions";
+import FileUploadDialog from "../../components/upload/FileUploadDialog.vue";
+import { ref } from "vue";
+import { useLanguageStore } from "../../stores/language";
 
 export default {
   name: "WorkManagmentKHTC",
   components: {
     TaskFormDialog,
+    FileUploadDialog,
   },
   setup() {
     const {
@@ -169,6 +178,20 @@ export default {
       confirmDeleteTask,
       closeDialog,
     } = useTaskActions(allTasks, paginatedTasks, dummyTasks);
+    
+    const langStore = useLanguageStore();
+
+    // Reactive variable to control display dialog upload
+    const uploadDialogVisible = ref(false);
+    // Function to open dialog upload file
+    const handleUploadFile = () => {
+      uploadDialogVisible.value = true;
+    }
+    // Function resolve after upload success
+    const handleUploadSuccess = () => {
+      // Callback fetch data function to update new data table
+      fetchDataAndInitialize();
+    }
 
     // Xử lý sự kiện phân trang (có thể giữ lại ở đây hoặc đưa vào composable riêng nếu phức tạp hơn)
     const handleSizeChange = (val) => {
@@ -178,10 +201,6 @@ export default {
 
     const handleCurrentChange = (val) => {
       currentPage.value = val;
-    };
-
-    const handleUploadFile = () => {
-      alert("Chức năng tải file lên sẽ được phát triển!");
     };
 
     const exportTask = () => {
@@ -224,7 +243,10 @@ export default {
       EditPen,
       Delete,
       Printer,
-      exportTask
+      exportTask,
+      handleUploadSuccess,
+      uploadDialogVisible,
+      langStore
     };
   },
 };
