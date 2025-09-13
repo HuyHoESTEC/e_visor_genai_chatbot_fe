@@ -79,6 +79,39 @@ export default {
   CreateProdutionOrdersProjects: 'Tạo lệnh sản xuất/dự án',
   workReport: 'Báo cáo công việc',
   ProductionStageManagement: 'Quản lý công đoạn sản xuất',
+
   Exit: 'Thoát',
-  Continue: 'Tiếp tục'
+  Continue: 'Tiếp tục',
+  UploadFileToServer: 'Tải File lên máy chủ',
+  FileUploading: 'Đang tải file lên...',
+  WorkUploading: 'Đang tải công việc...',
+  DataUploading: 'Đang tải dữ liệu...',
+  AddWork: 'Thêm công việc',
+  FileExport: 'Xuất File',
+  FilterBasedOnAssign: 'Lọc theo người thực hiện',
+  FilterBasedOnProjectCode: 'Lọc theo mã dự án',
+  FilterBasedOnStatus: 'Lọc theo trạng thái',
+  Uploading: 'Đang tải lên...',
+
+  JobCode: 'Mã công việc',
+  JobDescription: 'Mô tả',
+  HandlePerson: 'Người thực hiện',
+  ProjectCode: 'Mã dự án',
+  StartDate: 'Ngày bắt đầu',
+  EndDate: 'Ngày kết thúc',
+  JobHours: 'Số giờ',
+  JobStatus: 'Trạng thái',
+  JobArea: 'Khu vực',
+  JobAction: 'Hành động',
+
+  EditAct: 'Sửa',
+  DeleteAct: 'Xóa',
+  DestroyAct: 'Hủy',
+  UploadAct: 'Tải lên',
+  NoData: 'Không có dữ liệu',
+
+  ConfirmTheFileUpload: 'Bạn có chắc chắn muốn hủy tải file ?',
+  NotiLimitFileDisk: 'Dung lượng file không được vượt quá 5MB!',
+  PleaseSelectOneFileToUpload: 'Vui lòng chọn 1 file để tải lên.',
+  YouCanOnlySelectOnefileAtATime: 'Bạn chỉ có thể chọn 1 file tại 1 thời điểm.'
 };

@@ -130,7 +130,7 @@ export const uploadWorkManagementKHTCApi = async (payload, signal) => {
         const response = await axios.post(`${API_BASE_URL}/WorkManagement_Processing`, payload, {
             signal,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form-data'
             }
         });
         return response;

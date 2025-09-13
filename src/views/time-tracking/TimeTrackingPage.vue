@@ -32,7 +32,7 @@
             <span v-if="!isUploading">
               {{ langStore.t("UploadAllFiles") }}
             </span>
-            <span v-else>Đang tải lên...</span>
+            <span v-else>{{ langStore.t('Uploading') }}</span>
           </el-button>
         </div>
       </div>

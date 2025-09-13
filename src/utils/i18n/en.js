@@ -76,5 +76,40 @@ export default {
   KHTCWorkManagement: 'Work Management (Organizational Plan)',
   CreateProdutionOrdersProjects: 'Create Prodution Orders Projects',
   workReport: 'Work Report',
-  ProductionStageManagement: 'Production Stage Management'
+  ProductionStageManagement: 'Production Stage Management',
+
+  "Exit": "Exit",
+  "Continue": "Continue",
+  "UploadFileToServer": "Upload File to Server",
+  "FileUploading": "File is uploading...",
+  "WorkUploading": "Work is uploading...",
+  "DataUploading": "Data is uploading...",
+  "AddWork": "Add Work",
+  "FileExport": "Export File",
+  "FilterBasedOnAssign": "Filter by assignee",
+  "FilterBasedOnProjectCode": "Filter by project code",
+  "FilterBasedOnStatus": "Filter by status",
+  "Uploading": "Uploading...",
+
+  "JobCode": "Job Code",
+  "JobDescription": "Description",
+  "HandlePerson": "Assignee",
+  "ProjectCode": "Project Code",
+  "StartDate": "Start Date",
+  "EndDate": "End Date",
+  "JobHours": "Hours",
+  "JobStatus": "Status",
+  "JobArea": "Area",
+  "JobAction": "Action",
+
+  "EditAct": "Edit",
+  "DeleteAct": "Delete",
+  "DestroyAct": "Cancel",
+  "UploadAct": "Upload",
+  "NoData": "No Data",
+
+  "ConfirmTheFileUpload": "Are you sure you want to cancel the file upload?",
+  "NotiLimitFileDisk": "File size cannot exceed 5MB!",
+  "PleaseSelectOneFileToUpload": "Please select one file to upload.",
+  "YouCanOnlySelectOnefileAtATime": "You can only select one file at a time."
 };
