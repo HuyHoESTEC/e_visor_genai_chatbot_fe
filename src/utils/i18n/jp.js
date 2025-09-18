@@ -110,5 +110,15 @@ export default {
   "ConfirmTheFileUpload": "ファイルのアップロードをキャンセルしてもよろしいですか？",
   "NotiLimitFileDisk": "ファイルサイズは5MBを超えることはできません！",
   "PleaseSelectOneFileToUpload": "アップロードするファイルを1つ選択してください。",
-  "YouCanOnlySelectOnefileAtATime": "一度に選択できるファイルは1つだけです。"
+  "YouCanOnlySelectOnefileAtATime": "一度に選択できるファイルは1つだけです。",
+
+  "UpdateWorkloadSuccess": "業務の更新に成功しました！",
+  "AddWorkloadSuccess": "業務の追加に成功しました！",
+  "ConfirmDeleteWorkload": "この業務を削除してもよろしいですか",
+  "ConfirmDelete": "削除の確認",
+  "DeleteWorkloadSuccess": "業務の削除に成功しました！",
+  "ErrorOccurredWhenDeleted": "削除中にエラーが発生しました：",
+  "ErrorOccurredWhenUpdated": '更新中にエラーが発生しました:',
+  "ErrorOccurredWhenInserted": '新規追加中にエラーが発生しました:',
+  "CancelDelete": "削除をキャンセル"
 };

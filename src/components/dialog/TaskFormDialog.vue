@@ -43,6 +43,25 @@
         ></el-date-picker>
       </el-form-item>
 
+      <el-form-item label="Số giờ" prop="QTY">
+        <el-input 
+          v-model="formData.QTY"
+          type="number"
+          placeholder="Nhập số giờ làm việc"
+        />
+      </el-form-item>
+
+      <el-form-item label="Khu vực" prop="site">
+        <el-select v-model="formData.site" placeholder="Chọn khu vực làm việc" style="width: 100%;">
+          <el-option
+            v-for="site in sites"
+            :key="site.value"
+            :label="site.label"
+            :value="site.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
       <el-form-item label="Trạng thái" prop="status">
         <el-select v-model="formData.status" placeholder="Chọn trạng thái" style="width: 100%;">
           <el-option
@@ -87,6 +106,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    sites: {
+      type: Array,
+      default: () => []
+    },
   },
   emits: ['update:modelValue', 'save', 'close'], // Khai báo các sự kiện emit
 
@@ -130,9 +153,10 @@ export default {
         },
       ],
       QTY: [
-        { required: true, message: 'Số lượng không được để trống', trigger: 'blur' },
-        { type: 'number', message: 'Số lượng phải là số', trigger: 'blur' },
-        { min: 0, message: 'Số lượng không thể âm', trigger: 'blur' },
+        { required: true, message: 'Số lượng không được để trống', trigger: 'change' },
+      ],
+      site: [
+        { required: true, message: 'Khu vực làm việc không được để trống', trigger: 'change' },
       ],
       status: [
         { required: true, message: 'Trạng thái không được để trống', trigger: 'change' },
@@ -173,7 +197,7 @@ export default {
         start_date: '',
         end_date: '',
         QTY: 0,
-        status: 'pending',
+        status: 'Chờ xử lý',
       };
     }
 

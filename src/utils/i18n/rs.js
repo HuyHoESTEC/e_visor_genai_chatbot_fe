@@ -110,5 +110,15 @@ export default {
   "ConfirmTheFileUpload": "Вы уверены, что хотите отменить загрузку файла?",
   "NotiLimitFileDisk": "Размер файла не должен превышать 5 МБ!",
   "PleaseSelectOneFileToUpload": "Пожалуйста, выберите один файл для загрузки.",
-  "YouCanOnlySelectOnefileAtATime": "Вы можете выбрать только один файл за раз."
+  "YouCanOnlySelectOnefileAtATime": "Вы можете выбрать только один файл за раз.",
+
+  "UpdateWorkloadSuccess": "Рабочая нагрузка успешно обновлена!",
+  "AddWorkloadSuccess": "Рабочая нагрузка успешно добавлена!",
+  "ConfirmDeleteWorkload": "Вы уверены, что хотите удалить рабочую нагрузку",
+  "ConfirmDelete": "Подтвердить удаление",
+  "DeleteWorkloadSuccess": "Рабочая нагрузка успешно удалена!",
+  "ErrorOccurredWhenDeleted": "Произошла ошибка при удалении:",
+  "ErrorOccurredWhenUpdated": 'Произошла ошибка при обновлении:',
+  "ErrorOccurredWhenInserted": 'Произошла ошибка при добавлении:',
+  "CancelDelete": "Отменить удаление"
 };

@@ -15,6 +15,7 @@ const MENU_ITEMS = [
     routeName: "SummaryDashboard",
     isActive: false,
   },
+  // -----KHTC Department-----
   {
     name: "KHTC",
     label: "Kế hoạch tổ chức",
@@ -42,6 +43,7 @@ const MENU_ITEMS = [
       }
     ]
   },
+  // -----RnD Department-----
   {
     name: "RND",
     label: "Nghiên cứu và phát triển",
@@ -75,7 +77,7 @@ const MENU_ITEMS = [
       },
     ]
   },
-  // MESX
+  // -----WorkShop Department-----
   {
     name: "WorkShop",
     label: "WorkShop",
@@ -86,7 +88,7 @@ const MENU_ITEMS = [
     children: [
       {
         name: "WorkshopDashboard",
-        label: "WorkShop Dashboard",
+        label: "Thống kê WorkShop",
         routeName: "WorkshopDashboard",
         iconComponent: "Platform",
         isActive: false,
@@ -128,6 +130,29 @@ const MENU_ITEMS = [
           }
         ],
       },
+      {
+        name: "WarehouseManagement",
+        label: "Quản lý kho",
+        routeName: null,
+        isDropdown: true,
+        iconComponent: "Box",
+        children: [
+          {
+            name: "ImportWarehouse",
+            label: "Nhập kho",
+            routeName: "ImportWarehouseRoute",
+            iconComponent: "ShoppingCart",
+            isActive: false,
+          },
+          {
+            name: "ExportWarehouse",
+            label: "Xuất kho",
+            routeName: "ExportWarehouseRoute",
+            iconComponent: "Van",
+            isActive: false,
+          }
+        ]
+      }
       // {
       //   name: "QuanLySanXuat",
       //   label: "Quản lý sản xuất",

@@ -9,20 +9,19 @@ import ChatPage from "../views/main/ChatPage.vue";
 // import SettingsPage from "../views/main/SettingsPage.vue";
 // import ProfilePage from '../views/profile/ProfilePage.vue';
 // import { onAuthStateChanged, auth } from "../firebase";
-import MesxDashboard from "../views/MESX/mesxDashboard.vue";
+import MesxDashboard from "../views/WorkShop/mesxDashboard.vue";
 import WmsxDashboard from "../views/WMSX/wmsxDashboard.vue";
 import QmsxDashboard from "../views/QMSX/qmsxDashboard.vue";
 import MmsxDashboard from "../views/MMSX/mmsxDashboard.vue";
 import PmsxDashboard from "../views/PMSX/pmsxDashboard.vue";
 import TimeTrackingPage from "../views/time-tracking/TimeTrackingPage.vue";
 import SummaryDashboard from "../views/dashboard/SummaryDashboard.vue";
-import { ElMessageBox } from "element-plus";
 import RnDDashboard from "../views/RnD/RnDDashboard.vue";
 import RndWorkManagement from "../views/RnD/RndWorkManagement.vue";
 import WorkManagementKHTC from "../views/time-tracking/WorkManagementKHTC.vue";
-import CreateProdutionOrdersProjects from "../views/MESX/CreateProdutionOrdersProjects.vue";
+import CreateProdutionOrdersProjects from "../views/WorkShop/CreateProdutionOrdersProjects.vue";
 import RndWorkReport from "../views/RnD/RndWorkReport.vue";
-import ProductionStageManagement from "../views/MESX/ProductionStageManagement.vue";
+import ProductionStageManagement from "../views/WorkShop/ProductionStageManagement.vue";
 
 const routes = [
   {
@@ -91,17 +90,6 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/time-tracking',
-    name: 'TimeTracking',
-    component: TimeTrackingPage,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('../views/NotFoundPage.vue') // Lazy load 404 page
-  },
-  {
     path: '/summary-dashboard',
     name: 'SummaryDashboard',
     component: SummaryDashboard,
@@ -110,12 +98,20 @@ const routes = [
       titleKey: 'SummaryDashboard' 
     }
   },
+  // -----KHTC-----
   {
-    path: '/workshop-summary-dashboard',
-    name: 'WorkshopDashboard',
-    component: SummaryDashboard,
+    path: '/time-tracking',
+    name: 'TimeTracking',
+    component: TimeTrackingPage,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/work-management-khtc',
+    name: 'KHTCWorkManagement',
+    component: WorkManagementKHTC,
+    meta: { requiresAuth: true }
+  },
+  // -----RND-----
   {
     path: '/rnd-dashboard',
     name: 'RndDashboard',
@@ -129,21 +125,22 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/create-production-orders-project',
-    name: 'CreateProdutionOrdersProjects',
-    component: CreateProdutionOrdersProjects,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/work-management-khtc',
-    name: 'KHTCWorkManagement',
-    component: WorkManagementKHTC,
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/rnd-work-report',
     name: 'RndWorkReport',
     component: RndWorkReport,
+    meta: { requiresAuth: true }
+  },
+  // -----WorkShop-----
+  {
+    path: '/workshop-summary-dashboard',
+    name: 'WorkshopDashboard',
+    component: SummaryDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/create-production-orders-project',
+    name: 'CreateProdutionOrdersProjects',
+    component: CreateProdutionOrdersProjects,
     meta: { requiresAuth: true }
   },
   {
@@ -151,7 +148,25 @@ const routes = [
     name: 'ProductionStageManagement',
     component: ProductionStageManagement,
     meta: { requiresAuth: true }
-  }
+  },
+  {
+    path: '/import-warehouse',
+    name: 'ImportWarehouseRoute',
+    component: () => import('../views/NotFoundPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/export-warehouse',
+    name: 'ExportWarehouseRoute',
+    component: () => import('../views/NotFoundPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  // -----NotFound-----
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFoundPage.vue') // Lazy load 404 page
+  },
 ];
 
 const router = createRouter({

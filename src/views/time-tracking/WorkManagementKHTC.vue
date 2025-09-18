@@ -71,7 +71,7 @@
             <el-empty :description="langStore.t('NoData')" />
           </div>
         </template>
-        <el-table-column prop="task_id" :label="langStore.t('JobCode')" sortable></el-table-column>
+        <el-table-column prop="task_id" :label="langStore.t('JobCode')" sortable width="100"></el-table-column>
         <el-table-column prop="description" :label="langStore.t('JobDescription')"></el-table-column>
         <el-table-column prop="full_name" :label="langStore.t('HandlePerson')" width="180" sortable></el-table-column>
         <el-table-column prop="project_code" :label="langStore.t('ProjectCode')" sortable></el-table-column>
@@ -85,16 +85,22 @@
             {{ formatDate(row.end_date) }}
           </template>
         </el-table-column>
-        <el-table-column prop="QTY" :label="langStore.t('JobHours')" width="120" sortable></el-table-column>
-        <el-table-column prop="status" :label="langStore.t('JobStatus')" width="120" sortable>
+        <el-table-column prop="QTY" :label="langStore.t('JobHours')" width="100" sortable></el-table-column>
+        <el-table-column prop="status" :label="langStore.t('JobStatus')" width="150" sortable>
           <template #default="{ row }">
-            <el-tag :type="getStatusTagType(row.status)">
+            <el-tag :type="getStatusTagType(row.status)" style="font-weight: bolder;">
               {{ getTranslatedStatusLabel(row.status, taskStatuses) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="site" :label="langStore.t('JobArea')" width="120" sortable />
-        <el-table-column :label="langStore.t('JobAction')">
+        <el-table-column prop="site" :label="langStore.t('JobArea')" sortable>
+          <template #default="{ row }">
+            <el-tag :type="getSiteTagType(row.site)" style="font-weight: bolder;">
+              {{ getTranslatedStatusLabel(row.site, taskSites) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="langStore.t('JobAction')" width="auto">
           <template #default="{ row }">
             <el-button size="small" @click="editTask(row)" :icon="EditPen">{{ langStore.t('EditAct') }}</el-button>
             <el-button size="small" type="danger" @click="confirmDeleteTask(row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
@@ -119,6 +125,7 @@
         :taskToEdit="currentTask"
         :users="dummyTasks"
         :statuses="taskStatuses"
+        :sites="taskSites"
         @save="saveTask"
         @close="closeDialog"
       />
@@ -146,6 +153,8 @@ export default {
     FileUploadDialog,
   },
   setup() {
+    const langStore = useLanguageStore();
+
     const {
       allTasks,
       isLoading,
@@ -163,7 +172,8 @@ export default {
       filteredTasks,
       paginatedTasks,
       applyFilters,
-      emptyData
+      emptyData,
+      taskSites
     } = useTaskData();
 
     const {
@@ -177,9 +187,8 @@ export default {
       saveTask,
       confirmDeleteTask,
       closeDialog,
-    } = useTaskActions(allTasks, paginatedTasks, dummyTasks);
-    
-    const langStore = useLanguageStore();
+      getSiteTagType,
+    } = useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, fetchDataAndInitialize);
 
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
@@ -246,7 +255,9 @@ export default {
       exportTask,
       handleUploadSuccess,
       uploadDialogVisible,
-      langStore
+      langStore,
+      taskSites,
+      getSiteTagType
     };
   },
 };
