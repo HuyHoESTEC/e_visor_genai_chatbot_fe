@@ -20,11 +20,28 @@ export function useTaskData() {
   const pageSize = ref(10);
 
   // --- Dữ liệu tĩnh hoặc được tải động cho các bộ lọc ---
+  /**
+   * 0 => Pending / Plan status
+   * 1 => Todo status
+   * 2 => In Progress status
+   * 3 => Complete / Done status
+   * 4 => Cancel status
+   */
   const taskStatuses = [
-    { value: 'pending', label: 'Chờ xử lý' },
-    { value: 'in_progress', label: 'Đang tiến hành' },
-    { value: 'completed', label: 'Hoàn thành' },
-    { value: 'cancelled', label: 'Đã hủy' },
+    { value: 0, label: 'Chờ xử lý' },
+    { value: 1, label: 'Lên kế hoạch' },
+    { value: 2, label: 'Đang tiến hành' },
+    { value: 3, label: 'Hoàn thành' },
+    { value: 4, label: 'Đã hủy' },
+  ];
+
+  /**
+   * S => Inside
+   * V => Outside
+   */
+  const taskSites = [
+    { value: 'S', label: 'Văn phòng / Nhà máy' },
+    { value: 'V', label: 'Ngoài văn phòng / nhà máy' }
   ];
 
   // Dummy users cho dialog, sẽ được cập nhật từ dữ liệu thực tế
@@ -159,6 +176,7 @@ export function useTaskData() {
     filteredTasks, // filteredTasks giờ là một ref
     paginatedTasks,
     applyFilters,
-    emptyData // emptyData giờ là một computed property
+    emptyData, // emptyData giờ là một computed property
+    taskSites,
   };
 }

@@ -109,5 +109,15 @@ export default {
   "ConfirmTheFileUpload": "파일 업로드를 취소하시겠습니까?",
   "NotiLimitFileDisk": "파일 크기는 5MB를 초과할 수 없습니다!",
   "PleaseSelectOneFileToUpload": "업로드할 파일을 하나 선택하십시오.",
-  "YouCanOnlySelectOnefileAtATime": "한 번에 하나의 파일만 선택할 수 있습니다."
+  "YouCanOnlySelectOnefileAtATime": "한 번에 하나의 파일만 선택할 수 있습니다.",
+
+  "UpdateWorkloadSuccess": "업무가 성공적으로 업데이트되었습니다!",
+  "AddWorkloadSuccess": "업무가 성공적으로 추가되었습니다!",
+  "ConfirmDeleteWorkload": "이 업무를 삭제하시겠습니까",
+  "ConfirmDelete": "삭제 확인",
+  "DeleteWorkloadSuccess": "업무가 성공적으로 삭제되었습니다!",
+  "ErrorOccurredWhenDeleted": "삭제 중 오류가 발생했습니다:",
+  "ErrorOccurredWhenUpdated": '업데이트 중 오류가 발생했습니다:',
+  "ErrorOccurredWhenInserted": '새로 추가하는 중 오류가 발생했습니다:',
+  "CancelDelete": "삭제 취소"
 };

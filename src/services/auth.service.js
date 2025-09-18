@@ -140,9 +140,9 @@ export const uploadWorkManagementKHTCApi = async (payload, signal) => {
     }
 }
 
-export const editWorkManagementKHTCApi = async (payload, signal) => {
+export const actionFormWorkManagementKHTCApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/Edit_WorkManagement`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WorkManagement_DML`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'

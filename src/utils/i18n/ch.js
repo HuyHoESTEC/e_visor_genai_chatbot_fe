@@ -109,5 +109,15 @@ export default {
   "ConfirmTheFileUpload": "您确定要取消文件上传吗？",
   "NotiLimitFileDisk": "文件大小不能超过5MB！",
   "PleaseSelectOneFileToUpload": "请选择一个文件进行上传。",
-  "YouCanOnlySelectOnefileAtATime": "您一次只能选择一个文件。"
+  "YouCanOnlySelectOnefileAtATime": "您一次只能选择一个文件。",
+
+  "UpdateWorkloadSuccess": "工作量更新成功！",
+  "AddWorkloadSuccess": "工作量添加成功！",
+  "ConfirmDeleteWorkload": "您确定要删除工作量吗",
+  "ConfirmDelete": "确认删除",
+  "DeleteWorkloadSuccess": "工作量删除成功！",
+  "ErrorOccurredWhenDeleted": "删除时发生错误：",
+  "ErrorOccurredWhenUpdated": '更新时出错:',
+  "ErrorOccurredWhenInserted": '添加时出错:',
+  "CancelDelete": "取消删除"
 };

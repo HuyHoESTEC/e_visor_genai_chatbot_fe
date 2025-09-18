@@ -109,5 +109,15 @@ export default {
   "ConfirmTheFileUpload": "Êtes-vous sûr de vouloir annuler le téléchargement du fichier ?",
   "NotiLimitFileDisk": "La taille du fichier ne peut pas dépasser 5 Mo !",
   "PleaseSelectOneFileToUpload": "Veuillez sélectionner un fichier à télécharger.",
-  "YouCanOnlySelectOnefileAtATime": "Vous ne pouvez sélectionner qu'un seul fichier à la fois."
+  "YouCanOnlySelectOnefileAtATime": "Vous ne pouvez sélectionner qu'un seul fichier à la fois.",
+
+  "UpdateWorkloadSuccess": "Charge de travail mise à jour avec succès !",
+  "AddWorkloadSuccess": "Charge de travail ajoutée avec succès !",
+  "ConfirmDeleteWorkload": "Êtes-vous sûr de vouloir supprimer la charge de travail",
+  "ConfirmDelete": "Confirmer la suppression",
+  "DeleteWorkloadSuccess": "Charge de travail supprimée avec succès !",
+  "ErrorOccurredWhenDeleted": "Une erreur est survenue lors de la suppression:",
+  "ErrorOccurredWhenUpdated": 'Une erreur est survenue lors de la mise à jour:',
+  "ErrorOccurredWhenInserted": "Une erreur est survenue lors de l'ajout:",
+  "CancelDelete": "Annuler la suppression"
 };

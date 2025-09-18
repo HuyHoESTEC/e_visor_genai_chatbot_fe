@@ -93,7 +93,7 @@ export default {
   FilterBasedOnStatus: 'Lọc theo trạng thái',
   Uploading: 'Đang tải lên...',
 
-  JobCode: 'Mã công việc',
+  JobCode: 'Mã CV',
   JobDescription: 'Mô tả',
   HandlePerson: 'Người thực hiện',
   ProjectCode: 'Mã dự án',
@@ -113,5 +113,15 @@ export default {
   ConfirmTheFileUpload: 'Bạn có chắc chắn muốn hủy tải file ?',
   NotiLimitFileDisk: 'Dung lượng file không được vượt quá 5MB!',
   PleaseSelectOneFileToUpload: 'Vui lòng chọn 1 file để tải lên.',
-  YouCanOnlySelectOnefileAtATime: 'Bạn chỉ có thể chọn 1 file tại 1 thời điểm.'
+  YouCanOnlySelectOnefileAtATime: 'Bạn chỉ có thể chọn 1 file tại 1 thời điểm.',
+
+  UpdateWorkloadSuccess: 'Cập nhật công việc thành công!',
+  AddWorkloadSuccess: 'Thêm công việc thành công!',
+  ConfirmDeleteWorkload: 'Bạn có chắc chắn muốn xóa công việc',
+  ConfirmDelete: 'Xác nhận xóa',
+  DeleteWorkloadSuccess: 'Xóa công việc thành công!',
+  ErrorOccurredWhenDeleted: 'Đã xảy ra lỗi khi xóa:',
+  ErrorOccurredWhenUpdated: 'Đã xảy ra lỗi khi cập nhật:',
+  ErrorOccurredWhenInserted: 'Đã xảy ra lỗi khi thêm mới:',
+  CancelDelete: 'Hủy xóa',
 };

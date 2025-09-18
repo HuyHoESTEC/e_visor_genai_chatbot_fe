@@ -111,5 +111,15 @@ export default {
   "ConfirmTheFileUpload": "Are you sure you want to cancel the file upload?",
   "NotiLimitFileDisk": "File size cannot exceed 5MB!",
   "PleaseSelectOneFileToUpload": "Please select one file to upload.",
-  "YouCanOnlySelectOnefileAtATime": "You can only select one file at a time."
+  "YouCanOnlySelectOnefileAtATime": "You can only select one file at a time.",
+
+  "UpdateWorkloadSuccess": "Workload updated successfully!",
+  "AddWorkloadSuccess": "Workload added successfully!",
+  "ConfirmDeleteWorkload": "Are you sure you want to delete the workload",
+  "ConfirmDelete": "Confirm Deletion",
+  "DeleteWorkloadSuccess": "Workload deleted successfully!",
+  "ErrorOccurredWhenDeleted": "An error occurred while deleting:",
+  "ErrorOccurredWhenUpdated": 'An error occurred while updating:',
+  "ErrorOccurredWhenInserted": 'An error occurred while inserting:',
+  "CancelDelete": "Cancel Deletion",
 };
