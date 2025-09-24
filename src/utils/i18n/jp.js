@@ -120,5 +120,17 @@ export default {
   "ErrorOccurredWhenDeleted": "削除中にエラーが発生しました：",
   "ErrorOccurredWhenUpdated": '更新中にエラーが発生しました:',
   "ErrorOccurredWhenInserted": '新規追加中にエラーが発生しました:',
-  "CancelDelete": "削除をキャンセル"
+  "CancelDelete": "削除をキャンセル",
+
+  "WarehouseDashboardRoute": "倉庫ダッシュボード",
+  "ImportWarehouseRoute": "入荷管理",
+  "ExportWarehouseRoute": "出荷管理",
+
+  "HourNumberShouldBeNumber": "時間は数値でなければなりません",
+  "TheNumberOfHoursCannotBeNegative": "時間はマイナスにできません",
+  "TheEndDateMustBeAfterTheBeginningDate": '終了日は開始日より後でなければなりません',
+  "PleaseWaitUntilTheFileIsFinishedUploading": 'ファイルのアップロードが完了するまでお待ちください',
+  "FileUploadedSuccessfully": 'ファイルが正常にアップロードされました',
+  'DetailAct': '詳細',
+  'CloseBtn': '閉じる',
 };

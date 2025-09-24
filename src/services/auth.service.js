@@ -80,7 +80,7 @@ export const fileUploadApi = async (payload, signal) => {
         throw new Error(`${errorMessage}`);
     }
 }
-
+// -----Change Password API-----
 export const changePassword = async (payload, signal) => {
     try{
         const response = await axios.post(`${API_BASE_URL}/ChangePassword`, payload, {
@@ -95,7 +95,7 @@ export const changePassword = async (payload, signal) => {
         throw new Error(`${errorMessage}`);
     }
 }
-
+// -----Work Management Uploading API-----
 export const loadWorkManagementKHTCApi = async (payload) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WorkManagement_View`, payload, {
@@ -139,7 +139,7 @@ export const uploadWorkManagementKHTCApi = async (payload, signal) => {
         throw new Error(`${errorMessage}`);
     }
 }
-
+// -----Work Management API-----
 export const actionFormWorkManagementKHTCApi = async (payload, signal) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WorkManagement_DML`, payload, {
@@ -188,5 +188,41 @@ export const getDocumentByUserIdApi = async (payload, signal) => {
         }
         const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định khi lấy tài liệu theo user_id";
         throw new Error(`API lấy tài liệu theo user_id lỗi: ${errorMessage}`);
+    }
+}
+// -----Warehouse Management API-----
+export const getWarehouseManagementApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WarehouseManagement_View`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (e) {
+        if (axios.isCancel(e)) {
+            throw new Error("Yêu cầu API lấy tài liệu đã bị hủy.");
+        }
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định khi lấy tài liệu";
+        throw new Error(`API lấy tài liệu lỗi: ${errorMessage}`);
+    }
+}
+
+export const updateGoodsInformationInTheWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WarehouseItem_Update`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (e) {
+        if (axios.isCancel(e)) {
+            throw new Error("Yêu cầu API cập nhật thông tin đã bị hủy");
+        }
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`Lỗi API cập nhật thông tin: ${errorMessage}`);
     }
 }

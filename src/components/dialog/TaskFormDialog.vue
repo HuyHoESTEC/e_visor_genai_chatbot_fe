@@ -9,11 +9,28 @@
       <el-form-item label="Người thực hiện" prop="full_name">
         <el-select v-model="formData.full_name" placeholder="Chọn người thực hiện" style="width: 100%;">
           <el-option
-            v-for="user in users"
+            v-for="user in assignerList"
             :key="user.id"
             :label="user.name"
             :value="user.id"
           ></el-option>
+          <template #footer>
+            <el-button v-if="!isAdding" text bg size="small" v-on:click="onAddOption">
+              Thêm người thực hiện mới
+            </el-button>
+            <template v-else>
+              <el-input
+                v-model="optionName"
+                class="option-input"
+                placeholder="Nhập tên người thực hiện"
+                size="small"
+              />
+              <el-button type="primary" size="small" v-on:click="onConfirm">
+                Thêm
+              </el-button>
+              <el-button size="small" v-on:click="clearAction">Hủy</el-button>
+            </template>
+          </template>
         </el-select>
       </el-form-item>
       <el-form-item label="Mô tả" prop="description">
@@ -48,6 +65,8 @@
           v-model="formData.QTY"
           type="number"
           placeholder="Nhập số giờ làm việc"
+          :min="0"
+          :max="20"
         />
       </el-form-item>
 
@@ -121,6 +140,33 @@ export default {
     // Computed property để xác định chế độ chỉnh sửa hay thêm mới
     const isEditing = computed(() => !!props.taskToEdit && props.taskToEdit.task_id !== '');
 
+    const isAdding = ref(false);
+    const optionName = ref('');
+    const addedUser = ref([]);
+    const assignerList = computed(() => {
+      return [...props.users, ...addedUser.value];
+    });
+    
+    const onAddOption = () => {
+      isAdding.value = true;
+    };
+
+    const onConfirm = () => {
+      if (optionName.value) {
+        addedUser.value.push({
+          id: optionName.value,
+          name: optionName.value,
+        })
+        
+        clearAction();
+      }
+    };
+
+    const clearAction = () => {
+      optionName.value = '';
+      isAdding.value = false;
+    };
+
     // Quy tắc kiểm tra hợp lệ cho form
     const rules = {
       task_id: [
@@ -154,6 +200,20 @@ export default {
       ],
       QTY: [
         { required: true, message: 'Số lượng không được để trống', trigger: 'change' },
+        {
+          validator: (rule, value, callback) => {
+            // Convert value to number, check
+            const numericValue = Number(value);
+            if (isNaN(numericValue)) {
+              callback(new Error('Số giờ phải là số'));
+            } else if (numericValue < 0) {
+              callback(new Error('Số giờ không thể là số âm!'));
+            } else {
+              callback(); // Valid
+            }
+          },
+          trigger: 'blur' // Activate when users leave the input box
+        }
       ],
       site: [
         { required: true, message: 'Khu vực làm việc không được để trống', trigger: 'change' },
@@ -233,6 +293,13 @@ export default {
       isEditing,
       handleSubmit,
       handleClose,
+      isAdding,
+      optionName,
+      addedUser,
+      assignerList,
+      onAddOption,
+      onConfirm,
+      clearAction,
     };
   },
 };
@@ -242,5 +309,9 @@ export default {
 .dialog-footer {
   text-align: right;
   display: block;
+}
+.option-input {
+  width: 100%;
+  margin-bottom: 8px;
 }
 </style>

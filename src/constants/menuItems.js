@@ -86,50 +86,50 @@ const MENU_ITEMS = [
     isActive: false,
     isDropdown: true,
     children: [
-      {
-        name: "WorkshopDashboard",
-        label: "Thống kê WorkShop",
-        routeName: "WorkshopDashboard",
-        iconComponent: "Platform",
-        isActive: false,
-      },
-      {
-        name: "ProjectAndWorkOrderManagement",
-        label: "Quản lý kế hoạch/dự án",
-        routeName: null,
-        isDropdown: true,
-        iconComponent: "Files",
-        children: [
-          {
-            name: "CreateProdutionOrdersProjects",
-            label: "Tạo lệnh sản xuất/dự án",
-            routeName: "CreateProdutionOrdersProjects",
-            iconComponent: "BottomRight",
-            isActive: false,
-          },
-          {
-            name: "WorkManagement",
-            label: "Quản lý công việc",
-            routeName: "WorkManagement",
-            iconComponent: "BottomRight",
-            isActive: false,
-          },
-          {
-            name: "DigitalDocumentManagement",
-            label: "Quản lý tài liệu kỹ thuật số",
-            routeName: "DigitalDocumentManagement",
-            iconComponent: "BottomRight",
-            isActive: false,
-          },
-          {
-            name: "ProductionStageManagement",
-            label: "Quản lý công đoạn sản xuất",
-            routeName: "ProductionStageManagement",
-            iconComponent: "BottomRight",
-            isActive: false,
-          }
-        ],
-      },
+      // {
+      //   name: "WorkshopDashboard",
+      //   label: "Thống kê WorkShop",
+      //   routeName: "WorkshopDashboard",
+      //   iconComponent: "Platform",
+      //   isActive: false,
+      // },
+      // {
+      //   name: "ProjectAndWorkOrderManagement",
+      //   label: "Quản lý kế hoạch/dự án",
+      //   routeName: null,
+      //   isDropdown: true,
+      //   iconComponent: "Files",
+      //   children: [
+      //     {
+      //       name: "CreateProdutionOrdersProjects",
+      //       label: "Tạo lệnh sản xuất/dự án",
+      //       routeName: "CreateProdutionOrdersProjects",
+      //       iconComponent: "BottomRight",
+      //       isActive: false,
+      //     },
+      //     {
+      //       name: "WorkManagement",
+      //       label: "Quản lý công việc",
+      //       routeName: "WorkManagement",
+      //       iconComponent: "BottomRight",
+      //       isActive: false,
+      //     },
+      //     {
+      //       name: "DigitalDocumentManagement",
+      //       label: "Quản lý tài liệu kỹ thuật số",
+      //       routeName: "DigitalDocumentManagement",
+      //       iconComponent: "BottomRight",
+      //       isActive: false,
+      //     },
+      //     {
+      //       name: "ProductionStageManagement",
+      //       label: "Quản lý công đoạn sản xuất",
+      //       routeName: "ProductionStageManagement",
+      //       iconComponent: "BottomRight",
+      //       isActive: false,
+      //     }
+      //   ],
+      // },
       {
         name: "WarehouseManagement",
         label: "Quản lý kho",
@@ -137,6 +137,13 @@ const MENU_ITEMS = [
         isDropdown: true,
         iconComponent: "Box",
         children: [
+          {
+            name: "WarehouseDashboard",
+            label: "Thống kê",
+            routeName: "WarehouseDashboardRoute",
+            iconComponent: "List",
+            isActive: false,
+          },
           {
             name: "ImportWarehouse",
             label: "Nhập kho",
@@ -1014,13 +1021,13 @@ const MENU_ITEMS = [
   //     },
   //   ],
   // },
-  {
-    name: "chat",
-    label: "ESTEC AI",
-    iconComponent: "ChatLineSquare",
-    routeName: "Chat",
-    isActive: false,
-  },
+  // {
+  //   name: "chat",
+  //   label: "ESTEC AI",
+  //   iconComponent: "ChatLineSquare",
+  //   routeName: "Chat",
+  //   isActive: false,
+  // },
 ];
 
 export { MENU_ITEMS };

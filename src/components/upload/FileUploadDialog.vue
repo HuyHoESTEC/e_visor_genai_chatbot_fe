@@ -45,6 +45,7 @@ import {
   ElIcon,
   ElMessage,
   ElMessageBox,
+  
   ElUpload,
 } from "element-plus";
 import { useLanguageStore } from "../../stores/language";
@@ -105,20 +106,36 @@ export default {
         ElMessage.error(langStore.t('NotiLimitFileDisk'));
         return;
       }
+      isUploading.value = true;
+      try {
+        // Call service and transfer userId receive from props
+        const result = await uploadFile(file);
 
-      // Call service and transfer userId receive from props
-      const result = await uploadFile(file);
-
-      if (result) {
-        emit("uploadSuccess");
-        handleClose();
+        if (result) {
+          emit("uploadSuccess");
+          ElMessage.success(langStore.t('FileUploadedSuccessfully'));
+          closeDialog();
+        }
+      } catch (e) {
+        ElMessage.error(`Lỗi khi tải lên tệp: ${e.message}`);
+      } finally {
+        isUploading.value = false;
       }
     };
 
+    const closeDialog = () => {
+      emit("update:modelValue", false);
+    };
+
     const handleClose = () => {
+      if (isUploading.value) {
+        ElMessage.warning(langStore.t('PleaseWaitUntilTheFileIsFinishedUploading'));
+
+        return;
+      }
       ElMessageBox.confirm(langStore.t('ConfirmTheFileUpload'))
         .then(() => {
-          emit("update:modelValue", false);
+          closeDialog();
         })
         .catch(() => {
           // do nothing
@@ -135,6 +152,7 @@ export default {
       submitUpload,
       handleClose,
       isUploading,
+      closeDialog,
     };
   },
 };
