@@ -119,5 +119,17 @@ export default {
   "ErrorOccurredWhenDeleted": "삭제 중 오류가 발생했습니다:",
   "ErrorOccurredWhenUpdated": '업데이트 중 오류가 발생했습니다:',
   "ErrorOccurredWhenInserted": '새로 추가하는 중 오류가 발생했습니다:',
-  "CancelDelete": "삭제 취소"
+  "CancelDelete": "삭제 취소",
+
+  "WarehouseDashboardRoute": "창고 대시보드",
+  "ImportWarehouseRoute": "입고 관리",
+  "ExportWarehouseRoute": "출고 관리",
+
+  "HourNumberShouldBeNumber": "시간은 숫자여야 합니다",
+  "TheNumberOfHoursCannotBeNegative": "시간은 음수일 수 없습니다",
+  "TheEndDateMustBeAfterTheBeginningDate": "종료일은 시작일보다 늦어야 합니다",
+  "PleaseWaitUntilTheFileIsFinishedUploading": "파일 업로드가 완료될 때까지 기다려 주세요",
+  "FileUploadedSuccessfully": "파일이 성공적으로 업로드되었습니다",
+  "DetailAct": "상세",
+  "CloseBtn": "닫기",
 };

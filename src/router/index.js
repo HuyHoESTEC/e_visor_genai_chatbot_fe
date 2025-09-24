@@ -22,6 +22,9 @@ import WorkManagementKHTC from "../views/time-tracking/WorkManagementKHTC.vue";
 import CreateProdutionOrdersProjects from "../views/WorkShop/CreateProdutionOrdersProjects.vue";
 import RndWorkReport from "../views/RnD/RndWorkReport.vue";
 import ProductionStageManagement from "../views/WorkShop/ProductionStageManagement.vue";
+import WarehouseManagementDashboard from "../views/WorkShop/Warehouse/WarehouseManagementDashboard.vue";
+import ImportedGoodsManagment from "../views/WorkShop/Warehouse/ImportedGoodsManagment.vue";
+import ExportedGoodsManagement from "../views/WorkShop/Warehouse/ExportedGoodsManagement.vue";
 
 const routes = [
   {
@@ -150,15 +153,21 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/warehouse-dashboard',
+    name: 'WarehouseDashboardRoute',
+    component: WarehouseManagementDashboard,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/import-warehouse',
     name: 'ImportWarehouseRoute',
-    component: () => import('../views/NotFoundPage.vue'),
+    component: ImportedGoodsManagment,
     meta: { requiresAuth: true }
   },
   {
     path: '/export-warehouse',
     name: 'ExportWarehouseRoute',
-    component: () => import('../views/NotFoundPage.vue'),
+    component: ExportedGoodsManagement,
     meta: { requiresAuth: true }
   },
   // -----NotFound-----

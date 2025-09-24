@@ -124,4 +124,16 @@ export default {
   ErrorOccurredWhenUpdated: 'Đã xảy ra lỗi khi cập nhật:',
   ErrorOccurredWhenInserted: 'Đã xảy ra lỗi khi thêm mới:',
   CancelDelete: 'Hủy xóa',
+
+  WarehouseDashboardRoute: 'Thống kê vật tư trong kho',
+  ImportWarehouseRoute: 'Quản lý nhập kho',
+  ExportWarehouseRoute: 'Quản lý xuất kho',
+
+  HourNumberShouldBeNumber: 'Số giờ phải là số',
+  TheNumberOfHoursCannotBeNegative: 'Số giờ không thể là số âm!',
+  TheEndDateMustBeAfterTheBeginningDate: 'Ngày kết thúc phải sau ngày bắt đầu',
+  PleaseWaitUntilTheFileIsFinishedUploading: 'Vui lòng đợi cho đến khi tải lên tài liệu hoàn thành',
+  FileUploadedSuccessfully: 'Tải lên tệp thành công',
+  DetailAct: 'Chi tiết',
+  CloseBtn: 'Đóng',
 };

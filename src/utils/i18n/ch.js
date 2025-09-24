@@ -119,5 +119,17 @@ export default {
   "ErrorOccurredWhenDeleted": "删除时发生错误：",
   "ErrorOccurredWhenUpdated": '更新时出错:',
   "ErrorOccurredWhenInserted": '添加时出错:',
-  "CancelDelete": "取消删除"
+  "CancelDelete": "取消删除",
+
+  "WarehouseDashboardRoute": "仓库仪表板",
+  "ImportWarehouseRoute": "进货管理",
+  "ExportWarehouseRoute": "出货管理",
+
+  "HourNumberShouldBeNumber": "小时数必须为数字",
+  "TheNumberOfHoursCannotBeNegative": "小时数不能为负数",
+  "TheEndDateMustBeAfterTheBeginningDate": "结束日期必须在开始日期之后",
+  "PleaseWaitUntilTheFileIsFinishedUploading": "请等待文件上传完成",
+  "FileUploadedSuccessfully": "文件上传成功",
+  "DetailAct": '详情',
+  "CloseBtn": "关闭",
 };

@@ -122,4 +122,16 @@ export default {
   "ErrorOccurredWhenUpdated": 'An error occurred while updating:',
   "ErrorOccurredWhenInserted": 'An error occurred while inserting:',
   "CancelDelete": "Cancel Deletion",
+
+  "WarehouseDashboardRoute": 'Warehouse dashboard',
+  "ImportWarehouseRoute": 'Import goods management',
+  "ExportWarehouseRoute": 'Export goods management',
+
+  "HourNumberShouldBeNumber": 'Hour number should be number',
+  "TheNumberOfHoursCannotBeNegative": 'The number of hours can not be negative',
+  "TheEndDateMustBeAfterTheBeginningDate": 'The end date must be after the beginning date',
+  "PleaseWaitUntilTheFileIsFinishedUploading": 'Please wait until the file is finished uploading',
+  "FileUploadedSuccessfully": 'File uploaded successfully',
+  "DetailAct": 'Detail',
+  "CloseBtn": 'Close',
 };

@@ -119,5 +119,17 @@ export default {
   "ErrorOccurredWhenDeleted": "Une erreur est survenue lors de la suppression:",
   "ErrorOccurredWhenUpdated": 'Une erreur est survenue lors de la mise à jour:',
   "ErrorOccurredWhenInserted": "Une erreur est survenue lors de l'ajout:",
-  "CancelDelete": "Annuler la suppression"
+  "CancelDelete": "Annuler la suppression",
+
+  "WarehouseDashboardRoute": "Tableau de bord de l'entrepôt",
+  "ImportWarehouseRoute": "Gestion des importations de marchandises",
+  "ExportWarehouseRoute": "Gestion des exportations de marchandises",
+
+  "ourNumberShouldBeNumber": "Le nombre d'heures doit être un nombre",
+  "TheNumberOfHoursCannotBeNegative": "Le nombre d'heures ne peut pas être un nombre négatif",
+  "TheEndDateMustBeAfterTheBeginningDate": "La date de fin doit être postérieure à la date de début",
+  "PleaseWaitUntilTheFileIsFinishedUploading": "Veuillez attendre la fin du téléchargement du fichier",
+  "FileUploadedSuccessfully": 'Fichier téléchargé avec succès',
+  'DetailAct': 'Détails',
+  'CloseBtn': 'Fermer',
 };

@@ -120,5 +120,17 @@ export default {
   "ErrorOccurredWhenDeleted": "Произошла ошибка при удалении:",
   "ErrorOccurredWhenUpdated": 'Произошла ошибка при обновлении:',
   "ErrorOccurredWhenInserted": 'Произошла ошибка при добавлении:',
-  "CancelDelete": "Отменить удаление"
+  "CancelDelete": "Отменить удаление",
+
+  "WarehouseDashboardRoute": "Панель управления складом",
+  "ImportWarehouseRoute": "Управление импортом товаров",
+  "ExportWarehouseRoute": "Управление экспортом товаров",
+
+  "HourNumberShouldBeNumber": "Количество часов должно быть числом",
+  "TheNumberOfHoursCannotBeNegative": "Количество часов не может быть отрицательным числом",
+  "TheEndDateMustBeAfterTheBeginningDate": "Дата окончания должна быть позже даты начала",
+  "PleaseWaitUntilTheFileIsFinishedUploading": "Пожалуйста, дождитесь завершения загрузки файла",
+  "FileUploadedSuccessfully": "Файл успешно загружен",
+  "DetailAct": "Подробнее",
+  "CloseBtn": "Закрыть",
 };
