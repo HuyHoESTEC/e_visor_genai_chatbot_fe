@@ -136,4 +136,6 @@ export default {
   FileUploadedSuccessfully: 'Tải lên tệp thành công',
   DetailAct: 'Chi tiết',
   CloseBtn: 'Đóng',
+
+  BOMFileUpload: 'Tải lên file BOM'
 };

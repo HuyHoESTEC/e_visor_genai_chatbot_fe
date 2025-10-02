@@ -24,12 +24,12 @@
                         <el-dropdown>
                             <el-button>
                                 Tùy chọn
-                                <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                                <el-icon class="el-icon--right" :icon="ArrowDown" />
                             </el-button>
                             <template #dropdown>
                                 <el-dropdown-menu>
-                                    <el-dropdown-item>Option 1</el-dropdown-item>
-                                    <el-dropdown-item>Option 2</el-dropdown-item>
+                                    <el-dropdown-item>Scan here</el-dropdown-item>
+                                    <el-dropdown-item>Scan IT</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -89,7 +89,7 @@
         </el-row>
     </div>
     <div class="content-section">
-        <el-tabs v-model="activeTab" type="border-card">
+        <!-- <el-tabs v-model="activeTab" type="border-card">
             <el-tab-pane label="Tất cả" name="all" />
             <el-tab-pane label="Lưu nháp" name="draft" />
             <el-tab-pane label="Chờ phê duyệt" name="pending" />
@@ -97,7 +97,7 @@
             <el-tab-pane label="Hoàn thành" name="completed" />
             <el-tab-pane label="Từ chối" name="rejected" />
             <el-tab-pane label="Đã hủy" name="cancelled" />
-        </el-tabs>
+        </el-tabs> -->
         <el-table :data="tableData" border>
             <el-table-column type="selection" width="55" />
             <el-table-column prop="plan_code" label="Mã kế hoạch" sortable />

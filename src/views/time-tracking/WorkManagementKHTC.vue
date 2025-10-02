@@ -71,6 +71,7 @@
             <el-empty :description="langStore.t('NoData')" />
           </div>
         </template>
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="task_id" :label="langStore.t('JobCode')" sortable width="100"></el-table-column>
         <el-table-column prop="description" :label="langStore.t('JobDescription')"></el-table-column>
         <el-table-column prop="full_name" :label="langStore.t('HandlePerson')" width="180" sortable></el-table-column>

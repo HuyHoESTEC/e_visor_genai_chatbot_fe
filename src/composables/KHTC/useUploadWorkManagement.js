@@ -23,7 +23,7 @@ export function useUploadWorkManagement() {
 
         try {
             const response = await uploadWorkManagementKHTCApi(payload, new AbortController().signal);
-            if (response.status === 'success') {
+            if (response.data.status === 'success') {
                 ElMessage.success('Tải file lên thành công!');
                 return true;
             } else {
