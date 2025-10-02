@@ -134,4 +134,6 @@ export default {
   "FileUploadedSuccessfully": 'File uploaded successfully',
   "DetailAct": 'Detail',
   "CloseBtn": 'Close',
+
+  "BOMFileUpload": 'BOM File Upload'
 };
