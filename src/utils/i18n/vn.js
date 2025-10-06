@@ -137,5 +137,16 @@ export default {
   DetailAct: 'Chi tiết',
   CloseBtn: 'Đóng',
 
-  BOMFileUpload: 'Tải lên file BOM'
+  BOMFileUpload: 'Tải lên file BOM',
+  DeleteAllAct: 'Xóa tất cả',
+  DeleteByAssignee: 'Xóa theo người thực hiện',
+  DeleteByProjectCode: 'Xóa theo mã dự án',
+  delete_success: 'Xóa hoàn tất',
+  delete_failed: 'Xóa thất bại',
+  server_error: 'Lỗi máy chủ',
+  PleaseSelectAtLeastOneRecord: 'Vui lòng chọn ít nhất 1 bảng ghi dữ liệu',
+  records: 'bảng ghi',
+  FilterApplied: 'Đã áp dụng bộ lọc',
+  DateFilterRemoved: 'Đã loại bỏ bộ lọc theo ngày',
+  PleaseSelectAValidDateRange: 'Vui lòng chọn phạm vi ngày'
 };

@@ -110,9 +110,9 @@ export const loadWorkManagementKHTCApi = async (payload) => {
     }
 }
 
-export const filterWorkManagementKHTCApi = async (payload, signal) => {
+export const filterWorkManagementKHTCByDateApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WorkManagement_Filter`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WorkManagement_View`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'

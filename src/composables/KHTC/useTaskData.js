@@ -1,5 +1,6 @@
 import { ref, computed, onMounted, watch } from 'vue'; // Thêm watch
 import { useLoadWorkManagementKHTC } from './useLoadWorkManagementKHTC';
+import { filterWorkManagementKHTCByDateApi } from '../../services/auth.service';
 
 export function useTaskData() {
   const { tableData: allTasksFromComposable, isLoading, error, fetchTableData } = useLoadWorkManagementKHTC();
@@ -18,6 +19,37 @@ export function useTaskData() {
   // --- State cho phân trang ---
   const currentPage = ref(1);
   const pageSize = ref(10);
+
+  const startAndEndDateVal = ref(null);
+  const loadTasksWithFilters = async (filterPayload = null) => {
+    if (!filterPayload) {
+      selectedUser.value = null;
+      selectedProjectCode.value = null;
+      startAndEndDateVal.value = null;
+
+      await fetchDataAndInitialize();
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      const result = await filterWorkManagementKHTCByDateApi(filterPayload);
+      if (result && result.data && Array.isArray(result.data)) {
+        allTasks.value = result.data;
+        applyFilters();
+      } else {
+        allTasks.value = [];
+        filteredTasks.value = [];
+      }
+    } catch (err) {
+      console.error("Error fetching filtered data:", err);
+      allTasks.value = [];
+      filteredTasks.value = [];
+    } finally {
+      isLoading.value = false;
+      currentPage.value = 1;
+    }
+  }
 
   // --- Dữ liệu tĩnh hoặc được tải động cho các bộ lọc ---
   /**
@@ -93,6 +125,13 @@ export function useTaskData() {
 
   // Hàm áp dụng bộ lọc và cập nhật filteredTasks
   const applyFilters = () => {
+    if (!Array.isArray(allTasks.value)) {
+      console.error("AllTasks.value is not an array before applying filters.");
+      filteredTasks.value = [];
+      currentPage.value = 1;
+      return;
+    }
+
     let tempTasks = [...allTasks.value]; // Bắt đầu với tất cả dữ liệu gốc đã tải
 
     if (selectedUser.value) {
@@ -178,5 +217,7 @@ export function useTaskData() {
     applyFilters,
     emptyData, // emptyData giờ là một computed property
     taskSites,
+    loadTasksWithFilters,
+    startAndEndDateVal,
   };
 }

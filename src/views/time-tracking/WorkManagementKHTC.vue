@@ -8,7 +8,8 @@
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
           <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
-          <el-button type="warning" v-on:click="exportTask" class="add-task-button" :icon="Printer">{{ langStore.t('FileExport') }}</el-button>
+          <el-button type="danger" v-on:click="exportTask" class="add-task-button" :icon="Printer"></el-button>
+          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         
         <el-select
@@ -55,6 +56,28 @@
             :value="status.value"
           ></el-option>
         </el-select>
+        <el-date-picker
+          v-model="startAndEndDateVal"
+          type="daterange"
+          :start-placeholder="langStore.t('StartDate')"
+          :end-placeholder="langStore.t('EndDate')"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          style="width: 100%;" 
+        />
+        <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
+      </div>
+
+      <div v-if="advanceDeleteVisible" class="advance-option-delete">
+        <el-button 
+          type="danger"
+          class="add-task-button"
+          :icon="Delete"
+          v-on:click="handleDeleteAction"
+          :loading="isDeleting"
+          :disabled="isDeleting"
+        >
+          {{ deleteButtonLabel }}
+        </el-button>
       </div>
 
       <el-table
@@ -65,6 +88,7 @@
         class="tasks-table"
         v-loading="isLoading"
         :element-loading-text="langStore.t('WorkUploading')"
+        @selection-change="handleSelectionChange"
       >
         <template #empty>
           <div v-if="emptyData" class="empty-data-message">
@@ -139,13 +163,14 @@
 </template>
 
 <script>
-import { Plus, UploadFilled, Search, EditPen, Delete, Printer } from "@element-plus/icons-vue";
+import { Plus, UploadFilled, Search, EditPen, Delete, Printer, Refresh, Filter } from "@element-plus/icons-vue";
 import TaskFormDialog from "../../components/dialog/TaskFormDialog.vue";
 import { useTaskData } from "../../composables/KHTC/useTaskData"; 
 import { useTaskActions } from "../../composables/KHTC/useTaskActions";
 import FileUploadDialog from "../../components/upload/FileUploadDialog.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useLanguageStore } from "../../stores/language";
+import { useAdvanceDelete } from "../../composables/KHTC/useAdvanceDelete";
 
 export default {
   name: "WorkManagmentKHTC",
@@ -174,7 +199,9 @@ export default {
       paginatedTasks,
       applyFilters,
       emptyData,
-      taskSites
+      taskSites,
+      startAndEndDateVal,
+      loadTasksWithFilters,
     } = useTaskData();
 
     const {
@@ -215,7 +242,30 @@ export default {
 
     const exportTask = () => {
       alert("Chức năng xuất file sẽ được phát triển sau!");
-    }
+    };
+
+    const refreshData = () => {
+      fetchDataAndInitialize();
+    };
+
+    const filterByDate = () => {
+      filterByDateAction();
+    };
+
+    const selectedRows = ref([]);
+    const advanceDeleteVisible = computed(() => currentDeleteMode.value !== 'none');
+    
+    const {
+      isDeleting,
+      currentDeleteMode,
+      deleteButtonLabel,
+      handleDeleteAction,
+      filterByDateAction
+    } = useAdvanceDelete(selectedRows, selectedUser, selectedProjectCode, langStore, fetchDataAndInitialize, startAndEndDateVal, loadTasksWithFilters);
+
+    const handleSelectionChange = (val) => {
+      selectedRows.value = val;
+    };
 
     return {
       isLoading,
@@ -258,7 +308,20 @@ export default {
       uploadDialogVisible,
       langStore,
       taskSites,
-      getSiteTagType
+      getSiteTagType,
+      Refresh,
+      refreshData,
+      Filter,
+      advanceDeleteVisible,
+      startAndEndDateVal,
+      filterByDate,
+      selectedRows,
+      handleSelectionChange,
+      isDeleting,
+      handleDeleteAction,
+      currentDeleteMode,
+      deleteButtonLabel,
+      loadTasksWithFilters,
     };
   },
 };
@@ -288,7 +351,7 @@ export default {
 
 .filter-section {
   display: flex;
-  gap: 15px;
+  gap: 8px;
   margin-bottom: 20px;
   align-items: center;
   flex-direction: row;
@@ -304,7 +367,7 @@ export default {
   max-width: 350px;
 }
 
-.user-select, .status-select {
+.user-select, .status-select, .project-code-select {
   min-width: 200px;
 }
 
@@ -327,5 +390,13 @@ export default {
 
 .table-data {
   display: contents;
+}
+
+.advance-option-delete {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-direction: row;
 }
 </style>

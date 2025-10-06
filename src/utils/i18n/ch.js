@@ -132,4 +132,17 @@ export default {
   "FileUploadedSuccessfully": "文件上传成功",
   "DetailAct": '详情',
   "CloseBtn": "关闭",
+
+  'BOMFileUpload': 'BOM 文件上传',
+  'DeleteAllAct': '删除全部',
+  'DeleteByAssignee': '按负责人删除',
+  'DeleteByProjectCode': '按项目代码删除',
+  'delete_success': '删除成功',
+  'delete_failed': '删除失败',
+  'server_error': '服务器错误',
+  'PleaseSelectAtLeastOneRecord': '请至少选择一条记录',
+  'records': '记录',
+  'FilterApplied': '已应用筛选器',
+  'DateFilterRemoved': '已移除日期筛选器',
+  'PleaseSelectAValidDateRange': '请选择一个有效的日期范围',
 };

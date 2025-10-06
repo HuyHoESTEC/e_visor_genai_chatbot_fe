@@ -133,4 +133,17 @@ export default {
   "FileUploadedSuccessfully": "Файл успешно загружен",
   "DetailAct": "Подробнее",
   "CloseBtn": "Закрыть",
+
+  'BOMFileUpload': 'Загрузка файла спецификации (BOM)',
+  'DeleteAllAct': 'Удалить все',
+  'DeleteByAssignee': 'Удалить по исполнителю',
+  'DeleteByProjectCode': 'Удалить по коду проекта',
+  'delete_success': 'Удаление завершено',
+  'delete_failed': 'Сбой удаления',
+  'server_error': 'Ошибка сервера',
+  'PleaseSelectAtLeastOneRecord': 'Пожалуйста, выберите хотя бы одну запись',
+  'records': 'записи',
+  'FilterApplied': 'Фильтр применен',
+  'DateFilterRemoved': 'Фильтр по дате удален',
+  'PleaseSelectAValidDateRange': 'Пожалуйста, выберите допустимый диапазон дат',
 };

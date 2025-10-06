@@ -133,4 +133,17 @@ export default {
   "FileUploadedSuccessfully": 'ファイルが正常にアップロードされました',
   'DetailAct': '詳細',
   'CloseBtn': '閉じる',
+
+  'BOMFileUpload': 'BOMファイルアップロード',
+  'DeleteAllAct': '全て削除',
+  'DeleteByAssignee': '実行者別で削除',
+  'DeleteByProjectCode': 'プロジェクトコード別で削除',
+  'delete_success': '削除完了',
+  'delete_failed': '削除失敗',
+  'server_error': 'サーバーエラー',
+  'PleaseSelectAtLeastOneRecord': '少なくとも1つのレコードを選択してください',
+  'records': 'レコード',
+  'FilterApplied': 'フィルター適用済み',
+  'DateFilterRemoved': '日付フィルターを解除しました',
+  'PleaseSelectAValidDateRange': '有効な日付範囲を選択してください',
 };
