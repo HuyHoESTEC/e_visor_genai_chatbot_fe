@@ -135,5 +135,16 @@ export default {
   "DetailAct": 'Detail',
   "CloseBtn": 'Close',
 
-  "BOMFileUpload": 'BOM File Upload'
+  "BOMFileUpload": 'BOM File Upload',
+  "DeleteAllAct": 'Delete All',
+  "DeleteByAssignee": 'Delete by assignee',
+  "DeleteByProjectCode": 'Delete by project code',
+  "delete_success": 'Delete success',
+  "delete_failed": 'Delete failed',
+  "server_error": 'Server error',
+  "PleaseSelectAtLeastOneRecord": 'Please select at least one record',
+  "records": 'Records',
+  "FilterApplied": 'Filter applied',
+  "DateFilterRemoved": 'Date filter removed',
+  "PleaseSelectAValidDateRange": 'Please select a vailable date range'
 };

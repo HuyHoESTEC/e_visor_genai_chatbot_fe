@@ -75,13 +75,14 @@ export function useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, 
       taskData.full_name = selectedAssignee.name;
     }
     const dmlAction = isEditingMode ? "update" : "insert";
+    const taskIdForPayload = isEditingMode && taskData.task_id != null ? [taskData.task_id] : null;
     // Compare data to create payload
     const payload = {
       "request_id": `evisor-${Date.now()}`,
       'owner': loggedInUserId,
       'dml_action': dmlAction,
       form: {
-        "id": isEditingMode ? taskData.task_id : null,
+        "id": taskIdForPayload,
         "owner": loggedInUserId,
         "full_name": taskData.full_name || '',
         "project_code": taskData.project_code || '',
@@ -144,7 +145,7 @@ export function useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, 
           'owner': loggedInUserId,
           'dml_action': "delete",
           form: {
-            "id": task.task_id,
+            "id": [task.task_id],
             "owner": task.owner || '',
             "full_name": task.full_name || '',
             "project_code": task.project_code || '',

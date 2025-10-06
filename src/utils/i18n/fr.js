@@ -132,4 +132,17 @@ export default {
   "FileUploadedSuccessfully": 'Fichier téléchargé avec succès',
   'DetailAct': 'Détails',
   'CloseBtn': 'Fermer',
+
+  'BOMFileUpload': 'Télécharger le fichier BOM',
+  'DeleteAllAct': 'Tout supprimer',
+  'DeleteByAssignee': 'Supprimer par responsable',
+  'DeleteByProjectCode': 'Supprimer par code de projet',
+  'delete_success': 'Suppression réussie',
+  'delete_failed': 'Échec de la suppression',
+  'server_error': 'Erreur de serveur',
+  'PleaseSelectAtLeastOneRecord': 'Veuillez sélectionner au moins un enregistrement',
+  'records': 'enregistrements',
+  'FilterApplied': 'Filtre appliqué',
+  'DateFilterRemoved': 'Filtre de date supprimé',
+  'PleaseSelectAValidDateRange': 'Veuillez sélectionner une plage de dates valide',
 };

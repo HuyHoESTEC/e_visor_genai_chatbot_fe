@@ -132,4 +132,17 @@ export default {
   "FileUploadedSuccessfully": "파일이 성공적으로 업로드되었습니다",
   "DetailAct": "상세",
   "CloseBtn": "닫기",
+
+  'BOMFileUpload': 'BOM 파일 업로드',
+  'DeleteAllAct': '모두 삭제',
+  'DeleteByAssignee': '담당자별 삭제',
+  'DeleteByProjectCode': '프로젝트 코드별 삭제',
+  'delete_success': '삭제 완료',
+  'delete_failed': '삭제 실패',
+  'server_error': '서버 오류',
+  'PleaseSelectAtLeastOneRecord': '최소한 1개의 레코드를 선택해 주세요',
+  'records': '레코드',
+  'FilterApplied': '필터 적용됨',
+  'DateFilterRemoved': '날짜 필터 제거됨',
+  'PleaseSelectAValidDateRange': '유효한 날짜 범위를 선택해 주세요',
 };
