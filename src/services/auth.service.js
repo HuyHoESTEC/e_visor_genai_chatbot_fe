@@ -193,7 +193,7 @@ export const getDocumentByUserIdApi = async (payload, signal) => {
 // -----Warehouse Management API-----
 export const getWarehouseManagementApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseManagement_View`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseStatistical_View`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'
@@ -229,7 +229,7 @@ export const updateGoodsInformationInTheWarehouseApi = async (payload, signal) =
 
 export const getGoodsInformationDetailApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WarehouseManagement_View_Detail`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseManagement_View_Detail`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'
@@ -242,5 +242,101 @@ export const getGoodsInformationDetailApi = async (payload, signal) => {
         }
         const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
         throw new Error(`Lỗi API lấy thông tin chi tiết: ${errorMessage}`);
+    }
+}
+
+export const loadingImportDataWarehouse = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_View`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (e) {
+        if (axios.isCancel(e)) {
+            throw new Error("Yêu cầu API lấy thông tin nhập hàng đã bị hủy");
+        }
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`Lỗi API lấy thông tin nhập hàng: ${errorMessage}`);
+    }
+}
+
+export const uploadImportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_Upload`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response;
+    } catch (e) {
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const updateImportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const loadingExportDataWarehouse = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_View`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (e) {
+        if (axios.isCancel(e)) {
+            throw new Error("Yêu cầu API lấy thông tin nhập hàng đã bị hủy");
+        }
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`Lỗi API lấy thông tin nhập hàng: ${errorMessage}`);
+    }
+}
+
+export const uploadExportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_Upload`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response;
+    } catch (e) {
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const updateExportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
     }
 }

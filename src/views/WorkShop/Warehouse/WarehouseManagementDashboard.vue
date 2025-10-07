@@ -51,13 +51,12 @@
             <el-empty description="No Data" />
           </div>
         </template>
-        <el-table-column fixed prop="ID" label="ID" width="80" />
+        <el-table-column fixed prop="id" label="ID" width="80" />
         <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
-        <el-table-column prop="device_code" label="Mã hàng hóa" width="auto" />
-        <el-table-column prop="brand" label="Hãng" width="auto" />
-        <el-table-column prop="type" albel="Loại hàng hóa" width="auto" />
+        <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+        <el-table-column prop="origin" label="Hãng" width="auto" />
         <el-table-column prop="quantity" label="Số lượng" width="auto" />
-        <el-table-column prop="series_number" label="Seri No." width="auto" />
+        <el-table-column prop="seri_number" label="Seri No." width="auto" />
         <el-table-column fixed="right" label="Hành động" min-width="auto">
           <template #default="scope">
             <el-button type="success" size="small" @click="showDetail(scope.row)" :icon="View">
@@ -85,16 +84,16 @@
     <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="ID">{{ selectedItem.ID }}</el-descriptions-item>
+          <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
           <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
-          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.device_code }}</el-descriptions-item>
-          <el-descriptions-item label="Hãng">{{ selectedItem.brand }}</el-descriptions-item>
+          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
+          <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
+          <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
           <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
-          <el-descriptions-item label="Số Seri">{{ selectedItem.series_number }}</el-descriptions-item>
+          <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
           <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
           <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
-          <el-descriptions-item label="Ngày nhập">{{ selectedItem.date_time }}</el-descriptions-item>
-          <el-descriptions-item label="Loại">{{ selectedItem.type }}</el-descriptions-item>
+          <el-descriptions-item label="Ngày nhập">{{ selectedItem.time }}</el-descriptions-item>
           <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
         </el-descriptions>
       </div>
@@ -110,22 +109,22 @@
           <el-input v-model="editedItem.product_name"></el-input>
         </el-form-item>
         <el-form-item label="Mã hàng hóa">
-          <el-input v-model="editedItem.device_code"></el-input>
+          <el-input v-model="editedItem.part_no"></el-input>
         </el-form-item>
         <el-form-item label="Hãng">
-          <el-input v-model="editedItem.brand"></el-input>
+          <el-input v-model="editedItem.origin"></el-input>
         </el-form-item>
         <el-form-item label="Số lượng">
           <el-input v-model="editedItem.quantity"></el-input>
         </el-form-item>
         <el-form-item label="Số seri">
-          <el-input v-model="editedItem.series_number"></el-input>
+          <el-input v-model="editedItem.seri_number"></el-input>
         </el-form-item>
         <el-form-item label="Vị trí">
           <el-input v-model="editedItem.location"></el-input>
         </el-form-item>
-        <el-form-item label="Loại hàng hóa">
-          <el-input v-model="editedItem.type"></el-input>
+        <el-form-item label="Mô tả">
+          <el-input v-model="editedItem.description" type="textarea"></el-input>
         </el-form-item>
       </el-form>
     </form-popup>
@@ -135,7 +134,7 @@
 <script>
 import { ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { EditPen, Printer, UploadFilled, View } from "@element-plus/icons-vue";
+import { EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import FormPopup from "../../../components/popup/FormPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
@@ -215,6 +214,7 @@ export default {
       handleFormSubmit,
       UploadFilled,
       Printer,
+      Refresh,
       filteredItems,
       fetchDataAndInitialize,
       emptyData,

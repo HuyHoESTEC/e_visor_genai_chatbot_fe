@@ -137,7 +137,7 @@
         background
         layout="prev, pager, next, sizes, total"
         :total="filteredTasks.length"
-        :page-sizes="[5, 10, 20, 50]"
+        :page-sizes="[5, 10, 20, 50, 100]"
         v-model:page-size="pageSize"
         v-model:current-page="currentPage"
         @size-change="handleSizeChange"

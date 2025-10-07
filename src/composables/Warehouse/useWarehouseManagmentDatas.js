@@ -44,9 +44,9 @@ export function useWarehouseManagementDatas() {
         }
         const items = new Map();
         allItems.value.forEach((item) => {
-            const itemId = item.id || item.device_code;
+            const itemId = item.id || item.part_no;
             if (itemId && !items.has(itemId)) {
-                items.set(itemId, { id: itemId, name: item.device_code });
+                items.set(itemId, { id: itemId, name: item.part_no });
             }
         });
         
@@ -59,9 +59,9 @@ export function useWarehouseManagementDatas() {
         }
         const itemSeriNum = new Map();
         allItems.value.forEach((item) => {
-            const seriId = item.series_number;
+            const seriId = item.seri_number;
             if (seriId && !itemSeriNum.has(seriId)) {
-                itemSeriNum.set(seriId, { id: seriId, name: item.series_number });
+                itemSeriNum.set(seriId, { id: seriId, name: item.seri_number });
             }
         });
         return Array.from(itemSeriNum.values());
