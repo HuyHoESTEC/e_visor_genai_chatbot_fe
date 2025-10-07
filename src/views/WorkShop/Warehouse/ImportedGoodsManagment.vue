@@ -1,222 +1,255 @@
 <template>
   <div class="imported-goods-managment-container">
-    <div class="header-actions">
-        <el-button type="primary" :icon="Plus" v-on:click="showCreateForm">
-            Tạo mới
-        </el-button>
-        <el-button type="success" :icon="Download">
-            Xuất dữ liệu
-        </el-button>
+    <div v-if="isLoading" class="loading-message">
+      {{ langStore.t("DataUploading") }}
     </div>
-
-    <ItemFormDialog
-        v-model="isFormVisible"
-        title="Phiếu nhập kho hàng hóa"
-        @submit="handleFormSubmit"
-    >
-        <el-form :model="formData" label-width="120px">
-            <el-form-item label="Tên hàng hóa">
-                <el-input v-model="formData.item_name"></el-input>
-            </el-form-item>
-            <el-form-item label="Mã hàng hóa">
-                <el-input v-model="formData.item_code" class="input-with-select">
-                    <template #append>
-                        <el-dropdown>
-                            <el-button>
-                                Tùy chọn
-                                <el-icon class="el-icon--right"><ArrowDown /></el-icon>
-                            </el-button>
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item>Scan here</el-dropdown-item>
-                                    <el-dropdown-item>Scan IT</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
-                    </template>
-                </el-input>
-            </el-form-item>
-            <el-form-item label="Hãng">
-                <el-input v-model="formData.item_brand"></el-input>
-            </el-form-item>
-            <el-form-item label="Số lượng">
-                <el-input-number v-model="formData.item_quantity" :min=0></el-input-number>
-            </el-form-item>
-            <el-form-item label="Vị trí">
-                <el-input v-model="formData.location" />
-            </el-form-item>
-            <el-form-item label="Số Seri">
-                <el-input v-model="formData.seri_no" />
-            </el-form-item>
-            <el-form-item label="Ngày nhập">
-                <el-date-picker
-                    v-model="formData.entered_date"
-                    type="date"
-                    placeholder="Chọn ngày nhập"
-                    value-format="YYYY-MM-DD"
-                />
-            </el-form-item>
-            <el-form-item label="Loại">
-                <el-input v-model="formData.item_type" />
-            </el-form-item>
-            <el-form-item label="Đơn vị">
-                <el-input v-model="formData.item_unit" />
-            </el-form-item>
-        </el-form>
-    </ItemFormDialog>
-
-    <div class="filter-section">
-        <el-row :gutter="20">
-            <el-col :span="4">
-                <el-input placeholder="Mã kế hoạch" />
-            </el-col>
-            <el-col :span="4">
-                <el-input placeholder="Khách hàng" style="width: 100%" />
-            </el-col>
-            <el-col :span="4">
-                <el-input placeholder="PT vận chuyển" style="width: 100%" />
-            </el-col>
-            <el-col :span="4">
-                <el-input placeholder="Packing list" />
-            </el-col>
-            <el-col :span="4">
-                <el-input placeholder="Số invoice" />
-            </el-col>
-            <el-col :span="4" class="filter-buttons">
-                <el-button>Hủy</el-button>
-                <el-button type="primary">Lọc</el-button>
-            </el-col>
-        </el-row>
-    </div>
-    <div class="content-section">
-        <!-- <el-tabs v-model="activeTab" type="border-card">
-            <el-tab-pane label="Tất cả" name="all" />
-            <el-tab-pane label="Lưu nháp" name="draft" />
-            <el-tab-pane label="Chờ phê duyệt" name="pending" />
-            <el-tab-pane label="Đang thực hiện" name="in-progress" />
-            <el-tab-pane label="Hoàn thành" name="completed" />
-            <el-tab-pane label="Từ chối" name="rejected" />
-            <el-tab-pane label="Đã hủy" name="cancelled" />
-        </el-tabs> -->
-        <el-table :data="tableData" border>
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="plan_code" label="Mã kế hoạch" sortable />
-            <el-table-column prop="customer_code" label="Mã khách hàng" sortable />
-            <el-table-column prop="customer_name" label="Tên khách hàng" sortable />
-            <el-table-column prop="shipping_method" label="PT vận chuyển" />
-            <el-table-column prop="export_date" label="Ngày KH xuất hàng" />
-            <el-table-column prop="invoice_number" label="Số invoice" />
-            <el-table-column prop="packing_list" label="Packing list" />
-            <el-table-column label="Hành động" width="100">
-                <template #default>
-                    <el-button type="info" :icon="View" circle />
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <div class="table-footer">
-            <div class="pagination-info">
-                <span>Số dòng mỗi trang 20</span>
-            </div>
-            <div class="pagination-summary">
-                <span>1-2 trên tổng số 2</span>
-                <el-button-group>
-                    <el-button :icon="ArrowLeftBold" />
-                    <el-button :icon="ArrowRightBold" />
-                </el-button-group>
-                <el-pagination layout="pager" :total="100" />
-            </div>
+    <div v-else class="table-data">
+      <div class="filter-section">
+        <div class="action-area">
+          <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
+            >Tải lên phiếu nhập kho</el-button
+          >
+          <el-button type="danger" :icon="Printer" disabled />
+          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
+        <el-select
+          v-model="selectedProductCode"
+          placeholder="Lọc theo mã code sản phẩm"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+        >
+          <el-option
+            v-for="barcode in uniqueProductCode"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+        <el-select
+          v-model="selectedSeriNumber"
+          placeholder="Lọc theo số seri sản phẩm"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+        >
+          <el-option
+            v-for="barcode in uniqueSeriNumber"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+      </div>
+      <el-table
+        :data="paginatedItems"
+        border
+        style="width: 100%; height: 100%"
+        stripe
+        class="items-table"
+      >
+        <template #empty>
+            <div v-if="emptyData" class="empty-data-message">
+                <el-empty description="No Data" />
+            </div>
+        </template>
+        <el-table-column fixed prop="id" label="ID" width="80" />
+        <el-table-column prop="project_code" label="Mã dự án" width="auto" />
+        <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
+        <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+        <el-table-column prop="origin" label="Hãng" width="auto" />
+        <el-table-column prop="quantity" label="Số lượng" width="auto" />
+        <el-table-column prop="seri_number" label="Seri No." width="auto" />
+        <el-table-column fixed="right" label="Hành động" min-width="auto">
+          <template #default="{ row }">
+            <el-button type="success" size="small" @click="showDetail(row)" :icon="View">
+              {{ langStore.t("DetailAct") }}
+            </el-button>
+            <el-button type="primary" size="small" @click="editItem(row)" :icon="EditPen">{{
+              langStore.t("EditAct")
+            }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        layout="prev, pager, next, sizes, total"
+        :total="filteredItems.length"
+        :page-sizes="[5, 10, 20, 50, 100]"
+        v-model:page-size="pageSize"
+        v-model:current-page="currentPage"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        class="pagination-controls"
+      >
+      </el-pagination>
+      <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
+      <div v-if="selectedItem">
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
+          <el-descriptions-item label="Ngày nhập">{{ selectedItem.import_time }}</el-descriptions-item>
+          <el-descriptions-item label="Mã dự án">{{ selectedItem.project_code }}</el-descriptions-item>
+          <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
+          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
+          <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
+          <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </detail-popup>
+    <warehouse-import-data-dialog 
+      v-model="dialogVisible"
+      :item-to-edit="currentItem"
+      @save="saveItem"
+      @close="closeDialog"
+    />
     </div>
+    <WarehouseImportUpload 
+        v-model="uploadDialogVisible"
+        @uploadSuccess="handleUploadSuccess"
+    />
   </div>
 </template>
 
 <script>
-import { Plus, Download, View, ArrowLeftBold, ArrowRightBold, ArrowDown } from '@element-plus/icons-vue';
-import { ref } from 'vue';
-import ItemFormDialog from '../../../components/dialog/ItemFormDialog.vue';
+import {
+  Download,
+  View,
+  ArrowLeftBold,
+  ArrowRightBold,
+  ArrowDown,
+  UploadFilled,
+  Printer,
+  EditPen,
+  Refresh,
+} from "@element-plus/icons-vue";
+import { ref } from "vue";
+import { useLanguageStore } from "../../../stores/language";
+import { useWarehouseImportDatas } from "../../../composables/Warehouse_Import/useWarehouseImportDatas";
+import DetailPopup from "../../../components/popup/DetailPopup.vue";
+import WarehouseImportUpload from "../../../components/upload/WarehouseImportUpload.vue";
+import WarehouseImportDataDialog from "../../../components/dialog/WarehouseImportDataDialog.vue";
+import { useWarehouseImportAction } from "../../../composables/Warehouse_Import/useWarehouseImportAction";
 
 export default {
   name: "ImportedGoodsManagement",
   components: {
-    Plus,
     Download,
     View,
     ArrowLeftBold,
     ArrowRightBold,
     ArrowDown,
-    ItemFormDialog
+    EditPen,
+    Refresh,
+    DetailPopup,
+    WarehouseImportUpload,
+    WarehouseImportDataDialog
   },
   setup() {
-    const activeTab = ref('all');
-    const tableData = [
-        {
-            plan_code: 'XH240308.02',
-            customer_code: '95018',
-            customer_name: 'YOUNGCHANG GST COMPANY LIMITED',
-            shipping_method: 'AIR',
-            export_date: '2025-09-23', // Thêm ngày xuất hàng
-            invoice_number: 'VKR002',
-            packing_list: 'P123',
-        },
-        {
-            plan_code: 'XH240308.01',
-            customer_code: '95018',
-            customer_name: 'YOUNGCHANG GST COMPANY LIMITED',
-            shipping_method: 'AIR',
-            export_date: '2025-09-22',
-            invoice_number: 'VKR001',
-            packing_list: 'P124',
-        }
-    ];
+    const langStore = useLanguageStore();
+    const {
+      filteredItems,
+      fetchDataAndInitialize,
+      emptyData,
+      paginatedItems,
+      selectedProductCode,
+      selectedSeriNumber,
+      uniqueProductCode,
+      uniqueSeriNumber,
+      pageSize,
+      currentPage,
+      applyFilters,
+      isLoading,
+    } = useWarehouseImportDatas();
 
-    const isFormVisible = ref(false);
-    const formData = ref({
-        item_name: '',
-        item_code: '',
-        item_brand: '',
-        item_quantity: 0,
-        location: '',
-        seri_no: '',
-        entered_date: '',
-        item_type: '',
-        item_unit: '',
-    });
+    const {
+        dialogVisible,
+        currentItem,
+        editItem,
+        saveItem,
+        closeDialog,
+    } = useWarehouseImportAction(langStore, fetchDataAndInitialize);
 
-    const showCreateForm = () => {
-        formData.value = {
-            item_name: '',
-            item_code: '',
-            item_brand: '',
-            item_quantity: 0,
-            location: '',
-            seri_no: '',
-            entered_date: '',
-            item_type: '',
-            item_unit: '',
-        };
-        isFormVisible.value = true;
-    };
-    const handleFormSubmit = () => {
-        console.log('Send request success', formData.value);
-        isFormVisible.value = false;
+    const isDetailVisible = ref(false);
+    const selectedItem = ref(null);
+
+    const editedItem = ref({});
+
+    const showDetail = (item) => {
+      selectedItem.value = item;
+      isDetailVisible.value = true;
     }
+
+    const handleFormSubmit = () => {
+      console.log('Send request success');
+      
+    }
+
+    const handleCurrentChange = (val) => {
+      currentPage.value = val;
+    };
+
+    const handleSizeChange = (val) => {
+      pageSize.value = val;
+      currentPage.value = 1;
+    };
+
+    // Reactive variable to control display dialog upload
+    const uploadDialogVisible = ref(false);
+    // Function to open dialog upload file
+    const handleUploadFile = () => {
+      uploadDialogVisible.value = true;
+    };
+    const handleUploadSuccess = () => {
+      // Callback fetch data function to update new data table
+      fetchDataAndInitialize();
+    };
+
+    const refreshData = () => {
+      fetchDataAndInitialize();
+    };
 
     return {
-        Plus,
-        Download,
-        View,
-        ArrowLeftBold,
-        ArrowRightBold,
-        ArrowDown,
-        activeTab,
-        tableData,
-        isFormVisible,
-        formData,
-        showCreateForm,
-        handleFormSubmit
-    }
-  }
+      Download,
+      View,
+      ArrowLeftBold,
+      ArrowRightBold,
+      ArrowDown,
+      Printer,
+      UploadFilled,
+      EditPen,
+      Refresh,
+      langStore,
+      filteredItems,
+      fetchDataAndInitialize,
+      emptyData,
+      paginatedItems,
+      selectedProductCode,
+      selectedSeriNumber,
+      uniqueProductCode,
+      uniqueSeriNumber,
+      pageSize,
+      currentPage,
+      applyFilters,
+      isLoading,
+      isDetailVisible,
+      selectedItem,
+      editedItem,
+      showDetail,
+      handleFormSubmit,
+      handleCurrentChange,
+      handleSizeChange,
+      uploadDialogVisible,
+      handleUploadFile,
+      handleUploadSuccess,
+      refreshData,
+      dialogVisible,
+      currentItem,
+      editItem,
+      saveItem,
+      closeDialog,
+    };
+  },
 };
 </script>
 
