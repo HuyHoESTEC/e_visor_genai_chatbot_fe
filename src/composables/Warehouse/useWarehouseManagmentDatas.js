@@ -38,9 +38,9 @@ export function useWarehouseManagementDatas() {
         }
         const items = new Map();
         allItems.value.forEach((item) => {
-            const itemId = item.id || item.part_no;
-            if (itemId && !items.has(itemId)) {
-                items.set(itemId, { id: itemId, name: item.part_no });
+            const ProductCode = item.part_no;
+            if (ProductCode && !items.has(ProductCode)) {
+                items.set(ProductCode, { id: ProductCode, name: ProductCode });
             }
         });
         
@@ -53,9 +53,9 @@ export function useWarehouseManagementDatas() {
         }
         const itemSeriNum = new Map();
         allItems.value.forEach((item) => {
-            const seriId = item.seri_number;
-            if (seriId && !itemSeriNum.has(seriId)) {
-                itemSeriNum.set(seriId, { id: seriId, name: item.seri_number });
+            const seriCode = item.seri_number;
+            if (seriCode && !itemSeriNum.has(seriCode)) {
+                itemSeriNum.set(seriCode, { id: seriCode, name: seriCode });
             }
         });
         return Array.from(itemSeriNum.values());
@@ -63,14 +63,16 @@ export function useWarehouseManagementDatas() {
 
     // Function use filter and update filteredItems
     const applyFilters = () => {
-        let tempItems = [...allItems.value];
+        let tempItems = Array.isArray(allItems.value) ? [...allItems.value] : [];
         
         if (selectedProductCode.value) {
-            tempItems = tempItems.filter(item => (item.id === selectedProductCode.value || item.product_name === selectedProductCode.value));
+            const productCode = selectedProductCode.value;
+            tempItems = tempItems.filter(item => item.part_no === productCode);
         }
 
         if (selectedProductSeriNum.value) {
-            tempItems = tempItems.filter(item => item.series_number === selectedProductSeriNum.value);
+            const seriCode = selectedProductSeriNum.value;
+            tempItems = tempItems.filter(item => item.seri_number === seriCode);
         }
 
         filteredItems.value = tempItems;
