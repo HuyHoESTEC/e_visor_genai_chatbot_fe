@@ -1,5 +1,6 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useLoadWarehouseImport } from "./useLoadWarehouseImport";
+import { useDateFormat } from "../utils/useDateFormat";
 
 export function useWarehouseImportDatas() {
     const { tableData: allItemsFromComposable, isLoading, error, fetchImportDataTable } = useLoadWarehouseImport();
@@ -10,6 +11,7 @@ export function useWarehouseImportDatas() {
     // State for filter tools
     const selectedSeriNumber = ref(null);
     const selectedProductCode = ref(null);
+    const selectedImportDate = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -17,6 +19,8 @@ export function useWarehouseImportDatas() {
 
     // Dummy item for dialog
     const dummyItems = ref([]);
+
+    const { formatDateTimeToDate } = useDateFormat();
 
     // EmptyData will be computed property to show data status
     const emptyData = computed(() => {
@@ -34,9 +38,9 @@ export function useWarehouseImportDatas() {
         }
         const itemSeriNumber = new Map();
         allItemsImport.value.forEach((item) => {
-            const seriId = item.id;
-            if (seriId && !itemSeriNumber.has(seriId)) {
-                itemSeriNumber.set(seriId, { id: seriId, name: item.seri_number });
+            const seriCode = item.seri_number;
+            if (seriCode && !itemSeriNumber.has(seriCode)) {
+                itemSeriNumber.set(seriCode, { id: seriCode, name: seriCode });
             }
         });
 
@@ -50,25 +54,54 @@ export function useWarehouseImportDatas() {
 
         const itemProductCode = new Map();
         allItemsImport.value.forEach((item) => {
-            const productId = item.id;
-            if (productId && !itemProductCode.has(productId)) {
-                itemProductCode.set(productId, { id: productId, name: item.part_no })
+            const productCode = item.part_no;
+            if (productCode && !itemProductCode.has(productCode)) {
+                itemProductCode.set(productCode, { id: productCode, name: productCode })
             }
         });
 
         return Array.from(itemProductCode.values());
     });
 
+    const uniqueImportDate = computed(() => {
+        if (!allItemsImport.value || allItemsImport.value.length === 0) {
+            return [];
+        }
+
+        const itemImportDate = new Map();
+        allItemsImport.value.forEach((item) => {
+            const fullDate = item.import_time;
+            const importDateOnly = formatDateTimeToDate(fullDate);
+
+            if (importDateOnly !== 'N/A' && !itemImportDate.has(importDateOnly)) {
+                itemImportDate.set(importDateOnly, { id: importDateOnly, name: importDateOnly })
+            }
+        });
+
+        return Array.from(itemImportDate.values());
+    });
+
     // Function use filter and update filteredItems
     const applyFilters = () => {
-        let tempItems = [...allItemsImport.value];
+        // Make sure that aLLItemsImport is array before copy
+        let tempItems = Array.isArray(allItemsImport.value) ? [...allItemsImport.value] : [];
 
         if (selectedProductCode.value) {
-            tempItems = tempItems.filter(item => (item.id === selectedProductCode.value || item.part_no === selectedProductCode.value));
+            const filterCode = selectedProductCode.value;
+            tempItems = tempItems.filter(item => item.part_no === filterCode);
         }
 
         if (selectedSeriNumber.value) {
-            tempItems = tempItems.filter(item => item.id === selectedSeriNumber.value || item.seri_number === selectedSeriNumber.value);
+            const filterSeri = selectedSeriNumber.value;
+            tempItems = tempItems.filter(item => item.seri_number === filterSeri);
+        }
+
+        if (selectedImportDate.value) {
+            const filterImportDate = selectedImportDate.value;
+            tempItems = tempItems.filter(item => {
+                    const itemDateOnly = formatDateTimeToDate(item.import_time);
+                    return itemDateOnly === filterImportDate;
+            });
         }
 
         filteredItems.value = tempItems;
@@ -130,5 +163,7 @@ export function useWarehouseImportDatas() {
         applyFilters,
         paginatedItems,
         fetchDataAndInitialize,
+        selectedImportDate,
+        uniqueImportDate,
     }
 }

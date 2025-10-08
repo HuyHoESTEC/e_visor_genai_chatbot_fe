@@ -67,12 +67,9 @@
         </el-table-column>
         <el-table-column fixed="right" label="Hành động" min-width="auto">
           <template #default="{ row }">
-            <el-button type="success" size="small" @click="showDetail(row)" :icon="View">
-              {{ langStore.t("DetailAct") }}
-            </el-button>
-            <el-button type="primary" size="small" @click="editItem(row)" :icon="EditPen">{{
-              langStore.t("EditAct")
-            }}</el-button>
+            <el-button type="success" size="default" @click="showDetail(row)" :icon="View" />
+            <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" />
+            <el-button type="danger" size="default" :icon="Delete" disabled/>
           </template>
         </el-table-column>
       </el-table>
@@ -100,7 +97,7 @@
             <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
             <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
             <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
-            <el-descriptions-item label="Ngày nhập">{{ selectedItem.time }}</el-descriptions-item>
+            <el-descriptions-item label="Ngày nhập">{{ formattedTime }}</el-descriptions-item>
             <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
           </el-descriptions>
           <div class="barcode-area">
@@ -140,13 +137,14 @@
 <script>
 import { computed, nextTick, ref, watch } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { Download, EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
+import { Delete, Download, EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
 import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
 import { useWarehouseManagementActions } from "../../../composables/Warehouse/useWarehouseManagmentActions";
 import WarehouseItemUpload from "../../../components/upload/WarehouseItemUpload.vue";
-import JsBarcode from "jsbarcode";
+import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
+import { useDateFormat } from "../../../composables/utils/useDateFormat";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -163,6 +161,7 @@ export default {
     WarehouseItemDialog,
     WarehouseItemUpload,
     Download,
+    Delete,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -234,77 +233,14 @@ export default {
       fetchDataAndInitialize();
     };
 
-    const barcodeRef = ref(null);
+    const { barcodeRef, generatedBarcode, downloadBarcodeSvg } = useBarcodeLogic(selectedItem, isDetailVisible);
+    const { formatDateTimeToDate } = useDateFormat();
 
-    const generateBarcode = (partNo, seriNumber) => {
-        if (partNo && seriNumber) {
-            return `${partNo}+${seriNumber}`;
+    const formattedTime = computed(() => {
+        if (selectedItem.value && selectedItem.value.time) {
+            return formatDateTimeToDate(selectedItem.value.time);
         }
         return 'N/A';
-    };
-
-    const generatedBarcode = computed(() => {
-        if (selectedItem.value) {
-            const partNoClean = selectedItem.value.part_no ? String(selectedItem.value.part_no).replace(/[^0-9A-Z]/g, '') : '';
-            const seriNumberClean = selectedItem.value.seri_number ? String(selectedItem.value.seri_number).replace(/[^0-9A-Z]/g, '') : '';
-
-            return generateBarcode(partNoClean, seriNumberClean);
-        }
-        return 'N/A';
-    });
-
-    const renderBarcode = (code) => {
-        if (code && code !== 'N/A' && barcodeRef.value) {
-            try {
-                JsBarcode(barcodeRef.value, code, {
-                    format: "CODE128",
-                    displayValue: true,
-                    width: 2,
-                    height: 100,
-                    margin: 10
-                });
-            } catch (e) {
-                console.error("Lỗi khi render JsBarcode:", e);
-            }
-        }
-    };
-
-    const downloadBarcodeSvg = () => {
-        // 1. Kiểm tra xem mã barcode có hợp lệ và đã được render chưa
-        if (!generatedBarcode.value || generatedBarcode.value === 'M/A') {
-            console.warn("Không thể tải về. Barcode không hợp lệ hoặc chưa được render.");
-            return;
-        }
-        // 2. Lấy phần tử SVG
-        const svgElement = barcodeRef.value;
-        if (!svgElement) {
-            console.error("Không tìm thấy phần tử SVG để tải về.");
-            return;
-        }
-        // 3. Chuyển SVG DOM element thành chuỗi XML
-        const svgData = new XMLSerializer().serializeToString(svgElement);
-        // 4. Tạo URL data URI
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-        // 5. Tạo thẻ <a> ẩn để kích hoạt tải về
-        const downloadLink = document.createElement('a');
-        downloadLink.href = svgUrl;
-        // Đặt tên file (ví dụ: part_no-seri_number.svg)
-        const fileName = `${generatedBarcode.value}.svg`;
-        downloadLink.download = fileName;
-        // 6. Kích hoạt tải về và dọn dẹp
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(svgUrl);
-    }
-
-    watch([isDetailVisible, generatedBarcode], ([isDetail, barcodeValue]) => {
-        if (isDetail && barcodeValue && barcodeValue!== 'N/A') {
-            nextTick(() => {
-                renderBarcode(barcodeValue);
-            });
-        }
     });
     
 
@@ -345,12 +281,12 @@ export default {
       uploadDialogVisible,
       handleUploadFile,
       handleUploadSuccess,
-      generateBarcode,
       generatedBarcode,
-      renderBarcode,
       barcodeRef,
       downloadBarcodeSvg,
       Download,
+      formattedTime,
+      Delete,
     };
   },
 };
