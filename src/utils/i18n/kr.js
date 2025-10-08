@@ -145,4 +145,7 @@ export default {
   'FilterApplied': '필터 적용됨',
   'DateFilterRemoved': '날짜 필터 제거됨',
   'PleaseSelectAValidDateRange': '유효한 날짜 범위를 선택해 주세요',
+
+  'UpdateInfoSuccess': '정보 업데이트 성공',
+  'ErrorOccurredWhenUpdated': '업데이트 중 오류가 발생했습니다',
 };

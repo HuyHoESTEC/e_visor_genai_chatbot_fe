@@ -145,4 +145,7 @@ export default {
   'FilterApplied': '已应用筛选器',
   'DateFilterRemoved': '已移除日期筛选器',
   'PleaseSelectAValidDateRange': '请选择一个有效的日期范围',
+
+  'UpdateInfoSuccess': '信息更新成功',
+  'ErrorOccurredWhenUpdated': '更新时出错',
 };

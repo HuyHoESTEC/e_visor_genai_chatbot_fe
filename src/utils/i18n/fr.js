@@ -145,4 +145,7 @@ export default {
   'FilterApplied': 'Filtre appliqué',
   'DateFilterRemoved': 'Filtre de date supprimé',
   'PleaseSelectAValidDateRange': 'Veuillez sélectionner une plage de dates valide',
+
+  'UpdateInfoSuccess': 'Mise à jour des informations réussie',
+  'ErrorOccurredWhenUpdated': 'Une erreur est survenue lors de la mise à jour',
 };

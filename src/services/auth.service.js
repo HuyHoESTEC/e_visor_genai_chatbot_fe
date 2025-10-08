@@ -209,9 +209,9 @@ export const getWarehouseManagementApi = async (payload, signal) => {
     }
 }
 
-export const updateGoodsInformationInTheWarehouseApi = async (payload, signal) => {
+export const updateDataWarehouseApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WarehouseItem_DML`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseStatistical_DML`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'
@@ -227,21 +227,18 @@ export const updateGoodsInformationInTheWarehouseApi = async (payload, signal) =
     }
 }
 
-export const getGoodsInformationDetailApi = async (payload, signal) => {
+export const uploadDataWarehouseApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseManagement_View_Detail`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseStatistical_Upload`, payload, {
             signal,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form-data'
             }
         });
-        return response.data;
+        return response;
     } catch (e) {
-         if (axios.isCancel(e)) {
-            throw new Error("Yêu cầu API lấy thông tin chi tiết đã bị hủy");
-        }
         const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
-        throw new Error(`Lỗi API lấy thông tin chi tiết: ${errorMessage}`);
+        throw new Error(`${errorMessage}`);
     }
 }
 

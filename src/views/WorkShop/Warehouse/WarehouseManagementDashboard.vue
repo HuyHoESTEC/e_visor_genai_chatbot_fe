@@ -6,8 +6,9 @@
     <div v-else class="table-data">
       <div class="filter-section">
         <div class="action-area">
-          <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled">{{ langStore.t('BOMFileUpload') }}</el-button>
-          <el-button type="primary" class="warehouse-action-btn" :icon="Printer">{{ langStore.t('FileExport') }}</el-button>
+          <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
+          <el-button type="danger" class="warehouse-action-btn" :icon="Printer" />
+          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
           v-model="selectedProductCode"
@@ -51,18 +52,25 @@
             <el-empty description="No Data" />
           </div>
         </template>
-        <el-table-column fixed prop="id" label="ID" width="80" />
+        <el-table-column fixed prop="id" label="ID" width="80" sortable />
         <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
         <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
         <el-table-column prop="origin" label="Hãng" width="auto" />
         <el-table-column prop="quantity" label="Số lượng" width="auto" />
         <el-table-column prop="seri_number" label="Seri No." width="auto" />
+        <el-table-column label="Trạng thái" width="120">
+          <template #default="{ row }">
+            <el-tag :type="row.quantity > 0 ? 'success' : 'danger'" effect="light">
+              {{ row.quantity > 0 ? `Còn hàng` : `Hết hàng` }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column fixed="right" label="Hành động" min-width="auto">
-          <template #default="scope">
-            <el-button type="success" size="small" @click="showDetail(scope.row)" :icon="View">
+          <template #default="{ row }">
+            <el-button type="success" size="small" @click="showDetail(row)" :icon="View">
               {{ langStore.t("DetailAct") }}
             </el-button>
-            <el-button type="primary" size="small" @click="showEditForm(scope.row)" :icon="EditPen">{{
+            <el-button type="primary" size="small" @click="editItem(row)" :icon="EditPen">{{
               langStore.t("EditAct")
             }}</el-button>
           </template>
@@ -72,7 +80,7 @@
         background
         layout="prev, pager, next, sizes, total"
         :total="filteredItems.length"
-        :page-sizes="[5, 10, 20, 50]"
+        :page-sizes="[5, 10, 20, 50, 100]"
         v-model:page-size="pageSize"
         v-model:current-page="currentPage"
         @size-change="handleSizeChange"
@@ -80,54 +88,34 @@
         class="pagination-controls"
       >
       </el-pagination>
+      <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
+        <div v-if="selectedItem">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
+            <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
+            <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
+            <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
+            <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
+            <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
+            <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
+            <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
+            <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
+            <el-descriptions-item label="Ngày nhập">{{ selectedItem.time }}</el-descriptions-item>
+            <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
+          </el-descriptions>
+        </div>
+      </detail-popup>
+      <warehouse-item-dialog 
+        v-model="dialogVisible"
+        :item-to-edit="currentItem"
+        @save="saveItem"
+        @close="closeDialog"
+      />
     </div>
-    <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
-      <div v-if="selectedItem">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
-          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
-          <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
-          <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
-          <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
-          <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
-          <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
-          <el-descriptions-item label="Ngày nhập">{{ selectedItem.time }}</el-descriptions-item>
-          <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
-        </el-descriptions>
-      </div>
-    </detail-popup>
-
-    <form-popup 
-      v-model="isEditVisible"
-      title="Chỉnh sửa thông tin hàng hóa"
-      @submit="handleFormSubmit"
-    >
-      <el-form :model="editedItem" label-width="150px">
-        <el-form-item label="Tên hàng hóa">
-          <el-input v-model="editedItem.product_name"></el-input>
-        </el-form-item>
-        <el-form-item label="Mã hàng hóa">
-          <el-input v-model="editedItem.part_no"></el-input>
-        </el-form-item>
-        <el-form-item label="Hãng">
-          <el-input v-model="editedItem.origin"></el-input>
-        </el-form-item>
-        <el-form-item label="Số lượng">
-          <el-input v-model="editedItem.quantity"></el-input>
-        </el-form-item>
-        <el-form-item label="Số seri">
-          <el-input v-model="editedItem.seri_number"></el-input>
-        </el-form-item>
-        <el-form-item label="Vị trí">
-          <el-input v-model="editedItem.location"></el-input>
-        </el-form-item>
-        <el-form-item label="Mô tả">
-          <el-input v-model="editedItem.description" type="textarea"></el-input>
-        </el-form-item>
-      </el-form>
-    </form-popup>
+    <warehouse-item-upload 
+      v-model="uploadDialogVisible"
+      @uploadSuccess="handleUploadSuccess"
+    />
   </div>
 </template>
 
@@ -136,8 +124,10 @@ import { ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import { EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
-import FormPopup from "../../../components/popup/FormPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
+import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
+import { useWarehouseManagementActions } from "../../../composables/Warehouse/useWarehouseManagmentActions";
+import WarehouseItemUpload from "../../../components/upload/WarehouseItemUpload.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -149,9 +139,10 @@ export default {
   },
   components: {
     DetailPopup,
-    FormPopup,
     UploadFilled,
     Printer,
+    WarehouseItemDialog,
+    WarehouseItemUpload
   },
   setup() {
     const langStore = useLanguageStore();
@@ -168,6 +159,14 @@ export default {
       applyFilters,
       isLoading,
     } = useWarehouseManagementDatas();
+
+    const {
+        dialogVisible,
+        currentItem,
+        editItem,
+        saveItem,
+        closeDialog,
+    } = useWarehouseManagementActions(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
     const selectedItem = ref(null);
@@ -199,6 +198,21 @@ export default {
       pageSize.value = val;
       currentPage.value = 1;
     };
+
+    const refreshData = () => {
+      fetchDataAndInitialize();
+    };
+
+    // Reactive variable to control display dialog upload
+    const uploadDialogVisible = ref(false);
+    // Function to open dialog upload file
+    const handleUploadFile = () => {
+      uploadDialogVisible.value = true;
+    };
+    const handleUploadSuccess = () => {
+      // Callback fetch data function to update new data table
+      fetchDataAndInitialize();
+    };
     
 
     return {
@@ -229,6 +243,15 @@ export default {
       handleSizeChange,
       applyFilters,
       isLoading,
+      refreshData,
+      dialogVisible,
+      currentItem,
+      editItem,
+      saveItem,
+      closeDialog,
+      uploadDialogVisible,
+      handleUploadFile,
+      handleUploadSuccess,
     };
   },
 };

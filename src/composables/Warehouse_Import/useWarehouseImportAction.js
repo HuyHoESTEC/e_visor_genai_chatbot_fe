@@ -20,10 +20,11 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
         const payload = {
             "request_id": `evisor-${Date.now()}`,
             'owner': loggedInUserId,
-            'option': "export",
+            'option': "import",
             'dml_action': "update",
             form: {
                 "id": itemData.id || '',
+                "import_id": itemData.import_id || '',
                 "time": itemData.time || '',
                 "import_time": itemData.import_time || '',
                 "project_code": itemData.project_code || '',

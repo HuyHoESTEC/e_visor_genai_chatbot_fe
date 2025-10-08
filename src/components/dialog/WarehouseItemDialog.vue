@@ -1,19 +1,13 @@
 <template>
   <el-dialog
     v-model="internalDialogVisible"
-    title="Chỉnh sửa thông tin hàng hóa đã nhập"
+    title="Chỉnh sửa thông tin hàng hóa"
     width="50%"
     :before-close="handleClose"
   >
     <el-form :model="formData" :rules="rules" ref="taskForm" label-width="150px">
-      <el-form-item label="Mã phiếu" prop="import_id">
-        <el-input v-model="formData.import_id"></el-input>
-      </el-form-item>
-      <el-form-item label="Mã dự án" prop="project_code">
-        <el-input v-model="formData.project_code"></el-input>
-      </el-form-item>
       <el-form-item label="Tên hàng hóa" prop="product_name">
-        <el-input v-model="formData.product_name" type="textarea" :rows="3"></el-input>
+        <el-input v-model="formData.product_name"></el-input>
       </el-form-item>
       <el-form-item label="Mã hàng hóa" prop="part_no">
         <el-input v-model="formData.part_no"></el-input>
@@ -22,13 +16,22 @@
         <el-input v-model="formData.origin"></el-input>
       </el-form-item>
       <el-form-item label="Số lượng" prop="quantity">
-        <el-input v-model="formData.quantity" type="number"></el-input>
+       <el-input v-model="formData.quantity" type="number"></el-input>
       </el-form-item>
       <el-form-item label="Số Seri" prop="seri_number">
         <el-input v-model="formData.seri_number"></el-input>
       </el-form-item>
-      <el-form-item label="Ngày nhập hàng" prop="time">
-        <el-date-picker v-model="formData.time" type="date" placeholder="Chọn ngày xuất hàng" />
+      <el-form-item label="Vị trí" prop="location">
+        <el-input v-model="formData.location"></el-input>
+      </el-form-item>
+      <el-form-item label="Mô tả" prop="description">
+        <el-input v-model="formData.description" type="textarea"></el-input>
+      </el-form-item>
+      <el-form-item label="Đơn vị" prop="unit">
+        <el-input v-model="formData.unit" />
+      </el-form-item>
+      <el-form-item label="Người nhập" prop="entered_by">
+        <el-input v-model="formData.entered_by" />
       </el-form-item>
     </el-form>
 
@@ -46,7 +49,7 @@ import { ref, watch, computed } from 'vue';
 import { ElMessage } from 'element-plus';
 
 export default {
-  name: 'WarehouseImportDataDialog',
+  name: 'WarehouseItemDialog',
   props: {
     modelValue: { // Sử dụng modelValue cho v-model
       type: Boolean,
@@ -114,14 +117,15 @@ export default {
     // Hàm khởi tạo dữ liệu form
     function initializeFormData(task) {
       return task ? { ...task } : {
-        project_code: '',
+        description: '',
         product_name: '',
         part_no: '',
         origin: '',
         quantity: '',
         seri_number: '',
-        import_id: '',
-        time: '',
+        location: '',
+        entered_by: '',
+        unit: '',
       };
     }
 

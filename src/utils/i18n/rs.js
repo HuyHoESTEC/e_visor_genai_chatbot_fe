@@ -146,4 +146,7 @@ export default {
   'FilterApplied': 'Фильтр применен',
   'DateFilterRemoved': 'Фильтр по дате удален',
   'PleaseSelectAValidDateRange': 'Пожалуйста, выберите допустимый диапазон дат',
+
+  'UpdateInfoSuccess': 'Информация успешно обновлена',
+  'ErrorOccurredWhenUpdated': 'Произошла ошибка при обновлении',
 };
