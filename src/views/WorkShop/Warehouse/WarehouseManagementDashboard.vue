@@ -103,6 +103,24 @@
             <el-descriptions-item label="Ngày nhập">{{ selectedItem.time }}</el-descriptions-item>
             <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
           </el-descriptions>
+          <div class="barcode-area">
+            <h4 class="barcode-label">Mã Barcode:</h4>
+            <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+                <el-button 
+                    type="primary" 
+                    size="small" 
+                    :icon="Download" 
+                    :disabled="generatedBarcode === 'N/A'"
+                    @click="downloadBarcodeSvg"
+                >
+                    Tải về SVG
+                </el-button>
+                <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+                    <svg ref="barcodeRef"></svg> 
+                </div>
+              </div>
+              <p v-else class="barcode-value-error">Không có thông tin Part No. hoặc Seri No. để tạo Barcode.</p>
+          </div>
         </div>
       </detail-popup>
       <warehouse-item-dialog 
@@ -120,7 +138,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import { EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
@@ -128,6 +146,7 @@ import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useW
 import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
 import { useWarehouseManagementActions } from "../../../composables/Warehouse/useWarehouseManagmentActions";
 import WarehouseItemUpload from "../../../components/upload/WarehouseItemUpload.vue";
+import JsBarcode from "jsbarcode";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -213,6 +232,79 @@ export default {
       // Callback fetch data function to update new data table
       fetchDataAndInitialize();
     };
+
+    const barcodeRef = ref(null);
+
+    const generateBarcode = (partNo, seriNumber) => {
+        if (partNo && seriNumber) {
+            return `${partNo}+${seriNumber}`;
+        }
+        return 'N/A';
+    };
+
+    const generatedBarcode = computed(() => {
+        if (selectedItem.value) {
+            const partNoClean = selectedItem.value.part_no ? String(selectedItem.value.part_no).replace(/[^0-9A-Z]/g, '') : '';
+            const seriNumberClean = selectedItem.value.seri_number ? String(selectedItem.value.seri_number).replace(/[^0-9A-Z]/g, '') : '';
+
+            return generateBarcode(partNoClean, seriNumberClean);
+        }
+        return 'N/A';
+    });
+
+    const renderBarcode = (code) => {
+        if (code && code !== 'N/A' && barcodeRef.value) {
+            try {
+                JsBarcode(barcodeRef.value, code, {
+                    format: "CODE128",
+                    displayValue: true,
+                    width: 2,
+                    height: 100,
+                    margin: 10
+                });
+            } catch (e) {
+                console.error("Lỗi khi render JsBarcode:", e);
+            }
+        }
+    };
+
+    const downloadBarcodeSvg = () => {
+        // 1. Kiểm tra xem mã barcode có hợp lệ và đã được render chưa
+        if (!generatedBarcode.value || generatedBarcode.value === 'M/A') {
+            console.warn("Không thể tải về. Barcode không hợp lệ hoặc chưa được render.");
+            return;
+        }
+        // 2. Lấy phần tử SVG
+        const svgElement = barcodeRef.value;
+        if (!svgElement) {
+            console.error("Không tìm thấy phần tử SVG để tải về.");
+            return;
+        }
+        // 3. Chuyển SVG DOM element thành chuỗi XML
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+        // 4. Tạo URL data URI
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        // 5. Tạo thẻ <a> ẩn để kích hoạt tải về
+        const downloadLink = document.createElement('a');
+        downloadLink.href = svgUrl;
+        // Đặt tên file (ví dụ: part_no-seri_number.svg)
+        const fileName = `${generatedBarcode.value}.svg`;
+        downloadLink.download = fileName;
+        // 6. Kích hoạt tải về và dọn dẹp
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(svgUrl);
+    }
+
+    watch([isDetailVisible, generatedBarcode], ([isDetail, barcodeValue]) => {
+        if (isDetail && barcodeValue && barcodeValue!== 'N/A') {
+            nextTick(() => {
+                renderBarcode(barcodeValue);
+            });
+        }
+    });
     
 
     return {
@@ -252,6 +344,11 @@ export default {
       uploadDialogVisible,
       handleUploadFile,
       handleUploadSuccess,
+      generateBarcode,
+      generatedBarcode,
+      renderBarcode,
+      barcodeRef,
+      downloadBarcodeSvg,
     };
   },
 };
@@ -291,5 +388,55 @@ export default {
   justify-content: center;
   padding-top: 15px;
   padding-bottom: 15px;
+}
+.barcode-area {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e4e7ed;
+    border-radius: 4px;
+    background-color: #f4f4f5;
+    text-align: center;
+}
+
+.barcode-label {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #606266;
+}
+
+.barcode-value {
+    font-size: 1.5em; /* Kích thước lớn hơn cho mã */
+    font-family: monospace; /* Sử dụng font cố định để mô phỏng mã */
+    font-weight: 700;
+    color: #303133;
+    word-break: break-all; /* Đảm bảo mã dài không tràn */
+}
+.barcode-area {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e4e7ed;
+    border-radius: 4px;
+    background-color: #f4f4f5;
+    text-align: center; /* Căn giữa nội dung, bao gồm barcode SVG */
+}
+
+.barcode-label {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #606266;
+}
+
+.actual-barcode-image {
+    display: block; /* Quan trọng để căn giữa SVG */
+    margin: 0 auto;
+    max-width: 90%; 
+    height: auto;
+}
+
+.barcode-value-error {
+    color: #f56c6c;
+    font-style: italic;
 }
 </style>
