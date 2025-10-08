@@ -6,6 +6,9 @@
     :before-close="handleClose"
   >
     <el-form :model="formData" :rules="rules" ref="taskForm" label-width="150px">
+      <el-form-item label="Mã phiếu" prop="export_id">
+        <el-input v-model="formData.export_id"></el-input>
+      </el-form-item>
       <el-form-item label="Mã dự án" prop="project_code">
         <el-input v-model="formData.project_code"></el-input>
       </el-form-item>
@@ -23,6 +26,9 @@
       </el-form-item>
       <el-form-item label="Số Seri" prop="seri_number">
         <el-input v-model="formData.seri_number"></el-input>
+      </el-form-item>
+      <el-form-item label="Ngày xuất hàng" prop="time">
+        <el-date-picker v-model="formData.time" type="date" placeholder="Chọn ngày xuất hàng" />
       </el-form-item>
     </el-form>
 
@@ -114,6 +120,8 @@ export default {
         origin: '',
         quantity: '',
         seri_number: '',
+        export_id: '',
+        time: '',
       };
     }
 

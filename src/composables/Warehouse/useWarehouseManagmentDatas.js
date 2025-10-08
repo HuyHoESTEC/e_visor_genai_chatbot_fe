@@ -19,12 +19,6 @@ export function useWarehouseManagementDatas() {
     const currentPage = ref(1);
     const pageSize = ref(10);
 
-    // Dynamic data for filter tools
-    const itemStatuses = [
-        { value: 0, label: "Còn hàng" },
-        { value: 1, label: "Hết hàng" }
-    ];
-
     // Dummy item for dialog
     const dummyItems = ref([]);
 
@@ -132,7 +126,6 @@ export function useWarehouseManagementDatas() {
         selectedEnteredDate,
         currentPage,
         pageSize,
-        itemStatuses,
         dummyItems,
         emptyData,
         uniqueProductCode,

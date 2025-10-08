@@ -146,4 +146,7 @@ export default {
   'FilterApplied': 'フィルター適用済み',
   'DateFilterRemoved': '日付フィルターを解除しました',
   'PleaseSelectAValidDateRange': '有効な日付範囲を選択してください',
+
+  'UpdateInfoSuccess': '情報の更新に成功しました',
+  'ErrorOccurredWhenUpdated': '更新中にエラーが発生しました',
 };

@@ -146,5 +146,8 @@ export default {
   "records": 'Records',
   "FilterApplied": 'Filter applied',
   "DateFilterRemoved": 'Date filter removed',
-  "PleaseSelectAValidDateRange": 'Please select a vailable date range'
+  "PleaseSelectAValidDateRange": 'Please select a vailable date range',
+
+  "UpdateInfoSuccess": 'Update information success',
+  "ErrorOccurredWhenUpdated": 'Error occurred when updated'
 };

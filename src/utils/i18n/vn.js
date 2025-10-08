@@ -148,5 +148,8 @@ export default {
   records: 'bảng ghi',
   FilterApplied: 'Đã áp dụng bộ lọc',
   DateFilterRemoved: 'Đã loại bỏ bộ lọc theo ngày',
-  PleaseSelectAValidDateRange: 'Vui lòng chọn phạm vi ngày'
+  PleaseSelectAValidDateRange: 'Vui lòng chọn phạm vi ngày',
+
+  UpdateInfoSuccess: 'Cập nhật thông tin thành công',
+  ErrorOccurredWhenUpdated: 'Có lỗi trong quá trình cập nhật thông tin'
 };

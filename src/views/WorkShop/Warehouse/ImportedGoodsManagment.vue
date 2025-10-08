@@ -53,7 +53,7 @@
                 <el-empty description="No Data" />
             </div>
         </template>
-        <el-table-column fixed prop="id" label="ID" width="80" />
+        <el-table-column fixed prop="id" label="ID" width="80" sortable />
         <el-table-column prop="project_code" label="Mã dự án" width="auto" />
         <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
         <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
@@ -87,7 +87,9 @@
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item label="Ngày nhập">{{ selectedItem.import_time }}</el-descriptions-item>
+          <el-descriptions-item label="Mã phiếu">{{ selectedItem.import_id }}</el-descriptions-item>
+          <el-descriptions-item label="Ngày nhập phiếu">{{ selectedItem.import_time }}</el-descriptions-item>
+          <el-descriptions-item label="Ngày nhập hàng">{{ selectedItem.time }}</el-descriptions-item>
           <el-descriptions-item label="Mã dự án">{{ selectedItem.project_code }}</el-descriptions-item>
           <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
           <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
