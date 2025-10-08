@@ -140,7 +140,7 @@
 <script>
 import { computed, nextTick, ref, watch } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
+import { Download, EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
 import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
@@ -161,7 +161,8 @@ export default {
     UploadFilled,
     Printer,
     WarehouseItemDialog,
-    WarehouseItemUpload
+    WarehouseItemUpload,
+    Download,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -349,6 +350,7 @@ export default {
       renderBarcode,
       barcodeRef,
       downloadBarcodeSvg,
+      Download,
     };
   },
 };
