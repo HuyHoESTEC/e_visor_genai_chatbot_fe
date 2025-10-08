@@ -70,21 +70,24 @@ export default {
     // Quy tắc kiểm tra hợp lệ cho form
     const rules = {
       quantity: [
-        { required: true, message: 'Số lượng không được để trống', trigger: 'change' },
+        { required: true, message: "Số lượng không được để trống", trigger: "change" },
         {
           validator: (rule, value, callback) => {
             // Convert value to number, check
             const numericValue = Number(value);
             if (isNaN(numericValue)) {
-              callback(new Error('Số giờ phải là số'));
+              callback(new Error("Số giờ phải là số"));
             } else if (numericValue < 0) {
-              callback(new Error('Số giờ không thể là số âm!'));
+              callback(new Error("Số giờ không thể là số âm!"));
             } else {
               callback(); // Valid
             }
           },
-          trigger: 'blur' // Activate when users leave the input box
-        }
+          trigger: "blur", // Activate when users leave the input box
+        },
+      ],
+      export_id: [
+        { required: true, message: "Mã phiếu không được để trống", trigger: "change" },
       ],
     };
 
