@@ -14,6 +14,7 @@ export function useWarehouseManagementDatas() {
     const selectedProductCode = ref(null);
     const selectedProductSeriNum = ref(null);
     const selectedEnteredDate = ref(null);
+    const selectedBrand = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -21,6 +22,9 @@ export function useWarehouseManagementDatas() {
 
     // Dummy item for dialog
     const dummyItems = ref([]);
+
+    const productCodeOptions = ref([]);
+    const loadingProductCode = ref(false);
 
     // EmptyData will be computed property to show data status
     const emptyData = computed(() => {
@@ -61,6 +65,34 @@ export function useWarehouseManagementDatas() {
         return Array.from(itemSeriNum.values());
     });
 
+    const uniqueBrand = computed(() => {
+        if (!allItems.value || allItems.value.length === 0) {
+            return [];
+        }
+        const itemBrand = new Map();
+        allItems.value.forEach((item) => {
+            const brandVal = item.origin;
+            if (brandVal && !itemBrand.has(brandVal)) {
+                itemBrand.set(brandVal, {id: brandVal, name: brandVal });
+            }
+        });
+        return Array.from(itemBrand.values());
+    });
+
+    const remoteSearchProductCode = (query) => {
+        if (query) {
+            loadingProductCode.value = true;
+            setTimeout(() => {
+                loadingProductCode.value = false;
+                productCodeOptions.value = uniqueProductCode.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                });
+            }, 200);
+        } else {
+            productCodeOptions.value = '';
+        }
+    };
+
     // Function use filter and update filteredItems
     const applyFilters = () => {
         let tempItems = Array.isArray(allItems.value) ? [...allItems.value] : [];
@@ -73,6 +105,11 @@ export function useWarehouseManagementDatas() {
         if (selectedProductSeriNum.value) {
             const seriCode = selectedProductSeriNum.value;
             tempItems = tempItems.filter(item => item.seri_number === seriCode);
+        }
+        
+        if (selectedBrand.value) {
+            const brandValue = selectedBrand.value;
+            tempItems = tempItems.filter(item => item.origin === brandValue);
         }
 
         filteredItems.value = tempItems;
@@ -109,6 +146,7 @@ export function useWarehouseManagementDatas() {
                 }
             });
             dummyItems.value = Array.from(items.values());
+            productCodeOptions.value = uniqueProductCode.value;
         } else {
             allItems.value = [];
             filteredItems.value = [];
@@ -135,5 +173,10 @@ export function useWarehouseManagementDatas() {
         applyFilters,
         paginatedItems,
         fetchDataAndInitialize,
+        productCodeOptions,
+        loadingProductCode,
+        remoteSearchProductCode,
+        selectedBrand,
+        uniqueBrand,
     }
 }

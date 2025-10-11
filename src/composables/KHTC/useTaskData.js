@@ -58,6 +58,7 @@ export function useTaskData() {
    * 2 => In Progress status
    * 3 => Complete / Done status
    * 4 => Cancel status
+   * 5 => Changed
    */
   const taskStatuses = [
     { value: 0, label: 'Chờ xử lý' },
@@ -65,6 +66,7 @@ export function useTaskData() {
     { value: 2, label: 'Đang tiến hành' },
     { value: 3, label: 'Hoàn thành' },
     { value: 4, label: 'Đã hủy' },
+    { value: 5, label: 'Đã chỉnh sửa' },
   ];
 
   /**

@@ -12,6 +12,8 @@ export function useWarehouseImportDatas() {
     const selectedSeriNumber = ref(null);
     const selectedProductCode = ref(null);
     const selectedImportDate = ref(null);
+    const selectedProjectCode = ref(null);
+    const selectedBrand = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -20,7 +22,13 @@ export function useWarehouseImportDatas() {
     // Dummy item for dialog
     const dummyItems = ref([]);
 
-    const { formatDateTimeToDate } = useDateFormat();
+    const productCodeOptions = ref([]);
+    const loadingProductCode = ref(false);
+
+    const projectCodeOptions = ref([]);
+    const loadingProjectCode = ref(false);
+
+    const { extractDateOnly } = useDateFormat();
 
     // EmptyData will be computed property to show data status
     const emptyData = computed(() => {
@@ -47,6 +55,20 @@ export function useWarehouseImportDatas() {
         return Array.from(itemSeriNumber.values());
     });
 
+    const uniqueBrand = computed(() => {
+        if (!allItemsImport.value || allItemsImport.value.length === 0) {
+            return [];
+        }
+        const itemBrand = new Map();
+        allItemsImport.value.forEach((item) => {
+            const brandVal = item.origin;
+            if (brandVal && !itemBrand.has(brandVal)) {
+                itemBrand.set(brandVal, {id: brandVal, name: brandVal });
+            }
+        });
+        return Array.from(itemBrand.values());
+    });
+
     const uniqueProductCode = computed(() => {
         if (!allItemsImport.value || allItemsImport.value.length === 0) {
             return [];
@@ -63,23 +85,49 @@ export function useWarehouseImportDatas() {
         return Array.from(itemProductCode.values());
     });
 
-    const uniqueImportDate = computed(() => {
+    const remoteSearchProductCode = (query) => {
+        if (query) {
+            loadingProductCode.value = true;
+            setTimeout(() => {
+                loadingProductCode.value = false;
+                productCodeOptions.value = uniqueProductCode.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                });
+            }, 200);
+        } else {
+            productCodeOptions.value = '';
+        }
+    };
+
+    const uniqueProjectCode = computed(() => {
         if (!allItemsImport.value || allItemsImport.value.length === 0) {
             return [];
         }
 
-        const itemImportDate = new Map();
+        const itemProjectCode = new Map();
         allItemsImport.value.forEach((item) => {
-            const fullDate = item.import_time;
-            const importDateOnly = formatDateTimeToDate(fullDate);
-
-            if (importDateOnly !== 'N/A' && !itemImportDate.has(importDateOnly)) {
-                itemImportDate.set(importDateOnly, { id: importDateOnly, name: importDateOnly })
+            const projectCode = item.project_code;
+            if (projectCode && !itemProjectCode.has(projectCode)) {
+                itemProjectCode.set(projectCode, { id: projectCode, name: projectCode })
             }
         });
 
-        return Array.from(itemImportDate.values());
+        return Array.from(itemProjectCode.values());
     });
+
+    const remoteSearchProjectCode = (query) => {
+        if (query) {
+            loadingProjectCode.value = true;
+            setTimeout(() => {
+                loadingProjectCode.value = false;
+                projectCodeOptions.value = uniqueProjectCode.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                })
+            }, 200);
+        } else {
+            projectCodeOptions.value = '';
+        }
+    };
 
     // Function use filter and update filteredItems
     const applyFilters = () => {
@@ -99,9 +147,19 @@ export function useWarehouseImportDatas() {
         if (selectedImportDate.value) {
             const filterImportDate = selectedImportDate.value;
             tempItems = tempItems.filter(item => {
-                    const itemDateOnly = formatDateTimeToDate(item.import_time);
+                    const itemDateOnly = extractDateOnly(item.import_time);
                     return itemDateOnly === filterImportDate;
             });
+        }
+
+        if (selectedProjectCode.value) {
+            const filterProjectCode = selectedProjectCode.value;
+            tempItems = tempItems.filter(item => item.project_code === filterProjectCode);
+        }
+
+        if (selectedBrand.value) {
+            const brandValue = selectedBrand.value;
+            tempItems = tempItems.filter(item => item.origin === brandValue);
         }
 
         filteredItems.value = tempItems;
@@ -138,12 +196,42 @@ export function useWarehouseImportDatas() {
                 }
             });
             dummyItems.value = Array.from(items.values());
+            productCodeOptions.value = uniqueProductCode.value;
+            projectCodeOptions.value = uniqueProjectCode.value;
         } else {
             allItemsImport.value = [];
             filteredItems.value = [];
             dummyItems.value = [];
         }
     }, { immediate: true });
+
+    const groupedItems = computed(() => {
+        if (!Array.isArray(filteredItems.value)) {
+            return [];
+        }
+
+        const groups = new Map();
+        filteredItems.value.forEach(item => {
+            const projectCode = item.project_code || 'Chưa phân loại';
+            if (!groups.has(projectCode)) {
+                groups.set(projectCode, {
+                    project_code: projectCode,
+                    items: [],
+                    total_quatity: 0
+                });
+            }
+
+            const group = groups.get(projectCode);
+            group.items.push(item);
+            group.total_quatity += item.quantity || 0;
+        });
+
+        return Array.from(groups.values());
+    });
+
+    const totalItemsForPagination = computed(() => {
+        return groupedItems.value.length;
+    });
 
     onMounted(() => {
         fetchDataAndInitialize();
@@ -164,6 +252,17 @@ export function useWarehouseImportDatas() {
         paginatedItems,
         fetchDataAndInitialize,
         selectedImportDate,
-        uniqueImportDate,
+        selectedProjectCode,
+        uniqueProjectCode,
+        productCodeOptions,
+        loadingProductCode,
+        remoteSearchProductCode,
+        groupedItems,
+        totalItemsForPagination,
+        projectCodeOptions,
+        loadingProjectCode,
+        remoteSearchProjectCode,
+        selectedBrand,
+        uniqueBrand,
     }
 }
