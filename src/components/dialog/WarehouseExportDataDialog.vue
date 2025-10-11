@@ -89,6 +89,9 @@ export default {
       export_id: [
         { required: true, message: "Mã phiếu không được để trống", trigger: "change" },
       ],
+      time: [
+        { required: true, message: "Ngày xuất kho không được để trống", trigger: "change" },
+      ],
     };
 
     // Theo dõi thay đổi của modelValue (v-model) từ component cha
