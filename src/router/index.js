@@ -170,6 +170,12 @@ const routes = [
     component: ExportedGoodsManagement,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/essembly-management',
+    name: 'AssemblyManagementRoute',
+    component: () => import('../views/NotFoundPage.vue'),
+    meta: { requiresAuth: true }
+  },
   // -----NotFound-----
   {
     path: '/:pathMatch(.*)*',

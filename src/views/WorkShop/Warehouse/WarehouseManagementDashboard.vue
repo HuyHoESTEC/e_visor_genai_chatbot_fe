@@ -7,7 +7,7 @@
       <div class="filter-section">
         <div class="action-area">
           <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
-          <el-button type="danger" class="warehouse-action-btn" :icon="Printer" />
+          <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
@@ -16,9 +16,27 @@
           clearable
           @change="applyFilters"
           class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchProductCode"
+          :loading="loadingProductCode"
         >
           <el-option
-            v-for="barcode in uniqueProductCode"
+            v-for="barcode in productCodeOptions"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+        <el-select
+          v-model="selectedBrand"
+          placeholder="Lọc theo hãng"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+        >
+          <el-option
+            v-for="barcode in uniqueBrand"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -67,9 +85,9 @@
         </el-table-column>
         <el-table-column fixed="right" label="Hành động" min-width="auto">
           <template #default="{ row }">
-            <el-button type="success" size="default" @click="showDetail(row)" :icon="View" />
-            <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" />
-            <el-button type="danger" size="default" :icon="Delete" disabled/>
+            <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
+            <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
+            <el-button type="danger" size="default" :icon="Delete" circle disabled />
           </template>
         </el-table-column>
       </el-table>
@@ -135,7 +153,7 @@
 </template>
 
 <script>
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import { Delete, Download, EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
@@ -171,12 +189,16 @@ export default {
       emptyData, paginatedItems,
       selectedProductCode,
       selectedProductSeriNum,
-      uniqueProductCode,
       uniqueProductSeriNum,
       pageSize,
       currentPage,
       applyFilters,
       isLoading,
+      productCodeOptions,
+      loadingProductCode,
+      remoteSearchProductCode,
+      selectedBrand,
+      uniqueBrand,
     } = useWarehouseManagementDatas();
 
     const {
@@ -242,7 +264,6 @@ export default {
         }
         return 'N/A';
     });
-    
 
     return {
       langStore,
@@ -264,7 +285,6 @@ export default {
       paginatedItems,
       selectedProductCode,
       selectedProductSeriNum,
-      uniqueProductCode,
       handleCurrentChange,
       uniqueProductSeriNum,
       pageSize,
@@ -287,6 +307,11 @@ export default {
       Download,
       formattedTime,
       Delete,
+      productCodeOptions,
+      loadingProductCode,
+      remoteSearchProductCode,
+      selectedBrand,
+      uniqueBrand,
     };
   },
 };

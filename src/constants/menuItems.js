@@ -7,14 +7,14 @@
  */
 
 const MENU_ITEMS = [
-  {
-    name: "summary-dashboard",
-    label: "Thống kê",
-    labelKey: "SummaryDashboard",
-    iconComponent: "Histogram",
-    routeName: "SummaryDashboard",
-    isActive: false,
-  },
+  // {
+  //   name: "summary-dashboard",
+  //   label: "Thống kê",
+  //   labelKey: "SummaryDashboard",
+  //   iconComponent: "Histogram",
+  //   routeName: "SummaryDashboard",
+  //   isActive: false,
+  // },
   // -----KHTC Department-----
   {
     name: "KHTC",
@@ -86,50 +86,6 @@ const MENU_ITEMS = [
     isActive: false,
     isDropdown: true,
     children: [
-      // {
-      //   name: "WorkshopDashboard",
-      //   label: "Thống kê WorkShop",
-      //   routeName: "WorkshopDashboard",
-      //   iconComponent: "Platform",
-      //   isActive: false,
-      // },
-      // {
-      //   name: "ProjectAndWorkOrderManagement",
-      //   label: "Quản lý kế hoạch/dự án",
-      //   routeName: null,
-      //   isDropdown: true,
-      //   iconComponent: "Files",
-      //   children: [
-      //     {
-      //       name: "CreateProdutionOrdersProjects",
-      //       label: "Tạo lệnh sản xuất/dự án",
-      //       routeName: "CreateProdutionOrdersProjects",
-      //       iconComponent: "BottomRight",
-      //       isActive: false,
-      //     },
-      //     {
-      //       name: "WorkManagement",
-      //       label: "Quản lý công việc",
-      //       routeName: "WorkManagement",
-      //       iconComponent: "BottomRight",
-      //       isActive: false,
-      //     },
-      //     {
-      //       name: "DigitalDocumentManagement",
-      //       label: "Quản lý tài liệu kỹ thuật số",
-      //       routeName: "DigitalDocumentManagement",
-      //       iconComponent: "BottomRight",
-      //       isActive: false,
-      //     },
-      //     {
-      //       name: "ProductionStageManagement",
-      //       label: "Quản lý công đoạn sản xuất",
-      //       routeName: "ProductionStageManagement",
-      //       iconComponent: "BottomRight",
-      //       isActive: false,
-      //     }
-      //   ],
-      // },
       {
         name: "WarehouseManagement",
         label: "Quản lý kho",
@@ -156,6 +112,13 @@ const MENU_ITEMS = [
             label: "Xuất kho",
             routeName: "ExportWarehouseRoute",
             iconComponent: "Van",
+            isActive: false,
+          },
+          {
+            name: "AssemblyManagement",
+            label: "Lắp đặt",
+            routeName: "AssemblyManagementRoute",
+            iconComponent: "SetUp",
             isActive: false,
           }
         ]

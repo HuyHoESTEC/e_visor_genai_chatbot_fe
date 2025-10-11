@@ -125,12 +125,12 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="langStore.t('JobAction')" width="auto">
+        <!-- <el-table-column :label="langStore.t('JobAction')" width="auto">
           <template #default="{ row }">
             <el-button size="small" @click="editTask(row)" :icon="EditPen">{{ langStore.t('EditAct') }}</el-button>
             <el-button size="small" type="danger" @click="confirmDeleteTask(row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
 
       <el-pagination

@@ -13,14 +13,50 @@
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
+          v-model="selectedProjectCode"
+          placeholder="Lọc theo mã dự án"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchProjectCode"
+          :loading="loadingProjectCode"
+        >
+          <el-option
+            v-for="barcode in projectCodeOptions"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+        <el-select
           v-model="selectedProductCode"
           placeholder="Lọc theo mã code sản phẩm"
           clearable
           @change="applyFilters"
           class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchProductCode"
+          :loading="loadingProductCode"
         >
           <el-option
-            v-for="barcode in uniqueProductCode"
+            v-for="barcode in productCodeOptions"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+        <el-select
+          v-model="selectedBrand"
+          placeholder="Lọc theo hãng"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+        >
+          <el-option
+            v-for="barcode in uniqueBrand"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -40,60 +76,113 @@
             :value="barcode.id"
           />
         </el-select>
-        <el-select
-          v-model="selectedImportDate"
-          placeholder="Lọc theo ngày nhập phiếu"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-        >
-          <el-option
-            v-for="barcode in uniqueImportDate"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
+        <el-date-picker 
+            v-model="selectedImportDate"
+            type="date"
+            placeholder="Lọc theo ngày nhập phiếu"
+            format="YYYY/MM/DD"
+            value-format="YYYY-MM-DD"
+            clearable
+            @change="applyFilters"
+            style="width: 100%;"
+        />
       </div>
-      <el-table
-        :data="paginatedItems"
-        border
-        style="width: 100%; height: 100%"
-        stripe
-        class="items-table"
-      >
-        <template #empty>
-            <div v-if="emptyData" class="empty-data-message">
-                <el-empty description="No Data" />
-            </div>
-        </template>
-        <el-table-column fixed prop="id" label="ID" width="80" sortable />
-        <el-table-column prop="project_code" label="Mã dự án" width="auto" />
-        <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
-        <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-        <el-table-column prop="origin" label="Hãng" width="auto" />
-        <el-table-column prop="quantity" label="Số lượng" width="auto" />
-        <el-table-column prop="seri_number" label="Seri No." width="auto" />
-        <el-table-column fixed="right" label="Hành động" min-width="auto">
-          <template #default="{ row }">
-            <el-button type="success" size="default" @click="showDetail(row)" :icon="View" />
-            <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" />
-            <el-button type="danger" size="default" :icon="Delete" disabled />
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        background
-        layout="prev, pager, next, sizes, total"
-        :total="filteredItems.length"
-        :page-sizes="[5, 10, 20, 50, 100]"
-        v-model:page-size="pageSize"
-        v-model:current-page="currentPage"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        class="pagination-controls"
-      >
-      </el-pagination>
+      <el-tabs v-model="activeTab" class="export-data-tabs">
+        <el-tab-pane label="Danh sách chi tiết" name="flat">
+            <el-table
+                :data="paginatedItemsFlat"
+                border
+                style="width: 100%;"
+                stripe
+                class="items-table"
+                height="calc(100vh - 297px)"
+            >
+                <template #empty>
+                    <div v-if="emptyData" class="empty-data-message">
+                        <el-empty description="No Data" />
+                    </div>
+                </template>
+                <el-table-column fixed prop="id" label="ID" width="80" sortable />
+                <el-table-column prop="project_code" label="Mã dự án" width="auto" />
+                <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
+                <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+                <el-table-column prop="origin" label="Hãng" width="auto" />
+                <el-table-column prop="quantity" label="Số lượng" width="auto" />
+                <el-table-column prop="seri_number" label="Seri No." width="auto" />
+                <el-table-column fixed="right" label="Hành động" min-width="auto">
+                <template #default="{ row }">
+                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
+                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
+                    <el-button type="danger" size="default" :icon="Delete" circle disabled />
+                </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination
+                background
+                layout="prev, pager, next, sizes, total"
+                :total="filteredItems.length"
+                :page-sizes="[5, 10, 20, 50, 100]"
+                v-model:page-size="pageSizeFlat"
+                v-model:current-page="currentPageFlat"
+                @size-change="handleSizeChangeFlat"
+                @current-change="handleCurrentChangeFlat"
+                class="pagination-controls"
+            >
+            </el-pagination>
+        </el-tab-pane>
+
+        <el-tab-pane label="Danh sách nhóm theo mã dự án" name="grouped">
+            <el-table
+                :data="paginatedItemsGroup"
+                border
+                style="width: 100%;"
+                stripe
+                class="items-table"
+                height="calc(100vh - 297px)"
+            >
+                <template #empty>
+                    <div v-if="emptyData" class="empty-data-message">
+                        <el-empty description="No Data" />
+                    </div>
+                </template>
+                <el-table-column type="expand">
+                    <template #default="{ row: projectGroup }">
+                        <div style="padding: 0 20px;">
+                            <h4>Chi tiết hàng hóa thuộc dự án: {{ projectGroup.project_code }}</h4>
+                            <el-table :data="projectGroup.items" border size="small">
+                                <el-table-column prop="project_code" label="Mã dự án" width="auto" />
+                                <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
+                                <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+                                <el-table-column prop="origin" label="Hãng" width="auto" />
+                                <el-table-column prop="quantity" label="Số lượng" width="auto" />
+                                <el-table-column prop="seri_number" label="Seri No." width="auto" />
+                                <el-table-column fixed="right" label="Hành động" min-width="auto">
+                                  <template #default="{ row }">
+                                      <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
+                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
+                                      <el-button type="danger" size="default" :icon="Delete" circle disabled />
+                                  </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="project_code" label="Mã dự án" min-width="600" sortable />
+            </el-table>
+            <el-pagination
+                background
+                layout="prev, pager, next, sizes, total"
+                :total="totalItemsForPagination" 
+                :page-sizes="[5, 10, 20, 50, 100]"
+                v-model:page-size="pageSizeGroup"
+                v-model:current-page="currentPageGroup"
+                @size-change="handleSizeChangeGroup"
+                @current-change="handleCurrentChangeGroup"
+                class="pagination-controls"
+            >
+          </el-pagination>
+        </el-tab-pane>
+      </el-tabs>
       <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
@@ -155,7 +244,7 @@ import {
   Refresh,
   Delete,
 } from "@element-plus/icons-vue";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseExportDatas } from "../../../composables/Warehouse_Export/useWarehouseExportDatas";
@@ -182,21 +271,41 @@ export default {
   },
   setup() {
     const langStore = useLanguageStore();
+    const activeTab = ref('flat'); // Mặc định hiển thị tab danh sách phẳng
+    // Khai báo ref và hàm phân trang riêng cho Tab Phẳng
+    const currentPageFlat = ref(1);
+    const pageSizeFlat = ref(10);
+    const handleCurrentChangeFlat = (val) => { currentPageFlat.value = val; };
+    const handleSizeChangeFlat = (val) => { pageSizeFlat.value = val; currentPageFlat.value = 1; };
+    // Khai báo ref và hàm phân trang riêng cho Tab Nhóm
+    const currentPageGroup = ref(1);
+    const pageSizeGroup = ref(10);
+    const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
+    const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
+
     const {
       filteredItems,
       fetchDataAndInitialize,
       emptyData,
-      paginatedItems,
       selectedProductCode,
       selectedSeriNumber,
-      uniqueProductCode,
       uniqueSeriNumber,
-      pageSize,
+      pageSize, // Keep for filter, but do not use for UI pagination
       currentPage,
       applyFilters,
       isLoading,
       selectedImportDate,
-      uniqueImportDate,
+      productCodeOptions,
+      loadingProductCode,
+      remoteSearchProductCode,
+      selectedProjectCode,
+      totalItemsForPagination,
+      groupedItems,
+      projectCodeOptions,
+      loadingProjectCode,
+      remoteSearchProjectCode,
+      selectedBrand,
+      uniqueBrand,
     } = useWarehouseExportDatas();
 
     const {
@@ -221,15 +330,6 @@ export default {
       console.log('Send request success');
       
     }
-
-    const handleCurrentChange = (val) => {
-      currentPage.value = val;
-    };
-
-    const handleSizeChange = (val) => {
-      pageSize.value = val;
-      currentPage.value = 1;
-    };
 
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
@@ -263,6 +363,24 @@ export default {
         return 'N/A';
     });
 
+    // Calculator Paginated Items for tab
+    const paginatedItemsFlat = computed(() => {
+      if (!Array.isArray(filteredItems.value)) return [];
+      const start = (currentPageFlat.value - 1) * pageSizeFlat.value;
+      const end = start + pageSizeFlat.value;
+
+      return filteredItems.value.slice(start, end);
+    });
+
+    // Calculator Paginated Items for group tab
+    const paginatedItemsGroup = computed(() => {
+      if (!Array.isArray(groupedItems.value)) return [];
+      const start = (currentPageGroup.value - 1) * pageSizeGroup.value;
+      const end = start + pageSizeGroup.value;
+
+      return groupedItems.value.slice(start, end);
+    });
+
     return {
       Download,
       View,
@@ -277,10 +395,9 @@ export default {
       filteredItems,
       fetchDataAndInitialize,
       emptyData,
-      paginatedItems,
       selectedProductCode,
       selectedSeriNumber,
-      uniqueProductCode,
+      pageSize,
       uniqueSeriNumber,
       pageSize,
       currentPage,
@@ -291,8 +408,6 @@ export default {
       editedItem,
       showDetail,
       handleFormSubmit,
-      handleCurrentChange,
-      handleSizeChange,
       uploadDialogVisible,
       handleUploadFile,
       handleUploadSuccess,
@@ -306,10 +421,31 @@ export default {
       barcodeRef,
       downloadBarcodeSvg,
       selectedImportDate,
-      uniqueImportDate,
       formattedImportTime,
       formattedTime,
       Delete,
+      selectedProjectCode,
+      productCodeOptions,
+      loadingProductCode,
+      remoteSearchProductCode,
+      totalItemsForPagination,
+      groupedItems,
+      paginatedItemsFlat,
+      paginatedItemsGroup,
+      currentPageFlat,
+      pageSizeFlat,
+      handleCurrentChangeFlat,
+      handleSizeChangeFlat,
+      currentPageGroup,
+      pageSizeGroup,
+      handleCurrentChangeGroup,
+      handleSizeChangeGroup,
+      activeTab,
+      projectCodeOptions,
+      loadingProjectCode,
+      remoteSearchProjectCode,
+      selectedBrand,
+      uniqueBrand,
     };
   },
 };
@@ -323,7 +459,7 @@ export default {
   background-color: #f9f9f9;
   flex-direction: column;
   overflow: scroll;
-  overflow-x: hidden;
+  overflow-y: hidden;
 }
 .header-actions {
   display: flex;
