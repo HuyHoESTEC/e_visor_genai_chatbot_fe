@@ -24,9 +24,9 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
             'dml_action': "update",
             form: {
                 "id": itemData.id || '',
-                "export_id": itemData.export_id || '',
+                "ticket_id": itemData.export_id || '',
                 "time": itemData.time || '',
-                "export_time": itemData.export_time || '',
+                "ticket_time": itemData.export_time || '',
                 "project_code": itemData.project_code || '',
                 "product_name": itemData.product_name || '',
                 "part_no": itemData.part_no || '',

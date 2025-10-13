@@ -9,7 +9,7 @@
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
             >Tải lên phiếu nhập kho</el-button
           >
-          <el-button type="danger" :icon="Printer" disabled />
+          <el-button type="danger" :icon="Printer" />
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
@@ -244,7 +244,7 @@ import {
   Refresh,
   Delete,
 } from "@element-plus/icons-vue";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import { useWarehouseImportDatas } from "../../../composables/Warehouse_Import/useWarehouseImportDatas";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
@@ -325,11 +325,6 @@ export default {
       isDetailVisible.value = true;
     }
 
-    const handleFormSubmit = () => {
-      console.log('Send request success');
-      
-    }
-
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
     // Function to open dialog upload file
@@ -406,7 +401,6 @@ export default {
       selectedItem,
       editedItem,
       showDetail,
-      handleFormSubmit,
       uploadDialogVisible,
       handleUploadFile,
       handleUploadSuccess,
