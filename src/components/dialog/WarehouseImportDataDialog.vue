@@ -6,8 +6,15 @@
     :before-close="handleClose"
   >
     <el-form :model="formData" :rules="rules" ref="taskForm" label-width="150px">
-      <el-form-item label="Mã phiếu" prop="import_id">
+      <el-form-item label="Mã phiếu" prop="ticket_id">
         <el-input v-model="formData.import_id"></el-input>
+      </el-form-item>
+      <el-form-item label="Ngày nhập phiếu" prop="import_time">
+        <el-date-picker
+          v-model="formData.import_time"
+          type="date"
+          placeholder="Chọn ngày nhập phiếu"
+        />
       </el-form-item>
       <el-form-item label="Mã dự án" prop="project_code">
         <el-input v-model="formData.project_code"></el-input>
@@ -97,6 +104,9 @@ export default {
       time: [
         { required: true, message: "Ngày nhập kho không được để trống", trigger: "change" },
       ],
+      import_time: [
+        { required: true, message: "Ngày nhập phiếu không được để trống", trigger: "change" },
+      ]
     };
 
     // Theo dõi thay đổi của modelValue (v-model) từ component cha
@@ -141,6 +151,7 @@ export default {
             seri_number: "",
             import_id: "",
             time: "",
+            ticket_time: '',
           };
     }
 

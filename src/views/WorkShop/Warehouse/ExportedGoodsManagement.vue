@@ -326,11 +326,6 @@ export default {
       isDetailVisible.value = true;
     }
 
-    const handleFormSubmit = () => {
-      console.log('Send request success');
-      
-    }
-
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
     // Function to open dialog upload file
@@ -407,7 +402,6 @@ export default {
       selectedItem,
       editedItem,
       showDetail,
-      handleFormSubmit,
       uploadDialogVisible,
       handleUploadFile,
       handleUploadSuccess,
