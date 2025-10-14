@@ -109,7 +109,7 @@
             style="width: 100%;"
         />
       </div>
-      <el-tabs v-model="activeTab" class="export-data-tabs">
+      <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane label="Danh sách chi tiết" name="flat">
             <el-table
                 :data="paginatedItemsFlat"
@@ -124,8 +124,7 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column type="selection" width="55" /> 
-                <el-table-column fixed prop="export_id" label="Mã phiếu" width="80" sortable />
+                <el-table-column fixed prop="export_id" label="Mã phiếu" width="auto" sortable />
                 <el-table-column prop="project_code" label="Mã dự án" width="auto" />
                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                 <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
@@ -285,7 +284,7 @@ import {
   Refresh,
   Delete,
 } from "@element-plus/icons-vue";
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseExportDatas } from "../../../composables/Warehouse_Export/useWarehouseExportDatas";
@@ -464,6 +463,23 @@ export default {
       downloadFile,
       confirmDownloadFile,
     } = useWarehouseExportDownload(selectedExportId, selectedProjectCode);
+
+    let intervalId = null;
+    const POLLING_INTERVAL = 15000; // 15 seconds
+    onMounted(() => {
+      // Thiết lập interval để gọi refreshData sau mỗi POLLING_INTERVAL
+      intervalId = setInterval(() => {
+        console.log(`Polling: làm mới dữ liệu sau mỗi ${POLLING_INTERVAL / 1000} giây...`);
+        refreshData();
+      }, POLLING_INTERVAL);
+    });
+
+    onUnmounted(() => {
+      // Rất quan trọng: Xóa interval khi component bị hủy để tránh rò rỉ bộ nhớ
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    });
 
     return {
       Download,

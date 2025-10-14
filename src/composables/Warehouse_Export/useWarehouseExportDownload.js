@@ -12,20 +12,12 @@ export function useWarehouseExportDownload(selectedExportId, selectedProjectCode
     const downloadFileUrl = ref('');
     // 2. Function resolve while click button print/download file
     const downloadFile = async () => {
-        if (!selectedExportId.value) {
-            ElMessage({
-                type: 'warning',
-                message: 'Vui lòng chọn Mã phiếu để tải file'
-            });
-            return;
-        }
-
         const payload = {
             "request_id": `evisor-${Date.now()}`,
             "owner": loggedInUserId,
             "option": "export",
-            "ticket_id": selectedExportId.value || '',
-            "project_code": selectedProjectCode.value || '',
+            "ticket_id": selectedExportId.value || null,
+            "project_code": selectedProjectCode.value || null,
         };
 
         downloadFileName.value = '';
