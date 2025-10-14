@@ -1,7 +1,7 @@
 import { ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage } from 'element-plus';
-import { updateImportDataWarehouseApi } from "../../services/auth.service";
+import { deleteImportDataWarehouseApi, exportToFileForImportApi, updateImportDataWarehouseApi } from "../../services/auth.service";
 
 export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
     const dialogVisible = ref(false);
@@ -56,6 +56,28 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
         dialogVisible.value = false;
     };
 
+    const deleteItemApi = async (itemData) => {
+        const deletePayload = {
+            "request_id": `evisor-${Date.now()}`,
+            'owner': loggedInUserId,
+            'option': "import",
+            'dml_action': "delete",
+            form: {
+                "id": itemData.id || '',
+                "ticket_id": itemData.import_id || '',
+                "time": itemData.time || '',
+                "ticket_time": itemData.import_time || '',
+                "project_code": itemData.project_code || '',
+                "product_name": itemData.product_name || '',
+                "part_no": itemData.part_no || '',
+                "origin": itemData.origin || '',
+                "quantity": itemData.quantity || '',
+                "seri_number": itemData.seri_number || ''
+            }
+        };
+        await deleteImportDataWarehouseApi(deletePayload);
+    };
+
     return {
         dialogVisible,
         currentItem,
@@ -64,5 +86,6 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
         closeDialog,
         loggedInUserId,
         originalItemData,
+        deleteItemApi,
     }
 }

@@ -9,7 +9,7 @@
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
             >Tải lên phiếu nhập kho</el-button
           >
-          <el-button type="danger" :icon="Printer" />
+          <el-button type="danger" v-on:click="downloadFile" :icon="Printer" />
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
@@ -43,6 +43,20 @@
         >
           <el-option
             v-for="barcode in productCodeOptions"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+        <el-select
+          v-model="selectedImportId"
+          placeholder="Lọc mã phiếu"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+        >
+          <el-option
+            v-for="barcode in uniqueImportId"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -102,7 +116,8 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column fixed prop="id" label="ID" width="80" sortable />
+                <el-table-column type="selection" width="55" /> 
+                <el-table-column fixed prop="import_id" label="Mã phiếu" width="80" sortable />
                 <el-table-column prop="project_code" label="Mã dự án" width="auto" />
                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                 <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
@@ -113,7 +128,7 @@
                 <template #default="{ row }">
                     <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
                     <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                    <el-button type="danger" size="default" :icon="Delete" circle disabled />
+                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
                 </template>
                 </el-table-column>
             </el-table>
@@ -229,6 +244,24 @@
         @uploadSuccess="handleUploadSuccess"
     />
   </div>
+  <el-dialog
+    v-model="downloadDialogVisible"
+    title="Tải về phiếu nhập kho"
+    width="300px"
+    center
+    :close-on-click-modal="false"
+  >
+    <div v-if="downloadFileName" style="text-align: center;">
+      <p>File đã sẵn sàng để tải</p>
+      <p style="font-weight: bold; margin-bottom: 20px;">{{ downloadFileName }}</p>
+      <el-button type="primary" :icon="Download" v-on:click="confirmDownloadFile">
+        Tải File
+      </el-button>
+    </div>
+    <div v-else style="text-align: center;">
+      <p>Đang chuẩn bị file...</p>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -244,7 +277,7 @@ import {
   Refresh,
   Delete,
 } from "@element-plus/icons-vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import { useWarehouseImportDatas } from "../../../composables/Warehouse_Import/useWarehouseImportDatas";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
@@ -253,6 +286,8 @@ import WarehouseImportDataDialog from "../../../components/dialog/WarehouseImpor
 import { useWarehouseImportAction } from "../../../composables/Warehouse_Import/useWarehouseImportAction";
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useWarehouseImportDownload } from "../../../composables/Warehouse_Import/useWarehouseImportDownload";
 
 export default {
   name: "ImportedGoodsManagement",
@@ -305,6 +340,8 @@ export default {
       remoteSearchProjectCode,
       selectedBrand,
       uniqueBrand,
+      selectedImportId,
+      uniqueImportId,
     } = useWarehouseImportDatas();
 
     const {
@@ -313,7 +350,8 @@ export default {
         editItem,
         saveItem,
         closeDialog,
-    } = useWarehouseImportAction(langStore, fetchDataAndInitialize);
+        deleteItemApi,
+    } = useWarehouseImportAction(langStore, fetchDataAndInitialize, selectedImportId);
 
     const isDetailVisible = ref(false);
     const selectedItem = ref(null);
@@ -374,6 +412,45 @@ export default {
 
       return groupedItems.value.slice(start, end);
     });
+
+    const handleDelete = async (item) => {
+      try {
+        await ElMessageBox.confirm(
+          `Bạn có chắc chắn muốn xóa hàng hóa có ID: ${item.id} không ?`,
+          'Cảnh báo',
+          {
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+          }
+        );
+        await deleteItemApi(item);
+        ElMessage({
+          type: 'success',
+          message: 'Xóa hàng hóa thành công',
+        });
+        fetchDataAndInitialize();
+      } catch (e) {
+        if (e === 'cancel') {
+            ElMessage({
+                type: 'info',
+                message: 'Đã hủy thao tác xóa.',
+            });
+        } else if (e.message && e.message.startsWith('API Error')) {
+             ElMessage({
+                type: 'error',
+                message: e.message,
+            });
+        }
+      }
+    };
+
+    const {
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFile,
+      confirmDownloadFile,
+    } = useWarehouseImportDownload(selectedImportId);
 
     return {
       Download,
@@ -439,6 +516,17 @@ export default {
       handleSizeChangeGroup,
       selectedBrand,
       uniqueBrand,
+      deleteItemApi,
+      handleDelete,
+      ElMessage,
+      ElMessageBox,
+      downloadFile,
+      selectedImportId,
+      uniqueImportId,
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFile,
+      confirmDownloadFile,
     };
   },
 };
