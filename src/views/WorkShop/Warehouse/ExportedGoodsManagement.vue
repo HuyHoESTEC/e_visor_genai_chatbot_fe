@@ -175,7 +175,7 @@
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
                                       <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                                      <el-button type="danger" size="default" :icon="Delete" circle disabled />
+                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
                                   </template>
                                 </el-table-column>
                             </el-table>
@@ -417,7 +417,7 @@ export default {
     const handleDelete = async (item) => {
       try {
         await ElMessageBox.confirm(
-          `Bạn có chắc chắn muốn xóa hàng hóa có ID: ${item.id} không ?`,
+          `Bạn có chắc chắn muốn xóa hàng hóa có mã hàng hóa: ${item.part_no} không ?`,
           'Cảnh báo',
           {
             confirmButtonText: 'Xóa',
@@ -541,6 +541,7 @@ export default {
   flex-direction: column;
   overflow: scroll;
   overflow-y: hidden;
+  overflow-x: hidden;
 }
 .header-actions {
   display: flex;
@@ -621,4 +622,16 @@ export default {
     color: #f56c6c;
     font-style: italic;
 }
+
+/* .action-filter {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.action-area {
+  justify-content: start;
+} */
 </style>

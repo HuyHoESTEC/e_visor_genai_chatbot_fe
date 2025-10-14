@@ -38,7 +38,7 @@
         <el-date-picker
           v-model="formData.time"
           type="date"
-          placeholder="Chọn ngày xuất hàng"
+          placeholder="Chọn ngày nhập hàng"
         />
       </el-form-item>
     </el-form>
