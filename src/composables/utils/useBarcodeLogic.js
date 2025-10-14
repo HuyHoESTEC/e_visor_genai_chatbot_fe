@@ -31,8 +31,8 @@ export function useBarcodeLogic(selectedItem, isDetailVisible) {
                 JsBarcode(barcodeRef.value, code, {
                     format: "CODE128",
                     displayValue: true,
-                    width: 2,
-                    height: 100,
+                    width: 1,
+                    height: 90,
                     margin: 10
                 });
             } catch (e) {
