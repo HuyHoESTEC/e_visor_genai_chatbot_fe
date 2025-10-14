@@ -54,9 +54,13 @@
           clearable
           @change="applyFilters"
           class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchImportId"
+          :loading="loadingImportId"
         >
           <el-option
-            v-for="barcode in uniqueImportId"
+            v-for="barcode in importIdOptions"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -68,9 +72,13 @@
           clearable
           @change="applyFilters"
           class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchBrand"
+          :loading="loadingBrand"
         >
           <el-option
-            v-for="barcode in uniqueBrand"
+            v-for="barcode in brandOptions"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -175,7 +183,7 @@
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
                                       <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                                      <el-button type="danger" size="default" :icon="Delete" circle disabled />
+                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
                                   </template>
                                 </el-table-column>
                             </el-table>
@@ -339,9 +347,13 @@ export default {
       loadingProjectCode,
       remoteSearchProjectCode,
       selectedBrand,
-      uniqueBrand,
       selectedImportId,
-      uniqueImportId,
+      importIdOptions,
+      loadingImportId,
+      remoteSearchImportId,
+      brandOptions,
+      loadingBrand,
+      remoteSearchBrand,
     } = useWarehouseImportDatas();
 
     const {
@@ -416,7 +428,7 @@ export default {
     const handleDelete = async (item) => {
       try {
         await ElMessageBox.confirm(
-          `Bạn có chắc chắn muốn xóa hàng hóa có ID: ${item.id} không ?`,
+          `Bạn có chắc chắn muốn xóa hàng hóa có mã hàng hóa: ${item.part_no} không ?`,
           'Cảnh báo',
           {
             confirmButtonText: 'Xóa',
@@ -515,18 +527,22 @@ export default {
       handleCurrentChangeGroup,
       handleSizeChangeGroup,
       selectedBrand,
-      uniqueBrand,
       deleteItemApi,
       handleDelete,
       ElMessage,
       ElMessageBox,
       downloadFile,
       selectedImportId,
-      uniqueImportId,
       downloadDialogVisible,
       downloadFileName,
       downloadFile,
       confirmDownloadFile,
+      importIdOptions,
+      loadingImportId,
+      remoteSearchImportId,
+      brandOptions,
+      loadingBrand,
+      remoteSearchBrand,
     };
   },
 };
@@ -540,6 +556,7 @@ export default {
   background-color: #f9f9f9;
   flex-direction: column;
   overflow: scroll;
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 .header-actions {
