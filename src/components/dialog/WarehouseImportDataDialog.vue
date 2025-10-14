@@ -29,7 +29,7 @@
         <el-input v-model="formData.origin"></el-input>
       </el-form-item>
       <el-form-item label="Số lượng" prop="quantity">
-        <el-input v-model="formData.quantity" type="number"></el-input>
+        <el-input v-model="formData.quantity" type="number" min="1"></el-input>
       </el-form-item>
       <el-form-item label="Số Seri" prop="seri_number">
         <el-input v-model="formData.seri_number"></el-input>
@@ -88,9 +88,9 @@ export default {
             // Convert value to number, check
             const numericValue = Number(value);
             if (isNaN(numericValue)) {
-              callback(new Error("Số giờ phải là số"));
+              callback(new Error("Số lượng phải là số"));
             } else if (numericValue < 0) {
-              callback(new Error("Số giờ không thể là số âm!"));
+              callback(new Error("Số lượng không thể là số âm!"));
             } else {
               callback(); // Valid
             }
@@ -100,9 +100,6 @@ export default {
       ],
       import_id: [
         { required: true, message: "Mã phiếu không được để trống", trigger: "change" },
-      ],
-      time: [
-        { required: true, message: "Ngày nhập kho không được để trống", trigger: "change" },
       ],
       import_time: [
         { required: true, message: "Ngày nhập phiếu không được để trống", trigger: "change" },

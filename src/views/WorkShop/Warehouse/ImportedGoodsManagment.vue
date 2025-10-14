@@ -462,7 +462,7 @@ export default {
       downloadFileName,
       downloadFile,
       confirmDownloadFile,
-    } = useWarehouseImportDownload(selectedImportId);
+    } = useWarehouseImportDownload(selectedImportId, selectedProjectCode);
 
     return {
       Download,
