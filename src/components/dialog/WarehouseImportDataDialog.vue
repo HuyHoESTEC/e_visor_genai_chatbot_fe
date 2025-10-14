@@ -32,7 +32,10 @@
         <el-input v-model="formData.quantity" type="number" min="1"></el-input>
       </el-form-item>
       <el-form-item label="Số Seri" prop="seri_number">
-        <el-input v-model="formData.seri_number"></el-input>
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <el-input v-model="formData.seri_number"></el-input>
+          <el-button type="primary" @click="handleGenerateSeri" style="flex-shrink: 0;">Tạo Seri</el-button>
+        </div>
       </el-form-item>
       <el-form-item label="Ngày nhập hàng" prop="time">
         <el-date-picker
@@ -176,6 +179,25 @@ export default {
       }
     };
 
+    function generateRandomString(length) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
+    };
+
+    const handleGenerateSeri = () => {
+      const partNo = formData.value.part_no;
+      if (!partNo) {
+        ElMessage.warning('Vui lòng nhập Mã hàng hóa trước khi tạo Số Seri tự động.');
+        return;
+      }
+      const randomString = generateRandomString(5);
+      formData.value.seri_number = `${partNo}${randomString}`;
+    };
+
     return {
       internalDialogVisible,
       formData,
@@ -184,6 +206,7 @@ export default {
       isEditing,
       handleSubmit,
       handleClose,
+      handleGenerateSeri,
     };
   },
 };

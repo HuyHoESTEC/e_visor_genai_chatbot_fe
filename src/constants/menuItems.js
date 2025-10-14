@@ -80,7 +80,7 @@ const MENU_ITEMS = [
   // -----WorkShop Department-----
   {
     name: "WorkShop",
-    label: "WorkShop",
+    label: "Xưởng sản xuất",
     iconComponent: "OfficeBuilding",
     routeName: "WorkShop",
     isActive: false,

@@ -8,19 +8,18 @@ import { computed, nextTick, ref, watch } from "vue";
 export function useBarcodeLogic(selectedItem, isDetailVisible) {
     const barcodeRef = ref(null);
 
-    const generateBarcode = (partNo, seriNumber) => {
-        if (partNo && seriNumber) {
-            return `${partNo}+${seriNumber}`;
+    const generateBarcode = (seriNumber) => {
+        if (seriNumber) {
+            return `${seriNumber}`;
         }
         return 'N/A';
     };
 
     const generatedBarcode = computed(() => {
         if (selectedItem.value) {
-            const partNoClean = selectedItem.value.part_no ? String(selectedItem.value.part_no).replace(/[^0-9A-Z]/g, '') : '';
             const seriNumberClean = selectedItem.value.seri_number ? String(selectedItem.value.seri_number).replace(/[^0-9A-Z]/g, '') : '';
 
-            return generateBarcode(partNoClean, seriNumberClean);
+            return generateBarcode(seriNumberClean);
         }
         return 'N/A';
     });
