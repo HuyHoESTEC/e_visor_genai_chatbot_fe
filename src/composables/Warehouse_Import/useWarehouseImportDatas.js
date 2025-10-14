@@ -14,6 +14,7 @@ export function useWarehouseImportDatas() {
     const selectedImportDate = ref(null);
     const selectedProjectCode = ref(null);
     const selectedBrand = ref(null);
+    const selectedImportId = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -116,7 +117,7 @@ export function useWarehouseImportDatas() {
     });
 
     const remoteSearchProjectCode = (query) => {
-        if (query) {
+        if (query) { 
             loadingProjectCode.value = true;
             setTimeout(() => {
                 loadingProjectCode.value = false;
@@ -128,6 +129,22 @@ export function useWarehouseImportDatas() {
             projectCodeOptions.value = '';
         }
     };
+
+    const uniqueImportId = computed(() => {
+        if (!allItemsImport.value || allItemsImport.value.length === 0) {
+            return [];
+        }
+
+        const itemImportId = new Map();
+        allItemsImport.value.forEach((item) => {
+            const importId = item.import_id;
+            if (importId && !itemImportId.has(importId)) {
+                itemImportId.set(importId, { id: importId, name: importId })
+            }
+        });
+
+        return Array.from(itemImportId.values());
+    });
 
     // Function use filter and update filteredItems
     const applyFilters = () => {
@@ -160,6 +177,11 @@ export function useWarehouseImportDatas() {
         if (selectedBrand.value) {
             const brandValue = selectedBrand.value;
             tempItems = tempItems.filter(item => item.origin === brandValue);
+        }
+
+        if (selectedImportId.value) {
+            const importIdVal = selectedImportId.value;
+            tempItems = tempItems.filter(item => item.import_id === importIdVal);
         }
 
         filteredItems.value = tempItems;
@@ -264,5 +286,7 @@ export function useWarehouseImportDatas() {
         remoteSearchProjectCode,
         selectedBrand,
         uniqueBrand,
+        selectedImportId,
+        uniqueImportId,
     }
 }

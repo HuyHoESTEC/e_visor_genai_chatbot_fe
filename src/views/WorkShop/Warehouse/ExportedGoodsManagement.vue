@@ -102,7 +102,8 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column fixed prop="id" label="ID" width="80" sortable />
+                <el-table-column type="selection" width="55" /> 
+                <el-table-column fixed prop="export_id" label="Mã phiếu" width="80" sortable />
                 <el-table-column prop="project_code" label="Mã dự án" width="auto" />
                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                 <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
@@ -113,7 +114,7 @@
                 <template #default="{ row }">
                     <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
                     <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                    <el-button type="danger" size="default" :icon="Delete" circle disabled />
+                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
                 </template>
                 </el-table-column>
             </el-table>
@@ -253,6 +254,7 @@ import WarehouseExportUpload from "../../../components/upload/WarehouseExportUpl
 import WarehouseExportDataDialog from "../../../components/dialog/WarehouseExportDataDialog.vue";
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 
 export default {
@@ -314,6 +316,7 @@ export default {
         editItem,
         saveItem,
         closeDialog,
+        deleteItemApi
     } = useWarehouseExportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -375,6 +378,38 @@ export default {
 
       return groupedItems.value.slice(start, end);
     });
+    
+    const handleDelete = async (item) => {
+      try {
+        await ElMessageBox.confirm(
+          `Bạn có chắc chắn muốn xóa hàng hóa có ID: ${item.id} không ?`,
+          'Cảnh báo',
+          {
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+          }
+        );
+        await deleteItemApi(item);
+        ElMessage({
+          type: 'success',
+          message: 'Xóa hàng hóa thành công',
+        });
+        fetchDataAndInitialize();
+      } catch (e) {
+        if (e === 'cancel') {
+            ElMessage({
+                type: 'info',
+                message: 'Đã hủy thao tác xóa.',
+            });
+        } else if (e.message && e.message.startsWith('API Error')) {
+             ElMessage({
+                type: 'error',
+                message: e.message,
+            });
+        }
+      }
+    };
 
     return {
       Download,
@@ -440,6 +475,10 @@ export default {
       remoteSearchProjectCode,
       selectedBrand,
       uniqueBrand,
+      deleteItemApi,
+      handleDelete,
+      ElMessage,
+      ElMessageBox,
     };
   },
 };
