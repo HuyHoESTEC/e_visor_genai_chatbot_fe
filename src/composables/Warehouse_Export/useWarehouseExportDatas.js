@@ -14,6 +14,7 @@ export function useWarehouseExportDatas() {
     const selectedImportDate = ref(null);
     const selectedProjectCode = ref(null);
     const selectedBrand = ref(null);
+    const selectedExportId = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -129,6 +130,22 @@ export function useWarehouseExportDatas() {
         }
     };
 
+    const uniqueExportId = computed(() => {
+        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+            return [];
+        }
+
+        const itemExportId = new Map();
+        allItemsExport.value.forEach((item) => {
+            const exportId = item.export_id;
+            if (exportId && !itemExportId.has(exportId)) {
+                itemExportId.set(exportId, { id: exportId, name: exportId })
+            }
+        });
+
+        return Array.from(itemExportId.values());
+    });
+
     // Function use filter and update filteredItems
     const applyFilters = () => {
         let tempItems = Array.isArray(allItemsExport.value) ? [...allItemsExport.value] : [];
@@ -157,6 +174,11 @@ export function useWarehouseExportDatas() {
         if (selectedBrand.value) {
             const brandValue = selectedBrand.value;
             tempItems = tempItems.filter(item => item.origin === brandValue);
+        }
+
+        if (selectedExportId.value) {
+            const exportIdVal = selectedExportId.value;
+            tempItems = tempItems.filter(item => item.export_id === exportIdVal);
         }
 
         filteredItems.value = tempItems;
@@ -248,5 +270,7 @@ export function useWarehouseExportDatas() {
         remoteSearchProjectCode,
         selectedBrand,
         uniqueBrand,
+        selectedExportId,
+        uniqueExportId,
     }
 }

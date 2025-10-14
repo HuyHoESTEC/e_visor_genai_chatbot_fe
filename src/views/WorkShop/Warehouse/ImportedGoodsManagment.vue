@@ -7,9 +7,9 @@
       <div class="filter-section">
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
-            >Tải lên phiếu nhập kho</el-button
+            >Tải lên mẫu phiếu</el-button
           >
-          <el-button type="danger" v-on:click="downloadFile" :icon="Printer" />
+          <el-button type="danger" v-on:click="downloadFile" :icon="Download">Tải xuống</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select

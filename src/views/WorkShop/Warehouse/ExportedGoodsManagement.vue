@@ -7,9 +7,9 @@
       <div class="filter-section">
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
-            >Tải lên phiếu xuất kho</el-button
+            >Tải lên mẫu phiếu</el-button
           >
-          <el-button type="danger" :icon="Printer" disabled />
+          <el-button type="danger" v-on:click="downloadFile" :icon="Download">Tải xuống</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
@@ -43,6 +43,20 @@
         >
           <el-option
             v-for="barcode in productCodeOptions"
+            :key="barcode.id"
+            :label="barcode.name"
+            :value="barcode.id"
+          />
+        </el-select>
+        <el-select
+          v-model="selectedExportId"
+          placeholder="Lọc mã phiếu"
+          clearable
+          @change="applyFilters"
+          class="barcode-select"
+        >
+          <el-option
+            v-for="barcode in uniqueExportId"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -155,7 +169,7 @@
                                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                                 <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
                                 <el-table-column prop="origin" label="Hãng" width="auto" />
-                                <el-table-column prop="quantity" label="Số lượng" width="auto" />
+                                <el-table-column prop="quantity" label="Số lượng" width="120" />
                                 <el-table-column prop="seri_number" label="Seri No." width="auto" />
                                 <el-table-column fixed="right" label="Hành động" min-width="auto">
                                   <template #default="{ row }">
@@ -230,6 +244,24 @@
         @uploadSuccess="handleUploadSuccess"
     />
   </div>
+  <el-dialog
+    v-model="downloadDialogVisible"
+    title="Tải về phiếu nhập kho"
+    width="300px"
+    center
+    :close-on-click-modal="false"
+  >
+    <div v-if="downloadFileName" style="text-align: center;">
+      <p>File đã sẵn sàng để tải</p>
+      <p style="font-weight: bold; margin-bottom: 20px;">{{ downloadFileName }}</p>
+      <el-button type="primary" :icon="Download" v-on:click="confirmDownloadFile">
+        Tải File
+      </el-button>
+    </div>
+    <div v-else style="text-align: center;">
+      <p>Đang chuẩn bị file...</p>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -255,6 +287,7 @@ import WarehouseExportDataDialog from "../../../components/dialog/WarehouseExpor
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { useWarehouseExportDownload } from "../../../composables/Warehouse_Export/useWarehouseExportDownload";
 
 
 export default {
@@ -308,6 +341,8 @@ export default {
       remoteSearchProjectCode,
       selectedBrand,
       uniqueBrand,
+      selectedExportId,
+      uniqueExportId,
     } = useWarehouseExportDatas();
 
     const {
@@ -411,6 +446,13 @@ export default {
       }
     };
 
+    const {
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFile,
+      confirmDownloadFile,
+    } = useWarehouseExportDownload(selectedExportId);
+
     return {
       Download,
       View,
@@ -479,6 +521,12 @@ export default {
       handleDelete,
       ElMessage,
       ElMessageBox,
+      selectedExportId,
+      uniqueExportId,
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFile,
+      confirmDownloadFile,
     };
   },
 };
