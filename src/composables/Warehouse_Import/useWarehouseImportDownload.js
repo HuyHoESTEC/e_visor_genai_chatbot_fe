@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { exportToFileForImportApi } from "../../services/auth.service";
 
-export function useWarehouseImportDownload(selectedImportId) {
+export function useWarehouseImportDownload(selectedImportId, selectedProjectCode) {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
     // 1. Define download status
@@ -24,7 +24,8 @@ export function useWarehouseImportDownload(selectedImportId) {
             "request_id": `evisor-${Date.now()}`,
             "owner": loggedInUserId,
             "option": "import",
-            "ticket_id": selectedImportId.value,
+            "ticket_id": selectedImportId.value || '',
+            "project_code": selectedProjectCode.value || '',
         };
 
         downloadFileName.value = '';
@@ -35,7 +36,11 @@ export function useWarehouseImportDownload(selectedImportId) {
             const response = await exportToFileForImportApi(payload);
             if (response && response.data.status === 'success' && response.data.url) {
                 downloadFileUrl.value = response.data.url;
-                downloadFileName.value = `Import_${selectedImportId.value}`;
+                if (selectedImportId.value) {
+                    downloadFileName.value = `Import_${selectedImportId.value}`;
+                } else if (selectedProjectCode.value) {
+                    downloadFileName.value = `Import_${selectedProjectCode.value}`;
+                }
                 if (!downloadFileUrl.value.startsWith('http')) {
                     throw new Error("URL tải file không hợp lệ");
                 }

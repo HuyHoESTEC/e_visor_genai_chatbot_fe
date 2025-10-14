@@ -54,9 +54,13 @@
           clearable
           @change="applyFilters"
           class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchExportId"
+          :loading="loadingExportId"
         >
           <el-option
-            v-for="barcode in uniqueExportId"
+            v-for="barcode in exportIdOptions"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -68,9 +72,13 @@
           clearable
           @change="applyFilters"
           class="barcode-select"
+          filterable
+          remote
+          :remote-method="remoteSearchBrand"
+          :loading="loadingBrand"
         >
           <el-option
-            v-for="barcode in uniqueBrand"
+            v-for="barcode in brandOptions"
             :key="barcode.id"
             :label="barcode.name"
             :value="barcode.id"
@@ -340,9 +348,13 @@ export default {
       loadingProjectCode,
       remoteSearchProjectCode,
       selectedBrand,
-      uniqueBrand,
       selectedExportId,
-      uniqueExportId,
+      exportIdOptions,
+      loadingExportId,
+      remoteSearchExportId,
+      brandOptions,
+      loadingBrand,
+      remoteSearchBrand,
     } = useWarehouseExportDatas();
 
     const {
@@ -451,7 +463,7 @@ export default {
       downloadFileName,
       downloadFile,
       confirmDownloadFile,
-    } = useWarehouseExportDownload(selectedExportId);
+    } = useWarehouseExportDownload(selectedExportId, selectedProjectCode);
 
     return {
       Download,
@@ -516,17 +528,21 @@ export default {
       loadingProjectCode,
       remoteSearchProjectCode,
       selectedBrand,
-      uniqueBrand,
       deleteItemApi,
       handleDelete,
       ElMessage,
       ElMessageBox,
       selectedExportId,
-      uniqueExportId,
       downloadDialogVisible,
       downloadFileName,
       downloadFile,
       confirmDownloadFile,
+      exportIdOptions,
+      loadingExportId,
+      remoteSearchExportId,
+      brandOptions,
+      loadingBrand,
+      remoteSearchBrand,
     };
   },
 };

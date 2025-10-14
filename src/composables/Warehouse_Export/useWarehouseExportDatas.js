@@ -29,6 +29,12 @@ export function useWarehouseExportDatas() {
     const projectCodeOptions = ref([]);
     const loadingProjectCode = ref(false);
 
+    const exportIdOptions = ref([]);
+    const loadingExportId = ref(false);
+
+    const brandOptions = ref([]);
+    const loadingBrand = ref(false);
+
     const { extractDateOnly } = useDateFormat();
 
     // EmptyData will be computed property to show data status
@@ -69,6 +75,20 @@ export function useWarehouseExportDatas() {
         });
         return Array.from(itemBrand.values());
     });
+
+    const remoteSearchBrand = (query) => {
+        if (query) {
+            loadingBrand.value = true;
+            setTimeout(() => {
+                loadingBrand.value = false;
+                brandOptions.value = uniqueBrand.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                });
+            }, 200);
+        } else {
+            brandOptions.value = '';
+        }
+    };
 
     const uniqueProductCode = computed(() => {
         if (!allItemsExport.value || allItemsExport.value.length === 0) {
@@ -145,6 +165,20 @@ export function useWarehouseExportDatas() {
 
         return Array.from(itemExportId.values());
     });
+
+    const remoteSearchExportId = (query) => {
+        if (query) {
+            loadingExportId.value = true;
+            setTimeout(() => {
+                loadingExportId.value = false;
+                exportIdOptions.value = uniqueExportId.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                })
+            }, 200);
+        } else {
+            exportIdOptions.value = '';
+        }
+    };
 
     // Function use filter and update filteredItems
     const applyFilters = () => {
@@ -233,6 +267,8 @@ export function useWarehouseExportDatas() {
             dummyItems.value = Array.from(items.values());
             productCodeOptions.value = uniqueProductCode.value;
             projectCodeOptions.value = uniqueProjectCode.value;
+            exportIdOptions.value = uniqueExportId.value;
+            brandOptions.value = uniqueBrand.value;
         } else {
             allItemsExport.value = [];
             filteredItems.value = [];
@@ -269,8 +305,12 @@ export function useWarehouseExportDatas() {
         loadingProjectCode,
         remoteSearchProjectCode,
         selectedBrand,
-        uniqueBrand,
         selectedExportId,
-        uniqueExportId,
+        exportIdOptions,
+        loadingExportId,
+        remoteSearchExportId,
+        brandOptions,
+        loadingBrand,
+        remoteSearchBrand,
     }
 }
