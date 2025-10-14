@@ -465,7 +465,7 @@ export default {
     } = useWarehouseExportDownload(selectedExportId, selectedProjectCode);
 
     let intervalId = null;
-    const POLLING_INTERVAL = 15000; // 15 seconds
+    const POLLING_INTERVAL = 5000; // 5 seconds
     onMounted(() => {
       // Thiết lập interval để gọi refreshData sau mỗi POLLING_INTERVAL
       intervalId = setInterval(() => {
