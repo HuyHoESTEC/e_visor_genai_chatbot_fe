@@ -34,7 +34,7 @@
       <el-form-item label="Số Seri" prop="seri_number">
         <div style="display: flex; gap: 10px; width: 100%;">
           <el-input v-model="formData.seri_number"></el-input>
-          <el-button type="primary" @click="handleGenerateSeri" style="flex-shrink: 0;">Tạo Seri</el-button>
+          <el-button type="primary" @click="handleGenerateSeri" style="flex-shrink: 0;" :icon="MagicStick" plain />
         </div>
       </el-form-item>
       <el-form-item label="Ngày nhập hàng" prop="time">
@@ -42,6 +42,7 @@
           v-model="formData.time"
           type="date"
           placeholder="Chọn ngày nhập hàng"
+          @change="handleDateChange('time')"
         />
       </el-form-item>
     </el-form>
@@ -58,6 +59,7 @@
 <script>
 import { ref, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
+import { MagicStick } from "@element-plus/icons-vue";
 
 export default {
   name: "WarehouseImportDataDialog",
@@ -198,6 +200,28 @@ export default {
       formData.value.seri_number = `${partNo}${randomString}`;
     };
 
+    const handleDateChange = (fieldName) => {
+      if (fieldName !== 'time' && fieldName !== 'import_time') return;
+
+      let dateValue = formData.value[fieldName];
+
+      if (dateValue) {
+        if (!(dateValue instanceof Date)) {
+          dateValue = new Date(dateValue);
+        }
+
+        if (isNaN(dateValue.getTime())) {
+          return;
+        }
+
+        const now = new Date();
+        dateValue.setHours(now.getHours());
+        dateValue.setMinutes(now.getMinutes());
+        dateValue.setSeconds(now.getSeconds());
+        dateValue.setMilliseconds(now.getMilliseconds());
+      }
+    };
+
     return {
       internalDialogVisible,
       formData,
@@ -207,6 +231,8 @@ export default {
       handleSubmit,
       handleClose,
       handleGenerateSeri,
+      MagicStick,
+      handleDateChange,
     };
   },
 };

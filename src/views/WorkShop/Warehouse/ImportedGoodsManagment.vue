@@ -10,7 +10,7 @@
             >Tải lên mẫu phiếu</el-button
           >
           <el-button type="danger" v-on:click="downloadFile" :icon="Download">Tải xuống</el-button>
-          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
         </div>
         <el-select
           v-model="selectedProjectCode"
@@ -133,9 +133,9 @@
                 <el-table-column prop="seri_number" label="Seri No." width="auto" />
                 <el-table-column fixed="right" label="Hành động" min-width="auto">
                 <template #default="{ row }">
-                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
-                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
+                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
                 </template>
                 </el-table-column>
             </el-table>
@@ -180,9 +180,9 @@
                                 <el-table-column prop="seri_number" label="Seri No." width="auto" />
                                 <el-table-column fixed="right" label="Hành động" min-width="auto">
                                   <template #default="{ row }">
-                                      <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
-                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
+                                      <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
                                   </template>
                                 </el-table-column>
                             </el-table>
@@ -204,6 +204,36 @@
             >
           </el-pagination>
         </el-tab-pane>
+        <!-- <el-tab-pane label="Lịch sử chỉnh sửa" name="history">
+          <el-table
+              :data="paginatedItemsFlat"
+              border
+              style="width: 100%;"
+              stripe
+              class="items-table"
+              height="calc(100vh - 297px)"
+          >
+              <template #empty>
+                  <div v-if="emptyData" class="empty-data-message">
+                      <el-empty description="No Data" />
+                  </div>
+              </template>
+              <el-table-column fixed prop="import_id" label="Mã phiếu" width="auto" sortable />
+              <el-table-column prop="project_code" label="Mã dự án" width="auto" />
+              <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
+              <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+              <el-table-column prop="origin" label="Hãng" width="auto" />
+              <el-table-column prop="quantity" label="Số lượng" width="auto" />
+              <el-table-column prop="seri_number" label="Seri No." width="auto" />
+              <el-table-column prop="owner" label="Người thao tác" width="auto" />
+              <el-table-column prop="edit_date" label="Ngày chỉnh sửa" width="auto" />
+              <el-table-column fixed="right" label="Hành động" min-width="auto">
+              <template #default="{ row }">
+                  <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+              </template>
+              </el-table-column>
+          </el-table>
+        </el-tab-pane> -->
       </el-tabs>
       <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
       <div v-if="selectedItem">

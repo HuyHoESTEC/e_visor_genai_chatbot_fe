@@ -133,9 +133,9 @@
                 <el-table-column prop="seri_number" label="Seri No." width="auto" />
                 <el-table-column fixed="right" label="Hành động" min-width="auto">
                 <template #default="{ row }">
-                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
-                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
+                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
                 </template>
                 </el-table-column>
             </el-table>
@@ -180,9 +180,9 @@
                                 <el-table-column prop="seri_number" label="Seri No." width="auto" />
                                 <el-table-column fixed="right" label="Hành động" min-width="auto">
                                   <template #default="{ row }">
-                                      <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
-                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" circle />
+                                      <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
                                   </template>
                                 </el-table-column>
                             </el-table>
