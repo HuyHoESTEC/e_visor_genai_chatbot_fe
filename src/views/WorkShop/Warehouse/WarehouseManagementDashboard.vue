@@ -66,6 +66,30 @@
                 <PieChart />
               </el-card>
             </div>
+
+            <div class="left-column">
+              <el-card header="Giá trị tồn kho">
+               <div class="card-header-filter">
+                 <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
+                 <el-select placeholder="Tên vật tư" size="small" style="width: 120px;" />
+               </div>
+               <DonutChart :inventory-data="inventoryValueData" />
+              </el-card>
+            </div>
+
+            <div class="right-column">
+               <el-card header="Biến động tồn kho">
+              <InventoryChart :initial-data="inventoryChartData" />
+               </el-card>
+            </div>
+
+          <el-card class="transaction-chart-card mt-20">
+              <DualChart 
+                  :chart-data="transactionChartData"
+                  :is-visible="activeTab === 'dashboard'" 
+              />
+          </el-card>
+
           </div>
         </div>
       </el-tab-pane>
@@ -240,6 +264,9 @@ import WarehouseItemUpload from "../../../components/upload/WarehouseItemUpload.
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import PieChart from "../../../components/charts/PieChart.vue";
+import DonutChart from "../../../components/charts/DonutChart.vue";
+import InventoryChart from "../../../components/charts/InventoryChart.vue";
+import DualChart from "../../../components/charts/DualChart.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -258,6 +285,9 @@ export default {
     Download,
     Delete,
     PieChart,
+    DonutChart,
+    InventoryChart,
+    DualChart,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -293,6 +323,29 @@ export default {
     const isEditVisible = ref(false);
     const editedItem = ref({});
 
+    const activeTab = ref('dashboard');
+
+    const inventoryValueData = ref([
+      { label: 'Giá trị VT bị giữ', value: 3 }, 
+      { label: 'Giá trị VT có thể xuất', value: 5 }, 
+    ]);
+
+    const inventoryChartData = ref([
+      { date: '2024-02-12', quantity: 90000, value: 50000 },
+      { date: '2024-02-13', quantity: 40000, value: 5000 },
+      { date: '2024-02-14', quantity: 55000, value: 70000 },
+      { date: '2024-02-15', quantity: 95000, value: 45000 },
+      { date: '2024-02-16', quantity: 35000, value: 40000 },
+    ]);
+
+    const transactionChartData = ref({
+      dates: ['19/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025'],
+      importQuantity: [950, 250, 500, 500, 900, 350, 500],
+      exportQuantity: [850, 1050, 980, 400, 800, 700, 520],
+      importValue: [38000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000], 
+      exportValue: [40000000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000], 
+    });
+    
     const showDetail = (item) => {
       selectedItem.value = item;
       isDetailVisible.value = true;
@@ -342,9 +395,7 @@ export default {
         }
         return 'N/A';
     });
-
-    const activeTab = ref('table');
-
+    
     const dateRange = ref(null);
     const importSummaryData = ref([
       { total: 12323, imported: 1231, cutting: 2321, completed: 242 }
@@ -404,6 +455,9 @@ export default {
       dateRange,
       importSummaryData,
       exportSummaryData,
+      inventoryValueData,
+      inventoryChartData,
+      transactionChartData,
     };
   },
 };
@@ -544,6 +598,11 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Chia thành 2 cột */
   gap: 20px;
+  margin-top: 20px;
+}
+
+.transaction-chart-card {
+    width: 100%;
 }
 
 .card-header-filter {
@@ -578,6 +637,13 @@ export default {
   box-shadow: 0 0 0 2px #dcdfe6;
 }
 
+.left-column,
+.right-column-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+
 .chart-value {
   font-size: 1.5em;
   font-weight: bold;
@@ -591,6 +657,16 @@ export default {
   gap: 20px;
   margin-top: 20px;
   font-size: 0.9em;
+}
+
+.chart-extra-filters {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa các select */
+    margin-top: 10px;
+    padding: 15px; 
+    border-top: 1px solid #EBEEF5; /* Đường phân cách */
+    background-color: #F8F8F8; /* Màu nền nhẹ */
+    border-radius: 0 0 4px 4px; /* Bo góc dưới */
 }
 
 .legend-item {
