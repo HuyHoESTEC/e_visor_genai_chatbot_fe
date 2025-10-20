@@ -14,7 +14,7 @@
         </div>
         <el-select
           v-model="selectedProjectCode"
-          placeholder="Lọc theo mã dự án"
+          placeholder="Lọc theo PO"
           clearable
           @change="applyFilters"
           class="barcode-select"
@@ -124,7 +124,7 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column fixed prop="export_id" label="Mã phiếu" width="auto" sortable />
+                <el-table-column fixed prop="export_id" label="PO" width="auto" sortable />
                 <el-table-column prop="project_code" label="Mã dự án" width="auto" />
                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                 <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
@@ -153,7 +153,7 @@
             </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="Danh sách nhóm theo mã dự án" name="grouped">
+        <el-tab-pane label="Danh sách nhóm theo tủ / mã dự án" name="grouped">
             <el-table
                 :data="paginatedItemsGroup"
                 border
@@ -170,7 +170,7 @@
                 <el-table-column type="expand">
                     <template #default="{ row: projectGroup }">
                         <div style="padding: 0 20px;">
-                            <h4>Chi tiết hàng hóa thuộc dự án: {{ projectGroup.project_code }}</h4>
+                            <h4>Chi tiết hàng hóa thuộc tủ / dự án: {{ projectGroup.project_code }}</h4>
                             <el-table :data="projectGroup.items" border size="small">
                                 <el-table-column prop="project_code" label="Mã dự án" width="auto" />
                                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />

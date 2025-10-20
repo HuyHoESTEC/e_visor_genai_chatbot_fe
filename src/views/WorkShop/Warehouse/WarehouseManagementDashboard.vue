@@ -1,150 +1,226 @@
 <template>
   <div class="warehouse_management_container">
-    <div v-if="isLoading" class="loading-message">
-      {{ langStore.t('DataUploading') }}
-    </div>
-    <div v-else class="table-data">
-      <div class="filter-section">
-        <div class="action-area">
-          <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
-          <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
-          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
-        </div>
-        <el-select
-          v-model="selectedProductCode"
-          placeholder="Lọc theo mã code sản phẩm"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchProductCode"
-          :loading="loadingProductCode"
-        >
-          <el-option
-            v-for="barcode in productCodeOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedBrand"
-          placeholder="Lọc theo hãng"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-        >
-          <el-option
-            v-for="barcode in uniqueBrand"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedProductSeriNum"
-          placeholder="Lọc theo số seri sản phẩm"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-        >
-          <el-option
-            v-for="barcode in uniqueProductSeriNum"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <!-- <el-date-picker /> -->
-      </div>
-      <el-table 
-        :data="paginatedItems"
-        border
-        style="width: 100%; height: 100%"
-        stripe
-        class="items-table"
-      >
-        <template #empty>
-          <div v-if="emptyData" class="empty-data-message">
-            <el-empty description="No Data" />
+    <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card">
+      <el-tab-pane label="Tổng quan kho" name="dashboard">
+        <div class="dashboard-content">
+          <div class="header-filters">
+            <el-date-picker
+              v-model="dateRange"
+              type="daterange"
+              range-separator="→"
+              start-placeholder="Ngày bắt đầu"
+              end-placeholder="Ngày kết thúc"
+              size="default"
+            />
           </div>
-        </template>
-        <el-table-column fixed prop="id" label="ID" width="80" sortable />
-        <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
-        <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-        <el-table-column prop="origin" label="Hãng" width="auto" />
-        <el-table-column prop="quantity" label="Số lượng" width="auto" />
-        <el-table-column prop="seri_number" label="Seri No." width="auto" />
-        <el-table-column label="Trạng thái" width="120">
-          <template #default="{ row }">
-            <el-tag :type="row.quantity > 0 ? 'success' : 'danger'" effect="light">
-              {{ row.quantity > 0 ? `Còn hàng` : `Hết hàng` }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="Hành động" min-width="auto">
-          <template #default="{ row }">
-            <el-button type="success" size="default" @click="showDetail(row)" :icon="View" circle />
-            <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" circle />
-            <el-button type="danger" size="default" :icon="Delete" circle disabled />
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        background
-        layout="prev, pager, next, sizes, total"
-        :total="filteredItems.length"
-        :page-sizes="[5, 10, 20, 50, 100]"
-        v-model:page-size="pageSize"
-        v-model:current-page="currentPage"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        class="pagination-controls"
-      >
-      </el-pagination>
-      <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
-        <div v-if="selectedItem">
-          <el-descriptions :column="2" border>
-            <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
-            <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
-            <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
-            <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
-            <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
-            <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
-            <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
-            <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
-            <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
-            <el-descriptions-item label="Ngày nhập">{{ formattedTime }}</el-descriptions-item>
-            <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
-          </el-descriptions>
-          <div class="barcode-area">
-            <h4 class="barcode-label">Mã Barcode:</h4>
-            <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                <el-button 
-                    type="primary" 
-                    size="small" 
-                    :icon="Download" 
-                    :disabled="generatedBarcode === 'N/A'"
-                    @click="downloadBarcodeSvg"
-                >
-                    Tải về SVG
-                </el-button>
-                <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                    <svg ref="barcodeRef"></svg> 
-                </div>
+
+          <div class="metric-cards">
+            <el-card class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><UploadFilled /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">1200</div>
+                <div class="metric-label">Phiếu nhập kho</div>
               </div>
-              <p v-else class="barcode-value-error">Không có thông tin Part No. hoặc Seri No. để tạo Barcode.</p>
+            </el-card>
+            <el-card class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><UploadFilled /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">1100</div>
+                <div class="metric-label">Phiếu xuất kho | lắp đặt</div>
+              </div>
+            </el-card>
+          </div>
+          <div class="charts-and-tables">
+            <div class="left-column">
+              <el-card header="Phiếu nhập kho">
+                <div class="card-header-filter">
+                  <el-select placeholder="Tât cả kho" size="small" style="width: 120px;" />
+                </div>
+                <el-table :data="importSummaryData" border size="small">
+                  <el-table-column prop="total" label="Tổng" width="100" />
+                  <el-table-column prop="imported" label="Nhập kho" width="100" />
+                  <el-table-column prop="cutting" label="Đang cắt hàng" />
+                  <el-table-column prop="completed" label="Cắt hàng xong" />
+                </el-table>
+              </el-card>
+
+              <el-card header="Phiếu xuất kho" class="mt-20">
+                <div class="card-header-filter">
+                  <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
+                </div>
+                <el-table :data="exportSummaryData" border size="small">
+                  <el-table-column prop="total" label="Tổng" />
+                  <el-table-column prop="loading" label="Đang lấy hàng" />
+                  <el-table-column prop="pending" label="Chờ xuất kho" />
+                  <el-table-column prop="exported" label="Đã xuất kho" />
+                </el-table>
+              </el-card>
+            </div>
+
+            <div class="right-column">
+              <el-card header="Hàng tồn kho hiện tại">
+                <div class="card-header-filter">
+                  <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
+                  <el-select placeholder="Tên vật tư" size="small" style="width: 120px;" />
+                </div>
+                <PieChart />
+              </el-card>
+            </div>
           </div>
         </div>
-      </detail-popup>
-      <warehouse-item-dialog 
-        v-model="dialogVisible"
-        :item-to-edit="currentItem"
-        @save="saveItem"
-        @close="closeDialog"
-      />
-    </div>
+      </el-tab-pane>
+      <el-tab-pane label="Quản lý hàng hóa" name="table">
+        <div v-if="isLoading" class="loading-message">
+          {{ langStore.t('DataUploading') }}
+        </div>
+        <div v-else class="table-data">
+          <div class="filter-section">
+            <div class="action-area">
+              <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
+              <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
+              <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+            </div>
+            <el-select
+              v-model="selectedProductCode"
+              placeholder="Lọc theo mã code sản phẩm"
+              clearable
+              @change="applyFilters"
+              class="barcode-select"
+              filterable
+              remote
+              :remote-method="remoteSearchProductCode"
+              :loading="loadingProductCode"
+            >
+              <el-option
+                v-for="barcode in productCodeOptions"
+                :key="barcode.id"
+                :label="barcode.name"
+                :value="barcode.id"
+              />
+            </el-select>
+            <el-select
+              v-model="selectedBrand"
+              placeholder="Lọc theo hãng"
+              clearable
+              @change="applyFilters"
+              class="barcode-select"
+            >
+              <el-option
+                v-for="barcode in uniqueBrand"
+                :key="barcode.id"
+                :label="barcode.name"
+                :value="barcode.id"
+              />
+            </el-select>
+            <el-select
+              v-model="selectedProductSeriNum"
+              placeholder="Lọc theo số seri sản phẩm"
+              clearable
+              @change="applyFilters"
+              class="barcode-select"
+            >
+              <el-option
+                v-for="barcode in uniqueProductSeriNum"
+                :key="barcode.id"
+                :label="barcode.name"
+                :value="barcode.id"
+              />
+            </el-select>
+            <!-- <el-date-picker /> -->
+          </div>
+          <el-table 
+            :data="paginatedItems"
+            border
+            style="width: 100%; height: 100%"
+            stripe
+            class="items-table"
+          >
+            <template #empty>
+              <div v-if="emptyData" class="empty-data-message">
+                <el-empty description="No Data" />
+              </div>
+            </template>
+            <el-table-column fixed prop="id" label="ID" width="80" sortable />
+            <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
+            <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+            <el-table-column prop="origin" label="Hãng" width="auto" />
+            <el-table-column prop="quantity" label="Số lượng" width="auto" />
+            <el-table-column prop="import_quantity" label="Số lượng nhập kho" width="auto" />
+            <el-table-column prop="export_quantity" label="Số lượng xuất kho" width="auto" />
+            <el-table-column prop="remaining _quantity" label="Số lượng còn lại" width="auto" />
+            <el-table-column prop="seri_number" label="Seri No." width="auto" />
+            <el-table-column label="Trạng thái" width="120">
+              <template #default="{ row }">
+                <el-tag :type="row.quantity > 0 ? 'success' : 'danger'" effect="light">
+                  {{ row.quantity > 0 ? `Còn hàng` : `Hết hàng` }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="Hành động" min-width="auto">
+              <template #default="{ row }">
+                <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                <el-button type="danger" size="default" :icon="Delete" plain circle />
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+            background
+            layout="prev, pager, next, sizes, total"
+            :total="filteredItems.length"
+            :page-sizes="[5, 10, 20, 50, 100]"
+            v-model:page-size="pageSize"
+            v-model:current-page="currentPage"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            class="pagination-controls"
+          >
+          </el-pagination>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+
+    <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
+      <div v-if="selectedItem">
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
+          <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
+          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
+          <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
+          <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
+          <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
+          <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
+          <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
+          <el-descriptions-item label="Ngày nhập">{{ formattedTime }}</el-descriptions-item>
+          <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
+        </el-descriptions>
+        <div class="barcode-area">
+          <h4 class="barcode-label">Mã Barcode:</h4>
+          <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+              <el-button 
+                  type="primary" 
+                  size="small" 
+                  :icon="Download" 
+                  :disabled="generatedBarcode === 'N/A'"
+                  @click="downloadBarcodeSvg"
+              >
+                  Tải về SVG
+              </el-button>
+              <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+                  <svg ref="barcodeRef"></svg> 
+              </div>
+            </div>
+            <p v-else class="barcode-value-error">Không có thông tin Part No. hoặc Seri No. để tạo Barcode.</p>
+        </div>
+      </div>
+    </detail-popup>
+    <warehouse-item-dialog 
+      v-model="dialogVisible"
+      :item-to-edit="currentItem"
+      @save="saveItem"
+      @close="closeDialog"
+    />
     <warehouse-item-upload 
       v-model="uploadDialogVisible"
       @uploadSuccess="handleUploadSuccess"
@@ -163,6 +239,7 @@ import { useWarehouseManagementActions } from "../../../composables/Warehouse/us
 import WarehouseItemUpload from "../../../components/upload/WarehouseItemUpload.vue";
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
+import PieChart from "../../../components/charts/PieChart.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -180,6 +257,7 @@ export default {
     WarehouseItemUpload,
     Download,
     Delete,
+    PieChart,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -265,6 +343,16 @@ export default {
         return 'N/A';
     });
 
+    const activeTab = ref('table');
+
+    const dateRange = ref(null);
+    const importSummaryData = ref([
+      { total: 12323, imported: 1231, cutting: 2321, completed: 242 }
+    ]);
+    const exportSummaryData = ref([
+      { total: 1083, loading: 677, pending: 294, exported: 294 }
+    ]);
+
     return {
       langStore,
       isDetailVisible,
@@ -312,6 +400,10 @@ export default {
       remoteSearchProductCode,
       selectedBrand,
       uniqueBrand,
+      activeTab,
+      dateRange,
+      importSummaryData,
+      exportSummaryData,
     };
   },
 };
@@ -324,7 +416,6 @@ export default {
   display: flex;
   background-color: #f9f9f9;
   flex-direction: column;
-  overflow: scroll;
   overflow-x: hidden;
 }
 
@@ -401,5 +492,128 @@ export default {
 .barcode-value-error {
     color: #f56c6c;
     font-style: italic;
+}
+
+.dashboard-content {
+  padding: 10px 0;
+}
+
+.header-filters {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.metric-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.metric-icon {
+  font-size: 32px;
+  padding: 10px;
+  border-radius: 6px;
+  margin-right: 15px;
+  color: white;
+}
+
+.metric-icon-import { background-color: #409eff; } /* Blue */
+.metric-icon-export { background-color: #67c23a; } /* Green */
+.metric-icon-request { background-color: #e6a23c; } /* Yellow */
+.metric-icon-transfer { background-color: #f56c6c; } /* Red */
+
+.metric-value {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.metric-label {
+  font-size: 0.8em;
+  color: #909399;
+}
+
+.charts-and-tables {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Chia thành 2 cột */
+  gap: 20px;
+}
+
+.card-header-filter {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.chart-placeholder {
+  text-align: center;
+  padding: 20px 0;
+  /* Giả lập biểu đồ */
+  height: 250px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Style cho donut chart */
+  background-image: conic-gradient(
+    #409eff 0 20%, 
+    #ff8a00 20% 100%
+  );
+  border-radius: 50%;
+  width: 250px;
+  margin: 20px auto;
+  border: 40px solid white; /* Tạo hiệu ứng donut */
+  box-shadow: 0 0 0 2px #dcdfe6;
+}
+
+.chart-value {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ff8a00;
+  margin-top: -10px;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  font-size: 0.9em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.color-box {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
+
+.color-box.blue { background-color: #409eff; }
+.color-box.orange { background-color: #ff8a00; }
+
+/* Điều chỉnh lại style cho nội dung tab để tận dụng không gian */
+.el-tabs__content {
+    padding: 0;
+}
+.el-tab-pane {
+    height: 100%;
+    overflow-y: auto;
 }
 </style>

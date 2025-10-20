@@ -114,13 +114,6 @@ const MENU_ITEMS = [
             iconComponent: "Van",
             isActive: false,
           },
-          {
-            name: "AssemblyManagement",
-            label: "Lắp đặt",
-            routeName: "AssemblyManagementRoute",
-            iconComponent: "SetUp",
-            isActive: false,
-          }
         ]
       }
       // {
