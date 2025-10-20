@@ -6,7 +6,7 @@
     :before-close="handleClose"
   >
     <el-form :model="formData" :rules="rules" ref="taskForm" label-width="150px">
-      <el-form-item label="Mã phiếu" prop="ticket_id">
+      <el-form-item label="PO" prop="ticket_id">
         <el-input v-model="formData.import_id"></el-input>
       </el-form-item>
       <el-form-item label="Ngày nhập phiếu" prop="import_time">

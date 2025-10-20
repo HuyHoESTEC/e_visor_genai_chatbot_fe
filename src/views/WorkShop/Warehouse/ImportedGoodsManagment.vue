@@ -14,7 +14,7 @@
         </div>
         <el-select
           v-model="selectedProjectCode"
-          placeholder="Lọc theo mã dự án"
+          placeholder="Lọc theo mã PO"
           clearable
           @change="applyFilters"
           class="barcode-select"
@@ -124,7 +124,7 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column fixed prop="import_id" label="Mã phiếu" width="auto" sortable />
+                <el-table-column fixed prop="import_id" label="PO" width="auto" sortable />
                 <el-table-column prop="project_code" label="Mã dự án" width="auto" />
                 <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                 <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
@@ -239,7 +239,7 @@
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item label="Mã phiếu">{{ selectedItem.import_id }}</el-descriptions-item>
+          <el-descriptions-item label="PO">{{ selectedItem.import_id }}</el-descriptions-item>
           <el-descriptions-item label="Ngày nhập phiếu">{{ formattedImportTime }}</el-descriptions-item>
           <el-descriptions-item label="Ngày nhập hàng">{{ formattedTime }}</el-descriptions-item>
           <el-descriptions-item label="Mã dự án">{{ selectedItem.project_code }}</el-descriptions-item>
