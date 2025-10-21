@@ -13,22 +13,35 @@
               size="default"
             />
           </div>
-
           <div class="metric-cards">
-            <el-card class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><UploadFilled /></el-icon></div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">1200</div>
                 <div class="metric-label">Phiếu nhập kho</div>
               </div>
-            </el-card>
-            <el-card class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><UploadFilled /></el-icon></div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">1100</div>
                 <div class="metric-label">Phiếu xuất kho | lắp đặt</div>
               </div>
-            </el-card>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><Tickets /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">50</div>
+                <div class="metric-label">Số lượng PO</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><Files /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">100</div>
+                <div class="metric-label">Số lượng mã dự án</div>
+              </div>
+            </div>
           </div>
           <div class="charts-and-tables">
             <div class="left-column">
@@ -56,16 +69,29 @@
                 </el-table>
               </el-card>
             </div>
-
-            <div class="right-column">
-              <el-card header="Hàng tồn kho hiện tại">
-                <div class="card-header-filter">
-                  <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
-                  <el-select placeholder="Tên vật tư" size="small" style="width: 120px;" />
-                </div>
-                <PieChart />
+            <div class="left-column">
+              <el-card header="Giá trị tồn kho">
+               <div class="card-header-filter">
+                 <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
+                 <el-select placeholder="Tên vật tư" size="small" style="width: 120px;" />
+               </div>
+               <DonutChart :inventory-data="inventoryValueData" />
               </el-card>
             </div>
+
+            <div class="right-column">
+               <el-card header="Biến động tồn kho">
+              <InventoryChart :initial-data="inventoryChartData" />
+               </el-card>
+            </div>
+
+          <el-card class="transaction-chart-card mt-20">
+              <DualChart 
+                  :chart-data="transactionChartData"
+                  :is-visible="activeTab === 'dashboard'" 
+              />
+          </el-card>
+
           </div>
         </div>
       </el-tab-pane>
@@ -144,15 +170,14 @@
             <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
             <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
             <el-table-column prop="origin" label="Hãng" width="auto" />
-            <el-table-column prop="quantity" label="Số lượng" width="auto" />
-            <el-table-column prop="import_quantity" label="Số lượng nhập kho" width="auto" />
-            <el-table-column prop="export_quantity" label="Số lượng xuất kho" width="auto" />
-            <el-table-column prop="remaining _quantity" label="Số lượng còn lại" width="auto" />
+            <el-table-column prop="quantity_import" label="Số lượng nhập kho" width="auto" />
+            <el-table-column prop="quantity_export" label="Số lượng xuất kho" width="auto" />
+            <el-table-column prop="quantity_stock" label="Số lượng còn lại" width="auto" />
             <el-table-column prop="seri_number" label="Seri No." width="auto" />
             <el-table-column label="Trạng thái" width="120">
               <template #default="{ row }">
-                <el-tag :type="row.quantity > 0 ? 'success' : 'danger'" effect="light">
-                  {{ row.quantity > 0 ? `Còn hàng` : `Hết hàng` }}
+                <el-tag :type="row.quantity_stock > 0 ? 'success' : 'danger'" effect="light">
+                  {{ row.quantity_stock > 0 ? `Còn hàng` : `Hết hàng` }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -188,7 +213,9 @@
           <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
           <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
           <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng nhập kho">{{ selectedItem.quantity_import }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng xuất kho">{{ selectedItem.quantity_export }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng còn lại">{{ selectedItem.quantity_stock }}</el-descriptions-item>
           <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
           <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
           <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
@@ -231,7 +258,7 @@
 <script>
 import { computed, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { Delete, Download, EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
+import { Delete, Download, EditPen, Files, Printer, Refresh, ShoppingCart, Ticket, Tickets, UploadFilled, Van, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
 import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
@@ -240,6 +267,10 @@ import WarehouseItemUpload from "../../../components/upload/WarehouseItemUpload.
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import PieChart from "../../../components/charts/PieChart.vue";
+import DonutChart from "../../../components/charts/DonutChart.vue";
+import InventoryChart from "../../../components/charts/InventoryChart.vue";
+import DualChart from "../../../components/charts/DualChart.vue";
+import FileUploadDialog from "../../../components/upload/FileUploadDialog.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -258,6 +289,9 @@ export default {
     Download,
     Delete,
     PieChart,
+    DonutChart,
+    InventoryChart,
+    DualChart,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -293,6 +327,29 @@ export default {
     const isEditVisible = ref(false);
     const editedItem = ref({});
 
+    const activeTab = ref('table');
+
+    const inventoryValueData = ref([
+      { label: 'Giá trị VT bị giữ', value: 10000000 }, 
+      { label: 'Giá trị VT có thể xuất', value: 5000000 }, 
+    ]);
+
+    const inventoryChartData = ref([
+      { date: '2024-02-12', quantity: 90000, value: 50000 },
+      { date: '2024-02-13', quantity: 40000, value: 5000 },
+      { date: '2024-02-14', quantity: 55000, value: 70000 },
+      { date: '2024-02-15', quantity: 95000, value: 45000 },
+      { date: '2024-02-16', quantity: 35000, value: 40000 },
+    ]);
+
+    const transactionChartData = ref({
+      dates: ['19/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025'],
+      importQuantity: [950, 250, 500, 500, 900, 350, 500],
+      exportQuantity: [850, 1050, 980, 400, 800, 700, 520],
+      importValue: [38000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000], 
+      exportValue: [40000000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000], 
+    });
+    
     const showDetail = (item) => {
       selectedItem.value = item;
       isDetailVisible.value = true;
@@ -342,9 +399,7 @@ export default {
         }
         return 'N/A';
     });
-
-    const activeTab = ref('table');
-
+    
     const dateRange = ref(null);
     const importSummaryData = ref([
       { total: 12323, imported: 1231, cutting: 2321, completed: 242 }
@@ -404,6 +459,9 @@ export default {
       dateRange,
       importSummaryData,
       exportSummaryData,
+      inventoryValueData,
+      inventoryChartData,
+      transactionChartData,
     };
   },
 };
@@ -509,12 +567,21 @@ export default {
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 20px;
+  border-radius: 8px;
 }
 
 .metric-card {
   display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
   align-items: center;
   padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  width: 250px;
+  height: 70px;
+  gap: 20px;
 }
 
 .metric-icon {
@@ -531,19 +598,27 @@ export default {
 .metric-icon-transfer { background-color: #f56c6c; } /* Red */
 
 .metric-value {
-  font-size: 1.5em;
+  font-size: 2em;
   font-weight: bold;
 }
 
 .metric-label {
-  font-size: 0.8em;
+  font-size: 14px;
   color: #909399;
+  margin-top: 2px;
+  white-space: nowrap;
+
 }
 
 .charts-and-tables {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Chia thành 2 cột */
   gap: 20px;
+  margin-top: 20px;
+}
+
+.transaction-chart-card {
+    width: 100%;
 }
 
 .card-header-filter {
@@ -578,6 +653,13 @@ export default {
   box-shadow: 0 0 0 2px #dcdfe6;
 }
 
+.left-column,
+.right-column-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+
 .chart-value {
   font-size: 1.5em;
   font-weight: bold;
@@ -591,6 +673,16 @@ export default {
   gap: 20px;
   margin-top: 20px;
   font-size: 0.9em;
+}
+
+.chart-extra-filters {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa các select */
+    margin-top: 10px;
+    padding: 15px; 
+    border-top: 1px solid #EBEEF5; /* Đường phân cách */
+    background-color: #F8F8F8; /* Màu nền nhẹ */
+    border-radius: 0 0 4px 4px; /* Bo góc dưới */
 }
 
 .legend-item {
