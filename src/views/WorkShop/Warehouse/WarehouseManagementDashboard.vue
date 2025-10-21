@@ -170,15 +170,14 @@
             <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
             <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
             <el-table-column prop="origin" label="Hãng" width="auto" />
-            <el-table-column prop="quantity" label="Số lượng" width="auto" />
-            <el-table-column prop="import_quantity" label="Số lượng nhập kho" width="auto" />
-            <el-table-column prop="export_quantity" label="Số lượng xuất kho" width="auto" />
-            <el-table-column prop="remaining _quantity" label="Số lượng còn lại" width="auto" />
+            <el-table-column prop="quantity_import" label="Số lượng nhập kho" width="auto" />
+            <el-table-column prop="quantity_export" label="Số lượng xuất kho" width="auto" />
+            <el-table-column prop="quantity_stock" label="Số lượng còn lại" width="auto" />
             <el-table-column prop="seri_number" label="Seri No." width="auto" />
             <el-table-column label="Trạng thái" width="120">
               <template #default="{ row }">
-                <el-tag :type="row.quantity > 0 ? 'success' : 'danger'" effect="light">
-                  {{ row.quantity > 0 ? `Còn hàng` : `Hết hàng` }}
+                <el-tag :type="row.quantity_stock > 0 ? 'success' : 'danger'" effect="light">
+                  {{ row.quantity_stock > 0 ? `Còn hàng` : `Hết hàng` }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -214,7 +213,9 @@
           <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
           <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
           <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng nhập kho">{{ selectedItem.quantity_import }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng xuất kho">{{ selectedItem.quantity_export }}</el-descriptions-item>
+          <el-descriptions-item label="Số lượng còn lại">{{ selectedItem.quantity_stock }}</el-descriptions-item>
           <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
           <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
           <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
