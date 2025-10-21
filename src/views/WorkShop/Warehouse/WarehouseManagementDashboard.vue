@@ -13,22 +13,35 @@
               size="default"
             />
           </div>
-
           <div class="metric-cards">
-            <el-card class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><UploadFilled /></el-icon></div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">1200</div>
                 <div class="metric-label">Phiếu nhập kho</div>
               </div>
-            </el-card>
-            <el-card class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><UploadFilled /></el-icon></div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">1100</div>
                 <div class="metric-label">Phiếu xuất kho | lắp đặt</div>
               </div>
-            </el-card>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><Tickets /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">50</div>
+                <div class="metric-label">Số lượng PO</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-import"><el-icon><Files /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">100</div>
+                <div class="metric-label">Số lượng mã dự án</div>
+              </div>
+            </div>
           </div>
           <div class="charts-and-tables">
             <div class="left-column">
@@ -56,17 +69,6 @@
                 </el-table>
               </el-card>
             </div>
-
-            <div class="right-column">
-              <el-card header="Hàng tồn kho hiện tại">
-                <div class="card-header-filter">
-                  <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
-                  <el-select placeholder="Tên vật tư" size="small" style="width: 120px;" />
-                </div>
-                <PieChart />
-              </el-card>
-            </div>
-
             <div class="left-column">
               <el-card header="Giá trị tồn kho">
                <div class="card-header-filter">
@@ -255,7 +257,7 @@
 <script>
 import { computed, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { Delete, Download, EditPen, Printer, Refresh, UploadFilled, View } from "@element-plus/icons-vue";
+import { Delete, Download, EditPen, Files, Printer, Refresh, ShoppingCart, Ticket, Tickets, UploadFilled, Van, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
 import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
@@ -267,6 +269,7 @@ import PieChart from "../../../components/charts/PieChart.vue";
 import DonutChart from "../../../components/charts/DonutChart.vue";
 import InventoryChart from "../../../components/charts/InventoryChart.vue";
 import DualChart from "../../../components/charts/DualChart.vue";
+import FileUploadDialog from "../../../components/upload/FileUploadDialog.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -323,11 +326,11 @@ export default {
     const isEditVisible = ref(false);
     const editedItem = ref({});
 
-    const activeTab = ref('dashboard');
+    const activeTab = ref('table');
 
     const inventoryValueData = ref([
-      { label: 'Giá trị VT bị giữ', value: 3 }, 
-      { label: 'Giá trị VT có thể xuất', value: 5 }, 
+      { label: 'Giá trị VT bị giữ', value: 10000000 }, 
+      { label: 'Giá trị VT có thể xuất', value: 5000000 }, 
     ]);
 
     const inventoryChartData = ref([
@@ -563,12 +566,21 @@ export default {
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 20px;
+  border-radius: 8px;
 }
 
 .metric-card {
   display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
   align-items: center;
   padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  width: 250px;
+  height: 70px;
+  gap: 20px;
 }
 
 .metric-icon {
@@ -585,13 +597,16 @@ export default {
 .metric-icon-transfer { background-color: #f56c6c; } /* Red */
 
 .metric-value {
-  font-size: 1.5em;
+  font-size: 2em;
   font-weight: bold;
 }
 
 .metric-label {
-  font-size: 0.8em;
+  font-size: 14px;
   color: #909399;
+  margin-top: 2px;
+  white-space: nowrap;
+
 }
 
 .charts-and-tables {

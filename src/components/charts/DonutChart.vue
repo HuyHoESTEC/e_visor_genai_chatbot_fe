@@ -79,30 +79,25 @@ export default defineComponent({
       plugins: {
         legend: { display: false },
         tooltip: {
-            // *** Hiệu ứng Tooltip ***
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             titleFont: { weight: 'bold', size: 14 },
             bodyFont: { size: 12 },
             padding: 10,
             boxPadding: 4,
-            displayColors: true,
-            // Định dạng tiền tệ trong tooltip giữ nguyên
+            displayColors: true,          
             callbacks: {
               label: (context) => {
                 let label = context.label || '';
                 if (context.parsed !== null) {
-                    const value = context.parsed;
-                    // Tính toán phần trăm
+                    const value = context.parsed;             
                     const total = context.dataset.data.reduce((sum, current) => sum + current, 0);
                     const percentage = total === 0 ? 0 : ((value / total) * 100).toFixed(2);
-
                     const formattedValue = new Intl.NumberFormat('vi-VN', { 
                         style: 'currency', 
                         currency: 'VND',
                         minimumFractionDigits: 0
-                    }).format(value);
-                    
-                    label += `: ${formattedValue} (${percentage}%)`; // Thêm giá trị và phần trăm
+                    }).format(value);                  
+                    label += `: ${formattedValue} (${percentage}%)`;
                 }
                 return label;
               }

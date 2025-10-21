@@ -21,6 +21,13 @@ export function useLoadWarehouseItem() {
         const payload = {
             request_id: "evisor-" + Date.now(),
             owner: loggedInUserId,
+            filter: {
+                part_no: null,
+                origin: null,
+                seri_number: null,
+            },
+            pagination: 1,
+            page_size: 1000
         };
         try {
             const response = await getWarehouseManagementApi(payload);
