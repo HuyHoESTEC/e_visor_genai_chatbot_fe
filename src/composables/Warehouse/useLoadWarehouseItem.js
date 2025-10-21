@@ -25,6 +25,7 @@ export function useLoadWarehouseItem() {
                 part_no: null,
                 origin: null,
                 seri_number: null,
+                project_code: null,
             },
             pagination: 1,
             page_size: 1000
