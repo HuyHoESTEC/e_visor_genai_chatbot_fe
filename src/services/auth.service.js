@@ -401,3 +401,19 @@ export const exportToFileForExportApi = async (payload, signal) => {
         throw new Error(`${errorMessage}`);
     }
 };
+
+export const getWarehouseDashboardApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseStatistical_Dashboard`, 
+        payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
