@@ -1,10 +1,9 @@
-
 <template>
   <div class="chart-wrapper">
     <div class="donut-chart-container">
       <canvas ref="chartCanvas"></canvas>
       <div class="center-text">
-        <div class="total-value">{{ formatCurrency(totalValue) }}</div>
+        <div class="total-value">{{ formatNumber(totalValue) }}</div>
       </div>
     </div>
     
@@ -34,7 +33,7 @@ export default defineComponent({
     inventoryData: {
       type: Array,
       required: true,
-      default: () => []
+      default: () => ({ import: [], export: [], installation: [] })
     }
   },
   setup(props) {
@@ -42,16 +41,16 @@ export default defineComponent({
     let chartInstance = null;
 
     const chartData = computed(() => {
-      const holdValue = props.inventoryData[0]?.value || 0;
-      const exportableValue = props.inventoryData[1]?.value || 0;
+      const importQuantity = props.inventoryData.import || 0;
+      const exportQuantity = props.inventoryData.export || 0;
 
       return {
         labels: [
-          'Giá trị VT bị giữ (VNĐ)',
-          'Giá trị VT có thể xuất (VNĐ)',
+          'Số lượng Nhập', 
+          'Số lượng Xuất',
         ],
         datasets: [{
-          data: [holdValue, exportableValue],
+          data: [importQuantity, exportQuantity],
           backgroundColor: [
             '#007bff', 
             '#ff8c4a', 
@@ -63,8 +62,13 @@ export default defineComponent({
     });
     
     const totalValue = computed(() => {
-        return props.inventoryData.reduce((sum, item) => sum + item.value, 0);
+      const data = chartData.value.datasets[0].data;
+      return data.reduce((sum, item) => sum + item, 0);
     });
+
+    const formatNumber = (value) => {
+        return new Intl.NumberFormat('vi-VN').format(value);
+    };
 
     const chartOptions = {
       responsive: true,
@@ -92,12 +96,8 @@ export default defineComponent({
                     const value = context.parsed;             
                     const total = context.dataset.data.reduce((sum, current) => sum + current, 0);
                     const percentage = total === 0 ? 0 : ((value / total) * 100).toFixed(2);
-                    const formattedValue = new Intl.NumberFormat('vi-VN', { 
-                        style: 'currency', 
-                        currency: 'VND',
-                        minimumFractionDigits: 0
-                    }).format(value);                  
-                    label += `: ${formattedValue} (${percentage}%)`;
+                    const formattedValue = formatNumber(value); 
+                            label += `: ${formattedValue} (${percentage}%)`;
                 }
                 return label;
               }
@@ -110,7 +110,8 @@ export default defineComponent({
       if (!chartCanvas.value) return;
 
       if (chartInstance) {
-        chartInstance.data = chartData.value;
+        chartInstance.data.labels = chartData.value.labels;
+        chartInstance.data.datasets = chartData.value.datasets;
         chartInstance.update();
       } else {
         const ctx = chartCanvas.value.getContext('2d');
@@ -122,15 +123,6 @@ export default defineComponent({
       }
     };
 
-
-    const formatCurrency = (value) => {
-      return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-        minimumFractionDigits: 0,
-      }).format(value);
-    };
-
     onMounted(renderChart);
     watch(chartData, renderChart, { deep: true });
 
@@ -138,7 +130,7 @@ export default defineComponent({
       chartCanvas,
       chartData,
       totalValue,
-      formatCurrency,
+      formatNumber,
     };
   }
 });

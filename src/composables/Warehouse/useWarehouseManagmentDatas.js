@@ -1,5 +1,6 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useLoadWarehouseItem } from "./useLoadWarehouseItem";
+import { getWarehouseDashboardApi } from "../../services/auth.service";
 
 export function useWarehouseManagementDatas() {
     const { tableData: allItemsFromComposable, isLoading, error, fetchTableData } = useLoadWarehouseItem();
@@ -9,6 +10,8 @@ export function useWarehouseManagementDatas() {
 
     // This variable will contain filtered data, which needs to be a ref to be able to reassure the value
     const filteredItems = ref([]);
+
+    const startAndEndDateVal = ref(null);
 
     // State for filter tools
     const selectedProductCode = ref(null);
@@ -111,6 +114,11 @@ export function useWarehouseManagementDatas() {
             const brandValue = selectedBrand.value;
             tempItems = tempItems.filter(item => item.origin === brandValue);
         }
+        
+        if (selectedEnteredDate.value) {
+            const enteredDate = selectedEnteredDate.value;
+            tempItems = tempItems.filter(item => item.time === enteredDate);
+        }
 
         filteredItems.value = tempItems;
         currentPage.value = 1;
@@ -154,9 +162,66 @@ export function useWarehouseManagementDatas() {
         }
     }, { immediate: true });
 
+    const totalItemsForPagination = computed(() => {
+        return groupedItems.value.length;
+    });
+
     onMounted(() => {
         fetchDataAndInitialize();
     });
+
+    const groupedItems = computed(() => {
+        if (!Array.isArray(filteredItems.value)) {
+            return [];
+        }
+        const groups = new Map();
+        filteredItems.value.forEach(item => {
+            const productCode = item.part_no || 'Chưa phân loại';
+            if (!groups.has(productCode)) {
+                groups.set(productCode, {
+                    part_no: productCode,
+                    items: [],
+                    total_quantity_import: 0,
+                    total_quantity_export: 0,
+                    total_quantity_stock: 0,             
+                });
+            }
+            const group = groups.get(productCode);
+            group.items.push(item);
+            group.total_quantity_import += item.quantity_import || 0;
+            group.total_quantity_export += item.quantity_export || 0;
+            group.total_quantity_stock += item.quantity_stock || 0;
+        });
+        return Array.from(groups.values());
+    });
+
+    const loadDashboardWithFilters = async (filterPayload = null) => {
+        if (!filterPayload) {
+          startAndEndDateVal.value = null;
+    
+          await fetchDataAndInitialize();
+          return;
+        }
+    
+        isLoading.value = true;
+        try {
+          const result = await getWarehouseDashboardApi(filterPayload);
+          if (result && result.data && Array.isArray(result.data)) {
+            allItems.value = result.data;
+            applyFilters();
+          } else {
+            allItems.value = [];
+            filteredItems.value = [];
+          }
+        } catch (err) {
+          console.error("Error fetching filtered data:", err);
+          allItems.value = [];
+          filteredItems.value = [];
+        } finally {
+          isLoading.value = false;
+          currentPage.value = 1;
+        }
+    };
 
     return {
         allItems,
@@ -178,5 +243,9 @@ export function useWarehouseManagementDatas() {
         remoteSearchProductCode,
         selectedBrand,
         uniqueBrand,
+        groupedItems,
+        totalItemsForPagination,
+        startAndEndDateVal,
+        loadDashboardWithFilters,
     }
 }

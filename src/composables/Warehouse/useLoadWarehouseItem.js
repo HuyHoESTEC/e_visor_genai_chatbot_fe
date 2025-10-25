@@ -11,7 +11,6 @@ export function useLoadWarehouseItem() {
     const tableData = ref([]);
     const isLoading = ref(true); // Data loading status
     const error = ref(null);
-    const itemInfo = ref({});
 
     // Get dashboard data
     const fetchTableData = async () => {
@@ -26,6 +25,7 @@ export function useLoadWarehouseItem() {
                 origin: null,
                 seri_number: null,
                 project_code: null,
+                datetime_import: null
             },
             pagination: 1,
             page_size: 1000

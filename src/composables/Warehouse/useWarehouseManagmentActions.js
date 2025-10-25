@@ -1,9 +1,9 @@
 import { ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage } from 'element-plus';
-import { updateDataWarehouseApi } from "../../services/auth.service";
+import { getWarehouseManagementApi, updateDataWarehouseApi } from "../../services/auth.service";
 
-export function useWarehouseManagementActions(langStore, fetchDataAndInitialize) {
+export function useWarehouseManagementActions(langStore, fetchDataAndInitialize, selectedEnteredDate) {
     const dialogVisible = ref(false);
     const currentItem = ref(null);
     const authStore = useAuthStore();
@@ -57,6 +57,34 @@ export function useWarehouseManagementActions(langStore, fetchDataAndInitialize)
         dialogVisible.value = false;
     };
 
+    const filteredDataByDate = async () => {
+        console.log("selectedEnteredDate:", selectedEnteredDate.value);
+        const dateValue = selectedEnteredDate.value;
+        
+        const payload = {
+            "request_id": `evisor-${Date.now()}`,
+            "owner": loggedInUserId,
+            "filter": {
+                "part_no": null,
+                "origin": null,
+                "seri_number": null,
+                "project_code": null,
+                "datetime_import": dateValue
+            },
+            "pagination": 1,
+            "page_size": 20
+        };
+
+        try {
+            await getWarehouseManagementApi(payload);
+            const successMessage = "Đã áp dụng bộ lọc theo ngày";
+            ElMessage.success(successMessage);
+        } catch (err) {
+            const errorMessage = `Đã có lỗi trong quá trình tìm kiếm dữ liệu: ${err.message}`;
+            ElMessage.error(errorMessage)
+        }
+    };
+
     return {
         dialogVisible,
         currentItem,
@@ -65,5 +93,6 @@ export function useWarehouseManagementActions(langStore, fetchDataAndInitialize)
         closeDialog,
         loggedInUserId,
         originalItemData,
+        filteredDataByDate,
     }
 }

@@ -1,17 +1,17 @@
 <template>
   <div class="warehouse_management_container">
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card">
-      <el-tab-pane label="Tổng quan kho" name="dashboard">
+      <el-tab-pane label="Thống kê" name="dashboard" class="dashboard-tab-pane">
         <div class="dashboard-content">
           <div class="header-filters">
             <el-date-picker
-              v-model="dateRange"
+              v-model="startAndEndDateVal"
               type="daterange"
-              range-separator="→"
+              range-separator="To"
               start-placeholder="Ngày bắt đầu"
               end-placeholder="Ngày kết thúc"
-              size="default"
             />
+            <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
           </div>
           <div class="metric-cards">
             <div class="metric-card">
@@ -22,21 +22,21 @@
               </div>
             </div>
             <div class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><Van /></el-icon></div>
+              <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">1100</div>
                 <div class="metric-label">Phiếu xuất kho | lắp đặt</div>
               </div>
             </div>
             <div class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><Tickets /></el-icon></div>
+              <div class="metric-icon metric-icon-export"><el-icon><Tickets /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">50</div>
                 <div class="metric-label">Số lượng PO</div>
               </div>
             </div>
             <div class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><Files /></el-icon></div>
+              <div class="metric-icon metric-icon-request"><el-icon><Files /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">100</div>
                 <div class="metric-label">Số lượng mã dự án</div>
@@ -95,7 +95,7 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="Quản lý hàng hóa" name="table">
+      <el-tab-pane style="height: calc(100vh - 100px);" label="Chi tiết hàng hóa" name="table">
         <div v-if="isLoading" class="loading-message">
           {{ langStore.t('DataUploading') }}
         </div>
@@ -138,21 +138,16 @@
                 :value="barcode.id"
               />
             </el-select>
-            <el-select
-              v-model="selectedProductSeriNum"
-              placeholder="Lọc theo số seri sản phẩm"
+            <!-- <el-date-picker
+              v-model="selectedEnteredDate"
+              type="date"
+              placeholder="Chọn ngày nhập phiếu"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
               clearable
-              @change="applyFilters"
-              class="barcode-select"
-            >
-              <el-option
-                v-for="barcode in uniqueProductSeriNum"
-                :key="barcode.id"
-                :label="barcode.name"
-                :value="barcode.id"
-              />
-            </el-select>
-            <!-- <el-date-picker /> -->
+              style="width: 100%;"
+            />
+            <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
           </div>
           <el-table 
             :data="paginatedItems"
@@ -170,9 +165,9 @@
             <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
             <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
             <el-table-column prop="origin" label="Hãng" width="auto" />
-            <el-table-column prop="quantity_import" label="Số lượng nhập kho" width="auto" />
-            <el-table-column prop="quantity_export" label="Số lượng xuất kho" width="auto" />
-            <el-table-column prop="quantity_stock" label="Số lượng còn lại" width="auto" />
+            <el-table-column prop="quantity_import" label="Nhập kho" width="auto" />
+            <el-table-column prop="quantity_export" label="Xuất kho" width="auto" />
+            <el-table-column prop="quantity_stock" label="Còn lại" width="auto" />
             <el-table-column prop="seri_number" label="Seri No." width="auto" />
             <el-table-column label="Trạng thái" width="120">
               <template #default="{ row }">
@@ -203,8 +198,83 @@
           </el-pagination>
         </div>
       </el-tab-pane>
+    
+      <el-tab-pane label="Danh sách nhóm theo mã hàng hóa" name="grouped" class="grouped-tab-pane">
+        <el-table
+          :data="paginatedItemsGroup"
+          border
+          style="width: 100%; height: 90%"
+          stripe
+          class="items-table"
+        >
+          <template #empty>
+            <div v-if="emptyData" class="empty-data-message">
+              <el-empty description="No Data" />
+            </div>
+          </template>
+          <el-table-column type="expand">
+              <template #default="{ row: productGroup }">
+                  <div style="padding: 0 20px;">
+                      <h4>Chi tiết hàng hóa thuộc : {{ productGroup.part_no }}</h4>
+                      <el-table
+                        :data="getPaginatedChildItems(productGroup)" border
+                        style="width: 100%; height: 100%"
+                        stripe
+                        class="items-table"
+                      >
+                        <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
+                        <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+                        <el-table-column prop="origin" label="Hãng" width="auto" />
+                        <el-table-column prop="quantity_import" label="Nhập kho" width="auto" />
+                        <el-table-column prop="quantity_export" label="Xuất kho" width="auto" />
+                        <el-table-column prop="quantity_stock" label="Còn lại" width="auto" />
+                        <el-table-column prop="seri_number" label="Seri No." width="auto" />
+                        <el-table-column fixed="right" label="Hành động" min-width="auto">
+                          <template #default="{ row }">
+                              <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                              <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                              <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                      <el-pagination
+                          background
+                          layout="prev, pager, next, sizes, total"
+                          :total="productGroup.items.length"
+                          :page-sizes="[5, 10, 20, 50, 100]"
+                          :page-size="itemPaginationState[productGroup.part_no]?.pageSize || 10"
+                          :current-page="itemPaginationState[productGroup.part_no]?.currentPage || 1"
+                          @size-change="val => handleItemSizeChangeGroup(val, productGroup)"
+                          @current-change="val => handleItemCurrentChangeGroup(val, productGroup)"
+                          class="pagination-controls"
+                      >
+                    </el-pagination>
+                  </div>
+              </template>
+          </el-table-column>
+          <el-table-column prop="part_no" label="Số lượng" min-width="600" sortable>
+            <template #default="{ row: productGroup }">
+              <el-tag size="small" type="info" style="margin-left: 10px;">
+                ({{ productGroup.items.length }} hàng hóa)
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="part_no" label="Mã hàng hóa" min-width="600" sortable />
+        </el-table>
+        <el-pagination
+          background
+          layout="prev, pager, next, sizes, total"
+          :total="totalItemsForPagination" 
+          :page-sizes="[5, 10, 20, 50, 100]"
+          v-model:page-size="pageSizeGroup"
+          v-model:current-page="currentPageGroup"
+          @size-change="handleSizeChangeGroup"
+          @current-change="handleCurrentChangeGroup"
+          class="pagination-controls"
+        >
+        </el-pagination>
+      </el-tab-pane>
     </el-tabs>
-
     <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
@@ -258,7 +328,7 @@
 <script>
 import { computed, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { Delete, Download, EditPen, Files, Printer, Refresh, ShoppingCart, Ticket, Tickets, UploadFilled, Van, View } from "@element-plus/icons-vue";
+import { Delete, Download, EditPen, Files, Filter, Printer, Refresh, ShoppingCart, Tickets, UploadFilled, Van, View } from "@element-plus/icons-vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseManagementDatas } from "../../../composables/Warehouse/useWarehouseManagmentDatas";
 import WarehouseItemDialog from "../../../components/dialog/WarehouseItemDialog.vue";
@@ -270,7 +340,7 @@ import PieChart from "../../../components/charts/PieChart.vue";
 import DonutChart from "../../../components/charts/DonutChart.vue";
 import InventoryChart from "../../../components/charts/InventoryChart.vue";
 import DualChart from "../../../components/charts/DualChart.vue";
-import FileUploadDialog from "../../../components/upload/FileUploadDialog.vue";
+import { useLoadWarehouseChart } from "../../../composables/Warehouse/useLoadWarehouseChart";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -292,6 +362,7 @@ export default {
     DonutChart,
     InventoryChart,
     DualChart,
+    Filter
   },
   setup() {
     const langStore = useLanguageStore();
@@ -311,15 +382,24 @@ export default {
       remoteSearchProductCode,
       selectedBrand,
       uniqueBrand,
+      groupedItems,
+      totalItemsForPagination,
+      startAndEndDateVal,
+      loadDashboardWithFilters,
+      selectedEnteredDate,
     } = useWarehouseManagementDatas();
-
+    
     const {
         dialogVisible,
         currentItem,
         editItem,
         saveItem,
         closeDialog,
-    } = useWarehouseManagementActions(langStore, fetchDataAndInitialize);
+        filteredDataByDate,
+    } = useWarehouseManagementActions(langStore, fetchDataAndInitialize, selectedEnteredDate);
+
+    const currentPageGroup = ref(1);
+    const pageSizeGroup = ref(10);
 
     const isDetailVisible = ref(false);
     const selectedItem = ref(null);
@@ -329,10 +409,20 @@ export default {
 
     const activeTab = ref('table');
 
+    const rawApiData = ref(null);
+
     const inventoryValueData = ref([
-      { label: 'Giá trị VT bị giữ', value: 10000000 }, 
-      { label: 'Giá trị VT có thể xuất', value: 5000000 }, 
+      // { label: 'Giá trị VT bị giữ', value: 10000000 }, 
+      // { label: 'Giá trị VT có thể xuất', value: 5000000 }, 
+
     ]);
+
+     const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
+     const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
+
+     const handleFilterByDate = () => {
+      filteredDataByDate();
+    };
 
     const inventoryChartData = ref([
       { date: '2024-02-12', quantity: 90000, value: 50000 },
@@ -379,6 +469,13 @@ export default {
       fetchDataAndInitialize();
     };
 
+    const {
+        filterByDateAction,
+        inventoryChart,
+        donutChart,
+        dualCharts,
+    } = useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters);
+
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
     // Function to open dialog upload file
@@ -400,13 +497,74 @@ export default {
         return 'N/A';
     });
     
-    const dateRange = ref(null);
+    const filterByDate = () => {
+      filterByDateAction();
+    };
+
     const importSummaryData = ref([
       { total: 12323, imported: 1231, cutting: 2321, completed: 242 }
     ]);
     const exportSummaryData = ref([
       { total: 1083, loading: 677, pending: 294, exported: 294 }
     ]);
+
+    const paginatedItemsGroup = computed(() => {
+      if (!Array.isArray(groupedItems.value)) return [];
+      const start = (currentPageGroup.value - 1) * pageSizeGroup.value;
+      const end = start + pageSizeGroup.value;
+
+      return groupedItems.value.slice(start, end);
+    });
+
+    const mappedQuantityData = computed(() => {
+        const pieChartData = rawApiData.value?.chart?.pie_chart;
+
+        if (!pieChartData) {
+            return [];
+        }
+
+        const { import_quantity, export_quantity } = pieChartData;
+
+        return [
+            { value: import_quantity || 0 }, // Vị trí [0] 
+            { value: export_quantity || 0 }  // Vị trí [1]
+        ];
+    });
+
+    const itemPaginationState = ref({});
+
+    const getPaginatedChildItems = (productGroup) => {
+      const partNo = productGroup.part_no;
+      if (!itemPaginationState.value[partNo]) {
+        itemPaginationState.value[partNo] = {
+          currentPage: 1,
+          pageSize: 10,
+        };
+      }
+
+      const state = itemPaginationState.value[partNo];
+      const allItems = productGroup.items;
+
+      const start = (state.currentPage - 1) * state.pageSize;
+      const end = start + state.pageSize;
+
+      return allItems.slice(start, end);
+    };
+
+    const handleItemSizeChangeGroup = (val, productGroup) => {
+      const partNo = productGroup.part_no;
+      if (itemPaginationState.value[partNo]) {
+        itemPaginationState.value[partNo].pageSize = val;
+        itemPaginationState.value[partNo].currentPage = 1;
+      }
+    };
+
+    const handleItemCurrentChangeGroup = (val, productGroup) => {
+      const partNo = productGroup.part_no;
+      if (itemPaginationState.value[partNo]) {
+        itemPaginationState.value[partNo].currentPage = val;
+      }
+    };
 
     return {
       langStore,
@@ -456,12 +614,34 @@ export default {
       selectedBrand,
       uniqueBrand,
       activeTab,
-      dateRange,
+      startAndEndDateVal,
       importSummaryData,
       exportSummaryData,
       inventoryValueData,
       inventoryChartData,
       transactionChartData,
+      paginatedItemsGroup,
+      groupedItems,
+      totalItemsForPagination,
+      mappedQuantityData,
+      filterByDate,
+      filterByDateAction,
+      loadDashboardWithFilters,
+      Filter,
+      inventoryChart,
+      donutChart,
+      dualCharts,
+      currentPageGroup,
+      handleSizeChangeGroup,
+      handleCurrentChangeGroup,
+      pageSizeGroup,
+      getPaginatedChildItems,
+      handleItemSizeChangeGroup,
+      handleItemCurrentChangeGroup,
+      itemPaginationState,
+      selectedEnteredDate,
+      filteredDataByDate,
+      handleFilterByDate,
     };
   },
 };
@@ -473,17 +653,32 @@ export default {
   height: 100vh;
   display: flex;
   background-color: #f9f9f9;
+  overflow: hidden;
   flex-direction: column;
-  overflow-x: hidden;
+}
+
+.warehouse_management_container .el-tabs {
+    flex-grow: 1;
+    width: 100%;
+    height: -webkit-fill-available;
 }
 
 .table-data {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  height: 85%;
+  flex-grow: 1;
 }
 
 .action-area {
   display: flex;
   flex-direction: row;
+}
+
+.items-table {
+    flex-grow: 1;
+    flex-basis: 0;
+    overflow: auto;
 }
 
 .filter-section {
@@ -492,14 +687,20 @@ export default {
   gap: 15px;
   margin-bottom: 20px;
   align-items: center;
+
+  position: sticky;
+  top:0;
+  z-index: 100;
 }
 
 .pagination-controls {
-  margin-top: auto; /* Đẩy phân trang xuống cuối */
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
-  padding-top: 15px;
+  padding-top: 20px;
   padding-bottom: 15px;
+  border-top: 1px solid #ebeef5;
+  background-color: white;
 }
 .barcode-area {
     margin-top: 20px;
@@ -554,18 +755,20 @@ export default {
 
 .dashboard-content {
   padding: 10px 0;
+  height: auto;
 }
 
 .header-filters {
   display: flex;
-  justify-content: flex-end;
   margin-bottom: 20px;
+  width: fit-content;
+  gap: 15px;
 }
 
 .metric-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   margin-bottom: 20px;
   border-radius: 8px;
 }
@@ -582,17 +785,28 @@ export default {
   width: 250px;
   height: 70px;
   gap: 20px;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  cursor: pointer;
+}
+
+.metric-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25), 0 3px 3px rgba(0, 0, 0, 0.22);
 }
 
 .metric-icon {
-  font-size: 32px;
-  padding: 10px;
-  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  padding: 0;
+  border-radius: 50%;
   margin-right: 15px;
   color: white;
 }
 
-.metric-icon-import { background-color: #409eff; } /* Blue */
+.metric-icon-import { background-color: #2c2c6a; } /* Blue */
 .metric-icon-export { background-color: #67c23a; } /* Green */
 .metric-icon-request { background-color: #e6a23c; } /* Yellow */
 .metric-icon-transfer { background-color: #f56c6c; } /* Red */
@@ -675,6 +889,10 @@ export default {
   font-size: 0.9em;
 }
 
+.add-task-button {
+  align-self: flex-end;
+}
+
 .chart-extra-filters {
     display: flex;
     gap: 15px; /* Khoảng cách giữa các select */
@@ -704,8 +922,20 @@ export default {
 .el-tabs__content {
     padding: 0;
 }
-.el-tab-pane {
-    height: 100%;
-    overflow-y: auto;
+
+.dashboard-tab-pane {
+  height: -webkit-fill-available;
+  padding: 20px 20px;
+  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.grouped-tab-pane {
+  height: -webkit-fill-available;
+  padding: 20px 20px;
+  overflow: scroll;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 </style>
