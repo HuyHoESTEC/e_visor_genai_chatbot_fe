@@ -138,7 +138,7 @@
                 :value="barcode.id"
               />
             </el-select>
-            <!-- <el-date-picker
+            <el-date-picker
               v-model="selectedEnteredDate"
               type="date"
               placeholder="Chọn ngày nhập phiếu"
@@ -147,7 +147,7 @@
               clearable
               style="width: 100%;"
             />
-            <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
+            <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button>
           </div>
           <el-table 
             :data="paginatedItems"
