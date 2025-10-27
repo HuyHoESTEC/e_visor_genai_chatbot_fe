@@ -17,28 +17,28 @@
             <div class="metric-card">
               <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
               <div class="metric-data">
-                <div class="metric-value">1200</div>
+                <div class="metric-value">{{ importVal }}</div>
                 <div class="metric-label">Phiếu nhập kho</div>
               </div>
             </div>
             <div class="metric-card">
               <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
-                <div class="metric-value">1100</div>
+                <div class="metric-value">{{ exportVal }}</div>
                 <div class="metric-label">Phiếu xuất kho | lắp đặt</div>
               </div>
             </div>
             <div class="metric-card">
               <div class="metric-icon metric-icon-export"><el-icon><Tickets /></el-icon></div>
               <div class="metric-data">
-                <div class="metric-value">50</div>
+                <div class="metric-value">{{ totalPO }}</div>
                 <div class="metric-label">Số lượng PO</div>
               </div>
             </div>
             <div class="metric-card">
               <div class="metric-icon metric-icon-request"><el-icon><Files /></el-icon></div>
               <div class="metric-data">
-                <div class="metric-value">100</div>
+                <div class="metric-value">{{ totalProject }}</div>
                 <div class="metric-label">Số lượng mã dự án</div>
               </div>
             </div>
@@ -70,12 +70,14 @@
               </el-card>
             </div>
             <div class="left-column">
-              <el-card header="Giá trị tồn kho">
-               <div class="card-header-filter">
-                 <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
-                 <el-select placeholder="Tên vật tư" size="small" style="width: 120px;" />
-               </div>
-               <DonutChart :inventory-data="inventoryValueData" />
+              <el-card>
+               <!-- <DonutChart :inventory-data="inventoryValueData" /> -->
+                <DonutChart 
+                  :donutChartData="donutChart" 
+                  :isLoading="isLoading" 
+                  :langStore="langStore" 
+                  class="mb-4"
+                />
               </el-card>
             </div>
 
@@ -411,12 +413,6 @@ export default {
 
     const rawApiData = ref(null);
 
-    const inventoryValueData = ref([
-      // { label: 'Giá trị VT bị giữ', value: 10000000 }, 
-      // { label: 'Giá trị VT có thể xuất', value: 5000000 }, 
-
-    ]);
-
      const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
      const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
 
@@ -474,6 +470,10 @@ export default {
         inventoryChart,
         donutChart,
         dualCharts,
+        importVal,
+        exportVal,
+        totalPO,
+        totalProject
     } = useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters);
 
     // Reactive variable to control display dialog upload
@@ -617,7 +617,6 @@ export default {
       startAndEndDateVal,
       importSummaryData,
       exportSummaryData,
-      inventoryValueData,
       inventoryChartData,
       transactionChartData,
       paginatedItemsGroup,
@@ -642,6 +641,10 @@ export default {
       selectedEnteredDate,
       filteredDataByDate,
       handleFilterByDate,
+      importVal,
+      exportVal,
+      totalPO,
+      totalProject
     };
   },
 };
