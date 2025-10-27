@@ -1,6 +1,6 @@
 <template>
   <div class="warehouse_management_container">
-    <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card">
+    <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
       <el-tab-pane label="Thống kê" name="dashboard" class="dashboard-tab-pane">
         <div class="dashboard-content">
           <div class="header-filters">
@@ -97,7 +97,7 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane style="height: calc(100vh - 100px);" label="Chi tiết hàng hóa" name="table">
+      <!-- <el-tab-pane style="height: calc(100vh - 100px);" label="Chi tiết hàng hóa" name="table">
         <div v-if="isLoading" class="loading-message">
           {{ langStore.t('DataUploading') }}
         </div>
@@ -140,7 +140,7 @@
                 :value="barcode.id"
               />
             </el-select>
-            <!-- <el-date-picker
+            <el-date-picker
               v-model="selectedEnteredDate"
               type="date"
               placeholder="Chọn ngày nhập phiếu"
@@ -149,7 +149,7 @@
               clearable
               style="width: 100%;"
             />
-            <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
+            <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button>
           </div>
           <el-table 
             :data="paginatedItems"
@@ -199,9 +199,58 @@
           >
           </el-pagination>
         </div>
-      </el-tab-pane>
+      </el-tab-pane> -->
     
-      <el-tab-pane label="Danh sách nhóm theo mã hàng hóa" name="grouped" class="grouped-tab-pane">
+      <el-tab-pane label="Thông tin chi tiết của hàng hóa" name="grouped" class="grouped-tab-pane">
+        <div class="filter-section">
+          <div class="action-area">
+            <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
+            <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
+            <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+          </div>
+          <el-select
+            v-model="selectedProductCode"
+            placeholder="Lọc theo mã code sản phẩm"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProductCode"
+            :loading="loadingProductCode"
+          >
+            <el-option
+              v-for="barcode in productCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedBrand"
+            placeholder="Lọc theo hãng"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+          >
+            <el-option
+              v-for="barcode in uniqueBrand"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <!-- <el-date-picker
+            v-model="selectedEnteredDate"
+            type="date"
+            placeholder="Chọn ngày nhập phiếu"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            clearable
+            style="width: 100%;"
+          />
+          <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
+        </div>
         <el-table
           :data="paginatedItemsGroup"
           border
@@ -224,6 +273,7 @@
                         stripe
                         class="items-table"
                       >
+                        <el-table-column fixed prop="id" label="ID" width="80" sortable />
                         <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
                         <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
                         <el-table-column prop="origin" label="Hãng" width="auto" />
@@ -254,14 +304,16 @@
                   </div>
               </template>
           </el-table-column>
-          <el-table-column prop="part_no" label="Số lượng" min-width="600" sortable>
+          <el-table-column prop="part_no" label="Số lượng" min-width="150" sortable>
             <template #default="{ row: productGroup }">
               <el-tag size="small" type="info" style="margin-left: 10px;">
                 ({{ productGroup.items.length }} hàng hóa)
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="part_no" label="Mã hàng hóa" min-width="600" sortable />
+          <el-table-column prop="part_no" label="Mã hàng hóa" min-width="300" sortable />
+          <el-table-column prop="product_name" label="Tên hàng hóa" min-width="600" />
+          <el-table-column prop="origin" label="Hãng" width="auto" />
         </el-table>
         <el-pagination
           background
@@ -409,7 +461,7 @@ export default {
     const isEditVisible = ref(false);
     const editedItem = ref({});
 
-    const activeTab = ref('table');
+    const activeTab = ref('dashboard');
 
     const rawApiData = ref(null);
 
@@ -936,7 +988,7 @@ export default {
 
 .grouped-tab-pane {
   height: -webkit-fill-available;
-  padding: 20px 20px;
+  /* padding: 10px 10px; */
   overflow: scroll;
   overflow-y: hidden;
   overflow-x: hidden;
