@@ -2,6 +2,7 @@ import { onMounted, ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { getWarehouseDashboardApi } from "../../services/auth.service";
 import { ElMessage } from "element-plus";
+import DualChart from "../../components/charts/DualChart.vue";
 
 export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters) {
     const authStore = useAuthStore();
@@ -9,6 +10,11 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
 
     const isLoading = ref(true);
     const error = ref(null);
+
+    const importVal = ref(null);
+    const exportVal = ref(null);
+    const totalPO = ref(null);
+    const totalProject = ref(null);
 
     const inventoryChart = ref({
         total_products: 0,
@@ -43,7 +49,7 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         error.value = null;
 
         const payload = {
-            request_id: "dashboard-" + Date.now(),
+            request_id: "evisor-" + Date.now(),
             owner: loggedInUserId,
             filter: {
                 datetime_start: null,
@@ -52,20 +58,69 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         };
         try {
             const response = await getWarehouseDashboardApi(payload);
-            const chartPoint = response.point;
-            if (response.status === 'success'&& response.point) {
+
+            const chartPoint = response.data.list;
+            const cardPoint = response.data.point;
+            const dualchartPoint = response.data.bar_chart;
+
+            if (response.data.status === 'success') {
                 inventoryChart.value = {
-                    total_products: chartPoint.total_products,
-                    import_by_date: chartPoint.import_by_date,
-                    export_by_date: chartPoint.export_by_date,
-                    not_installation_by_date: chartPoint.not_installation_by_date,
-                    total_PO: chartPoint.total_PO,
-                    total_projects: chartPoint.total_projects,
+                    total_products: cardPoint.total_products,
+                    import_by_date: cardPoint.import_by_date,
+                    export_by_date: cardPoint.export_by_date,
+                    not_installation_by_date: cardPoint.not_installation_by_date,
+                    total_PO: cardPoint.total_PO,
+                    total_projects: cardPoint.total_projects,
+                }               
+                donutChart.value = {
+                    import: chartPoint.import,
+                    export: chartPoint.export,
+                    installation: [{ 
+                        name: 'Đã Lắp đặt',
+                        value: chartPoint.installation[0].total_quantity || 0 
+                    }],
                 }
-                
-                
-                donutChart.value = response.list;
+                // dualCharts.value = {
+                //     pie_chart:{
+                //         import_quantity: dualchartPoint.import_quantity,
+                //         export_quantity: dualchartPoint.export_quantity,
+                //     },
+                //     bar_chart:{
+                //         day:{
+                //             datetime_data: dualchartPoint.datetime_data,
+                //             import_data: dualchartPoint.import_data,
+                //             export_data: dualchartPoint.export_data,
+                //         },
+                //         week:{
+                //             datetime_data: dualchartPoint.datetime_data,
+                //             import_data: dualchartPoint.import_data,
+                //             export_data: dualchartPoint.export_data,
+                //         },
+                //         month:{
+                //             datetime_data: dualchartPoint.datetime_data,
+                //             import_data: dualchartPoint.import_data,
+                //             export_data: dualchartPoint.export_data,
+                //         },
+                //         quarter:{
+                //             datetime_data: dualchartPoint.datetime_data,
+                //             import_data: dualchartPoint.import_data,
+                //             export_data: dualchartPoint.export_data,
+                //         },
+                //         year:{
+                //             datetime_data: dualchartPoint.datetime_data,
+                //             import_data: dualchartPoint.import_data,
+                //             export_data: dualchartPoint.export_data,
+                //         }
+                //     }
+                // }
+
                 dualCharts.value = response.chart;
+                
+                importVal.value = cardPoint.import_by_date;
+                exportVal.value = cardPoint.export_by_date;
+                totalPO.value = cardPoint.total_PO;
+                totalProject.value = cardPoint.total_project;
+
             } else {
                 console.warn('API did not return an array for tableData:', response);
             }
@@ -112,5 +167,9 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         error,
         fetchDashboardData,
         filterByDateAction,
+        exportVal,
+        importVal,
+        totalPO,
+        totalProject
     }
 }
