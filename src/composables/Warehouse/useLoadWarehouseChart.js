@@ -2,7 +2,8 @@ import { onMounted, ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { getWarehouseDashboardApi } from "../../services/auth.service";
 import { ElMessage } from "element-plus";
-import DualChart from "../../components/charts/DualChart.vue";
+import BarChart from "../../components/charts/BarChart.vue";
+
 
 export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters) {
     const authStore = useAuthStore();
@@ -16,34 +17,37 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
     const totalPO = ref(null);
     const totalProject = ref(null);
 
+
     const inventoryChart = ref({
         total_products: 0,
         import_by_date: 0,
         export_by_date: 0,
         not_installation_by_date: 0,
+        installation_by_date:0,
         total_PO: 0,
         total_projects: 0,
     });
 
-    const donutChart = ref({
-        import: [],
-        export: [],
-        installation: [],
+    const piedChart = ref({
+        import_quantity: [],
+        export_quantity: [],
     });
-    
-    const dualCharts = ref({
-        pie_chart:{
-            import_quantity: 0,
-            export_quantity: 0,
-        },
-        bar_chart: {
+
+    const donutData = ref({
+        not_installation_by_date: [],
+        installation_by_date: [],
+    })
+
+    const barChart = ref ({
             day: {datetime_data: [], import_data: [], export_data: []},
             week: {datetime_data: [], import_data: [], export_data: []},
             month: {datetime_data: [], import_data: [], export_data: []},
             quarter: {datetime_data: [], import_data: [], export_data: []},
             year: {datetime_data: [], import_data: [], export_data: []},
-        }
     });
+
+    const currentTimestamp = new Date();
+
     const fetchDashboardData = async () => {
         isLoading.value = true;
         error.value = null;
@@ -52,16 +56,17 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
             request_id: "evisor-" + Date.now(),
             owner: loggedInUserId,
             filter: {
-                datetime_start: null,
-                datetime_end: null,
+                datetime_start: currentTimestamp.toISOString(),
+                datetime_end: currentTimestamp.toISOString(),
             }
         };
         try {
             const response = await getWarehouseDashboardApi(payload);
 
-            const chartPoint = response.data.list;
+            // const chartPoint = response.data.list;
             const cardPoint = response.data.point;
-            const dualchartPoint = response.data.bar_chart;
+            const piedChartPoint = response.data.chart;
+            const barChartPoint = response.data.chart.bar_chart;
 
             if (response.data.status === 'success') {
                 inventoryChart.value = {
@@ -69,58 +74,64 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
                     import_by_date: cardPoint.import_by_date,
                     export_by_date: cardPoint.export_by_date,
                     not_installation_by_date: cardPoint.not_installation_by_date,
+                    installation_by_date: cardPoint.installation_by_date,
                     total_PO: cardPoint.total_PO,
                     total_projects: cardPoint.total_projects,
-                }               
-                donutChart.value = {
-                    import: chartPoint.import,
-                    export: chartPoint.export,
-                    installation: [{ 
-                        name: 'Đã Lắp đặt',
-                        value: chartPoint.installation[0].total_quantity || 0 
-                    }],
-                }
-                // dualCharts.value = {
-                //     pie_chart:{
-                //         import_quantity: dualchartPoint.import_quantity,
-                //         export_quantity: dualchartPoint.export_quantity,
-                //     },
-                //     bar_chart:{
-                //         day:{
-                //             datetime_data: dualchartPoint.datetime_data,
-                //             import_data: dualchartPoint.import_data,
-                //             export_data: dualchartPoint.export_data,
-                //         },
-                //         week:{
-                //             datetime_data: dualchartPoint.datetime_data,
-                //             import_data: dualchartPoint.import_data,
-                //             export_data: dualchartPoint.export_data,
-                //         },
-                //         month:{
-                //             datetime_data: dualchartPoint.datetime_data,
-                //             import_data: dualchartPoint.import_data,
-                //             export_data: dualchartPoint.export_data,
-                //         },
-                //         quarter:{
-                //             datetime_data: dualchartPoint.datetime_data,
-                //             import_data: dualchartPoint.import_data,
-                //             export_data: dualchartPoint.export_data,
-                //         },
-                //         year:{
-                //             datetime_data: dualchartPoint.datetime_data,
-                //             import_data: dualchartPoint.import_data,
-                //             export_data: dualchartPoint.export_data,
-                //         }
-                //     }
-                // }
-
-                dualCharts.value = response.chart;
+                }     
                 
+                piedChart.value = {   
+                    import_quantity: piedChartPoint.pie_chart.import_quantity || 0, 
+                    export_quantity: piedChartPoint.pie_chart.export_quantity || 0, 
+                }
+
+                donutData.value = ({
+                    installation_by_date: [
+                        { 
+                            value: cardPoint.installation_by_date || 0, 
+                            name: langStore.t('Installed') || 'Đã lắp đặt' 
+                        }
+                    ],
+                    not_installation_by_date: [
+                        { 
+                            value: cardPoint.not_installation_by_date || 0, 
+                            name: langStore.t('NotInstalled') || 'Chưa lắp đặt' 
+                        }
+                    ]
+                });    
+                
+                barChart.value = [{
+                    day:{
+                        datetime_data: barChartPoint.day.datetime_data || [],
+                        import_data: barChartPoint.day.import_data || [],
+                        export_data: barChartPoint.day.export_data || [],
+                    },
+                    week:{
+                        datetime_data: barChartPoint.week.datetime_data || [],
+                        import_data: barChartPoint.week.import_data || [],
+                        export_data: barChartPoint.week.export_data || [],
+                    },
+                    month:{
+                        datetime_data: barChartPoint.month.datetime_data || [],
+                        import_data: barChartPoint.month.import_data || [],
+                        export_data: barChartPoint.month.export_data || [],
+                    },
+                    quarter:{
+                        datetime_data: barChartPoint.quarter.datetime_data || [],
+                        import_data: barChartPoint.quarter.import_data || [],
+                        export_data: barChartPoint.quarter.export_data || [],
+                    },
+                    year:{
+                        datetime_data: barChartPoint.year.datetime_data || [],
+                        import_data: barChartPoint.year.import_data || [],
+                        export_data: barChartPoint.year.export_data || [],
+                    },
+                }]  
+
                 importVal.value = cardPoint.import_by_date;
                 exportVal.value = cardPoint.export_by_date;
                 totalPO.value = cardPoint.total_PO;
                 totalProject.value = cardPoint.total_project;
-
+               
             } else {
                 console.warn('API did not return an array for tableData:', response);
             }
@@ -161,8 +172,9 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
     
     return{
         inventoryChart,
-        donutChart,
-        dualCharts,
+        donutData,
+        piedChart,
+        barChart,
         isLoading,
         error,
         fetchDashboardData,
@@ -170,6 +182,6 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         exportVal,
         importVal,
         totalPO,
-        totalProject
+        totalProject,
     }
 }

@@ -69,11 +69,21 @@
                 </el-table>
               </el-card>
             </div>
+
+            <div class="left-colum">
+              <el-card header="Tỷ lệ Nhập/Xuất (%)">
+                <PiedChart 
+                  :pied-chart="piedChart" 
+                  title-text="Biến Động Số Lượng"
+                />
+              </el-card>
+            </div>
+
             <div class="left-column">
               <el-card>
                <!-- <DonutChart :inventory-data="inventoryValueData" /> -->
                 <DonutChart 
-                  :donutChartData="donutChart" 
+                  :installation-data-from-inventory="donutData" 
                   :isLoading="isLoading" 
                   :langStore="langStore" 
                   class="mb-4"
@@ -81,19 +91,14 @@
               </el-card>
             </div>
 
-            <div class="right-column">
-               <el-card header="Biến động tồn kho">
-              <InventoryChart :initial-data="inventoryChartData" />
-               </el-card>
-            </div>
-
-          <el-card class="transaction-chart-card mt-20">
-              <DualChart 
+            <div class="left-colum">
+              <el-card class="transaction-chart-card mt-20">
+                <DualChart 
                   :chart-data="transactionChartData"
                   :is-visible="activeTab === 'dashboard'" 
               />
-          </el-card>
-
+              </el-card>
+            </div>
           </div>
         </div>
       </el-tab-pane>
@@ -304,16 +309,29 @@
                   </div>
               </template>
           </el-table-column>
-          <el-table-column prop="part_no" label="Số lượng" min-width="150" sortable>
+          <el-table-column prop="part_no" label="Số lượng" min-width="100" sortable>
             <template #default="{ row: productGroup }">
               <el-tag size="small" type="info" style="margin-left: 10px;">
-                ({{ productGroup.items.length }} hàng hóa)
+                {{ productGroup.items.length }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="part_no" label="Mã hàng hóa" min-width="300" sortable />
-          <el-table-column prop="product_name" label="Tên hàng hóa" min-width="600" />
-          <el-table-column prop="origin" label="Hãng" width="auto" />
+          <el-table-column prop="product_name" label="Tên hàng hóa" min-width="600">
+            <template #default="{ row: productGroup }">
+              {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="origin" label="Hãng" width="auto">
+            <template #default="{ row: productGroup }">
+              {{ productGroup.items.length > 0 ? productGroup.items[0].origin : 'N/A' }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="unit" label="Đơn vị" min-width="150">
+            <template #default="{ row: productGroup }">
+              {{ productGroup.items.length > 0 ? productGroup.items[0].unit : 'N/A' }}
+            </template>
+          </el-table-column>
         </el-table>
         <el-pagination
           background
@@ -395,6 +413,7 @@ import DonutChart from "../../../components/charts/DonutChart.vue";
 import InventoryChart from "../../../components/charts/InventoryChart.vue";
 import DualChart from "../../../components/charts/DualChart.vue";
 import { useLoadWarehouseChart } from "../../../composables/Warehouse/useLoadWarehouseChart";
+import PiedChart from "../../../components/charts/PiedChart.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -416,7 +435,8 @@ export default {
     DonutChart,
     InventoryChart,
     DualChart,
-    Filter
+    Filter,
+    PiedChart
   },
   setup() {
     const langStore = useLanguageStore();
@@ -481,11 +501,10 @@ export default {
     ]);
 
     const transactionChartData = ref({
-      dates: ['19/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025'],
-      importQuantity: [950, 250, 500, 500, 900, 350, 500],
-      exportQuantity: [850, 1050, 980, 400, 800, 700, 520],
-      importValue: [38000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000], 
-      exportValue: [40000000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000], 
+      dates: ['19/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025'],      importQuantity: [950, 250, 500, 500, 900, 350, 500],
+      exportQuantity: [850, 1050, 980, 400, 800, 700, 520, 1050, 980, 400, 800, 700, 520, 1050, 980, 400, 800, 700, 520],
+      importValue: [38000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000], 
+      exportValue: [40000000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000], 
     });
     
     const showDetail = (item) => {
@@ -520,12 +539,13 @@ export default {
     const {
         filterByDateAction,
         inventoryChart,
-        donutChart,
-        dualCharts,
+        // donutChart,
+        piedChart,
         importVal,
         exportVal,
         totalPO,
-        totalProject
+        totalProject,
+        donutData
     } = useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters);
 
     // Reactive variable to control display dialog upload
@@ -680,8 +700,7 @@ export default {
       loadDashboardWithFilters,
       Filter,
       inventoryChart,
-      donutChart,
-      dualCharts,
+      piedChart,
       currentPageGroup,
       handleSizeChangeGroup,
       handleCurrentChangeGroup,
@@ -696,7 +715,8 @@ export default {
       importVal,
       exportVal,
       totalPO,
-      totalProject
+      totalProject,
+      donutData
     };
   },
 };
