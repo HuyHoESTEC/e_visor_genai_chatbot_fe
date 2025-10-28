@@ -2,22 +2,38 @@
   <div class="inventory-chart-container">
     <div class="chart-header">
       <div class="chart-controls">
-        <el-select v-model="selectedWarehouse" placeholder="Tất cả kho" size="small" style="width: 120px; margin-right: 10px;">
-          <el-option label="Tất cả kho" value="all" />
+        <el-select v-model="selectedWarehouse" placeholder="Chọn Kho Hàng" size="small" style="width: 150px; margin-right: 15px;">
+          <el-option label="Tất cả Kho" value="all" />
+          <el-option label="Kho A" value="A" />
+          <el-option label="Kho B" value="B" />
         </el-select>
-        <el-select v-model="selectedMaterial" placeholder="Mã vật tư" size="small" style="width: 120px; margin-right: 10px;">
-          <el-option label="Mã vật tư 1" value="material1" />
-          <el-option label="Mã vật tư 2" value="material2" />
-          <el-option label="Mã vật tư 3" value="material3" />
+        <el-select v-model="selectedMaterial" placeholder="Chọn Vật Liệu" size="small" style="width: 150px; margin-right: 15px;">
+          <el-option label="Vật liệu 1" value="material1" />
+          <el-option label="Vật liệu 2" value="material2" />
         </el-select>
+
         <el-radio-group v-model="timePeriod" size="small" @change="handleTimePeriodChange">
           <el-radio-button label="day">Ngày</el-radio-button>
           <el-radio-button label="week">Tuần</el-radio-button>
           <el-radio-button label="month">Tháng</el-radio-button>
+          <el-radio-button label="quarter">Qúy</el-radio-button>
+          <el-radio-button label="year">Năm</el-radio-button>
         </el-radio-group>
       </div>
     </div>
-    <v-chart v-if="isMounted" class="chart" :option="chartOption" autoresize />
+
+    <div v-if="isLoadingData" class="chart-loading-overlay">
+        <div class="el-loading-spinner">
+            <svg viewBox="25 25 50 50" class="circular">
+                <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+            </svg>
+        </div>
+    </div>
+    <v-chart v-else-if="isMounted" class="chart" :option="chartOption" autoresize />
+    <div v-else class="chart-empty-state">
+        Không có dữ liệu để hiển thị.
+    </div>
+
     <div class="chart-footer">
       <el-slider
         v-model="dataZoomValue"
@@ -37,69 +53,117 @@
 
 <script>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import VChart from 'vue-echarts'; // Bỏ THEME_KEY nếu không dùng
+import VChart from 'vue-echarts';
 import { use } from 'echarts/core';
-import { BarChart, LineChart } from 'echarts/charts';
+import { BarChart } from 'echarts/charts';
 import {
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
-  DataZoomComponent,
+    GridComponent,
+    TooltipComponent,
+    LegendComponent,
+    DataZoomComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 
 use([
-  CanvasRenderer,
-  BarChart,
-  LineChart,
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
-  DataZoomComponent,
+    CanvasRenderer,
+    BarChart,
+    GridComponent,
+    TooltipComponent,
+    LegendComponent,
+    DataZoomComponent,
 ]);
 
 export default {
     props: {
-        initialData: {
-            type: Array,
-            default: () => [
-                { date: '2024-02-12', quantity: 90000, value: 50000 },
-                { date: '2024-02-13', quantity: 40000, value: 5000 },
-                { date: '2024-02-14', quantity: 55000, value: 70000 },
-                { date: '2024-02-15', quantity: 95000, value: 45000 },
-                { date: '2024-02-16', quantity: 35000, value: 40000 },
-            ]
+        // Chú ý: Kiểu dữ liệu là Array vì API trả về [{ day: {...}, ... }]
+        initialData: { 
+            type: Array, 
+            default: () => ([{}]) 
+        },
+        // Thêm prop để nhận trạng thái loading từ component cha
+        loading: {
+            type: Boolean,
+            default: false
         }
     },
     components: {
         VChart,
     },
     setup(props) {
-  
-        const timeGrouping = ref('week');
+        // --- State ---
         const selectedWarehouse = ref('all');
         const selectedMaterial = ref('material1');
-        const timePeriod = ref('week');
-        const chartData = ref(props.initialData);
+        const timePeriod = ref('week'); 
+        
+        // **LƯU TRỮ DỮ LIỆU TỪ PROPS:** Lấy phần tử đầu tiên của mảng props
+        const allChartData = ref(props.initialData[0] || {}); 
         const dataZoomValue = ref([0, 100]);
+        const isMounted = ref(false);
+        const isLoadingData = computed(() => props.loading);
 
-        // --- Computed ---
-        const xAxisData = computed(() => chartData.value.map(item => item.date));
-        const quantityData = computed(() => chartData.value.map(item => item.quantity));
-        const valueData = computed(() => chartData.value.map(item => item.value));
+        // --- Computed Properties để lấy dữ liệu hiện tại ---
+        const currentData = computed(() => {
+            const period = timePeriod.value;
+            // Trả về dữ liệu tương ứng với timePeriod hoặc mảng rỗng nếu không có
+            return allChartData.value[period] || { datetime_data: [], import_data: [], export_data: [] };
+        });
 
+        const xAxisData = computed(() => currentData.value.datetime_data);
+        const importData = computed(() => currentData.value.import_data);
+        const exportData = computed(() => currentData.value.export_data);
+
+        // Kiểm tra xem có dữ liệu để hiển thị không
+        const hasData = computed(() => xAxisData.value.length > 0);
+
+        // --- Hàm Tải Dữ liệu (Mô phỏng lại logic lọc) ---
+        // Trong môi trường component, chúng ta chỉ cần đảm bảo cập nhật allChartData từ props
+        const updateChartData = () => {
+             // Lấy dữ liệu từ props và gán vào allChartData (nếu có)
+            if (props.initialData && props.initialData.length > 0) {
+                 allChartData.value = props.initialData[0]; 
+            } else {
+                 allChartData.value = {};
+            }
+            // Reset dataZoomValue về [0, 100] khi dữ liệu thay đổi
+            dataZoomValue.value = [0, 100];
+        };
+
+        // --- Handlers ---
+        const handleTimePeriodChange = (value) => {
+            timePeriod.value = value;
+            // Gọi lại updateChartData để reset dataZoom và đảm bảo dữ liệu được cập nhật
+            updateChartData(); 
+            
+            // NOTE: Nếu logic API của bạn yêu cầu lọc theo timePeriod LẠI TỪ ĐẦU, 
+            // bạn cần emit sự kiện lên component cha để cha gọi API mới.
+            // Ví dụ: context.emit('time-period-change', value);
+        };
+
+        const handleSliderChange = (newRange) => {
+            dataZoomValue.value = newRange;
+        };
+
+        // --- Chart Option ---
         const chartOption = computed(() => ({
             backgroundColor: '#fff',
             legend: {
                 data: [
-                    { name: 'Số lượng', icon: 'rect' },
-                    { name: 'Giá trị (triệu đồng)', icon: 'line' }
+                    { name: 'Nhập kho', icon: 'rect' },
+                    { name: 'Xuất kho', icon: 'rect' }
                 ],
                 bottom: 0,
             },
             tooltip: {
                 trigger: 'axis',
-                axisPointer: { type: 'cross' }
+                axisPointer: { type: 'shadow' },
+                formatter: function (params) {
+                    let res = `<div style="font-weight: bold;">${params[0].name}</div>`;
+                    params.forEach(item => {
+                        res += `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${item.color};"></span>`
+                            + `${item.seriesName}: <b>${item.value.toLocaleString('en-US')}</b> <br/>`;
+                    });
+                    return res;
+                }
             },
             grid: {
                 left: '3%',
@@ -127,43 +191,29 @@ export default {
                     },
                     splitLine: { show: true, lineStyle: { type: 'dashed', color: '#E4E7ED' } }
                 },
-                {
-                    type: 'value',
-                    name: 'Giá trị (triệu đồng)',
-                    position: 'right',
-                    min: 0,
-                    axisLabel: {
-                        formatter: (value) => value.toLocaleString('en-US')
-                    },
-                    splitLine: { show: false }
-                }
             ],
             series: [
                 {
-                    name: 'Số lượng',
+                    name: 'Nhập kho',
                     type: 'bar',
-                    data: quantityData.value,
+                    data: importData.value,
                     yAxisIndex: 0,
                     itemStyle: {
-                        color: '#ff8a00',
+                        color: '#ff8a00', // Màu cam
                         borderRadius: [4, 4, 0, 0]
                     },
-                    barWidth: '50%'
+                    barWidth: '35%',
                 },
                 {
-                    name: 'Giá trị (triệu đồng)',
-                    type: 'line',
-                    data: valueData.value,
-                    yAxisIndex: 1,
+                    name: 'Xuất kho',
+                    type: 'bar',
+                    data: exportData.value,
+                    yAxisIndex: 0,
                     itemStyle: {
-                        color: '#409eff'
+                        color: '#409eff', // Màu xanh
+                        borderRadius: [4, 4, 0, 0]
                     },
-                    lineStyle: {
-                        width: 2.5
-                    },
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 8,
+                    barWidth: '35%',
                 }
             ],
             dataZoom: [
@@ -176,88 +226,52 @@ export default {
         }));
 
 
+        // --- Computed Property cho Date Range Display ---
         const dateRangeDisplay = computed(() => {
             if (xAxisData.value.length === 0) return '';
 
-            const startIndex = Math.floor((dataZoomValue.value[0] / 100) * (xAxisData.value.length - 1));
-            const endIndex = Math.floor((dataZoomValue.value[1] / 100) * (xAxisData.value.length - 1));
+            const dataLength = xAxisData.value.length;
+            const startIndex = Math.max(0, Math.floor((dataZoomValue.value[0] / 100) * (dataLength - 1)));
+            const endIndex = Math.min(dataLength - 1, Math.floor((dataZoomValue.value[1] / 100) * (dataLength - 1)));
 
-            const start = xAxisData.value[Math.min(startIndex, xAxisData.value.length - 1)];
-            const end = xAxisData.value[Math.min(endIndex, xAxisData.value.length - 1)];
+            const start = xAxisData.value[startIndex];
+            const end = xAxisData.value[endIndex];
 
             return `${start || '...'} - ${end || '...'}`;
         });
 
+        // --- Computed Property cho Slider Marks ---
         const sliderMarks = computed(() => {
             const marks = {};
             if (xAxisData.value.length > 0) {
-                // Chỉ hiện thị mốc đầu và cuối
                 marks[0] = xAxisData.value[0];
                 marks[100] = xAxisData.value[xAxisData.value.length - 1];
             }
             return marks;
         });
-
-        // --- Methods ---
-        const fetchChartData = (group, warehouse, material) => {
-            console.log(`Fetching data for: ${group}, Warehouse: ${warehouse}, Material: ${material}`);
-
-            if (group === 'day') {
-                chartData.value = [
-                    { date: '2024-02-12', quantity: 90000, value: 50000 },
-                    { date: '2024-02-13', quantity: 40000, value: 5000 },
-                    { date: '2024-02-14', quantity: 55000, value: 70000 },
-                    { date: '2024-02-15', quantity: 95000, value: 45000 },
-                    { date: '2024-02-16', quantity: 35000, value: 40000 },
-                ];
-            } else if (group === 'week') {
-                chartData.value = [
-                    { date: 'Tuần 1', quantity: 150000, value: 80000 },
-                    { date: 'Tuần 2', quantity: 120000, value: 55000 },
-                    { date: 'Tuần 3', quantity: 180000, value: 95000 },
-                    { date: 'Tuần 4', quantity: 110000, value: 40000 },
-                ];
-            } else if (group === 'month') {
-                chartData.value = [
-                    { date: 'Tháng 1', quantity: 600000, value: 300000 },
-                    { date: 'Tháng 2', quantity: 450000, value: 200000 },
-                    { date: 'Tháng 3', quantity: 700000, value: 400000 },
-                ];
-            } 
-            
-            dataZoomValue.value = [0, 100];
-        };
         
-        const setTimeGrouping = (group) => {
-            timeGrouping.value = group;
-            fetchChartData(group, selectedWarehouse.value, selectedMaterial.value);
-        };
-
-        const handleTimePeriodChange = (value) => {
-            setTimeGrouping(value);
-        };
-
-        const handleSliderChange = (newRange) => {
-            dataZoomValue.value = newRange;
-        };
-
-        // --- Watchers & Lifecycle Hooks ---
+        // --- Watchers ---
+        // Lắng nghe sự thay đổi của props.initialData từ component cha
+        watch(() => props.initialData, (newVal) => {
+            updateChartData();
+        }, { deep: true });
+        
+        // Lắng nghe sự thay đổi của các bộ lọc (Kho, Vật liệu)
         watch([selectedWarehouse, selectedMaterial], () => {
-            fetchChartData(timeGrouping.value, selectedWarehouse.value, selectedMaterial.value);
+             // NOTE: Bạn cần emit sự kiện lên component cha để gọi API mới với bộ lọc này
+             // Ví dụ: context.emit('filter-change', { warehouse: selectedWarehouse.value, material: selectedMaterial.value });
+             // Trong ví dụ này, tôi chỉ mô phỏng lại việc cập nhật dữ liệu nếu cần
+             updateChartData();
         });
 
+        // --- Lifecycle Hooks ---
         onMounted(() => {
-            fetchChartData(timeGrouping.value, selectedWarehouse.value, selectedMaterial.value);
+            updateChartData();
+            nextTick(() => {
+                isMounted.value = true;
+            })
         });
 
-        const isMounted = ref(false);
-        onMounted (() => {
-            fetchChartData(timeGrouping.value, selectedWarehouse.value, selectedMaterial.value);
-            nextTick(() =>{
-                isMounted.value = true;
-            })       
-        });
-        // 4. TRẢ VỀ DỮ LIỆU/HÀM ĐỂ SỬ DỤNG TRONG TEMPLATE
         return {
             selectedWarehouse,
             selectedMaterial,
@@ -268,7 +282,9 @@ export default {
             sliderMarks,
             handleTimePeriodChange,
             handleSliderChange,
-            isMounted
+            isMounted,
+            isLoadingData,
+            hasData
         };
     }
 };
@@ -279,38 +295,21 @@ export default {
   display: flex;
   flex-direction: column;
   height: 450px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  position: relative; /* Quan trọng cho overlay loading */
 }
 
 .chart-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 10px 15px 0 15px;
-}
-
-.chart-title {
-  font-size: 16px;
-  font-weight: bold;
 }
 
 .chart-controls {
   display: flex;
   align-items: center;
-}
-
-
-.time-buttons .el-button {
-    border-radius: 0;
-    margin-left: 0;
-}
-
-.time-buttons .el-button:first-child {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-}
-.time-buttons .el-button:last-child {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
 }
 
 .chart {
@@ -333,6 +332,62 @@ export default {
 
 .el-radio-group {
     display: flex;
-    margin-right: 15px;
+}
+
+/* Thêm style cho Loading và Empty State */
+.chart-loading-overlay, .chart-empty-state {
+    position: absolute;
+    top: 50px; /* Dưới header */
+    left: 0;
+    right: 0;
+    bottom: 50px; /* Trên footer */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+    font-size: 14px;
+    color: #909399;
+}
+
+.el-loading-spinner {
+    text-align: center;
+    padding: 20px;
+}
+
+.circular {
+    height: 42px;
+    width: 42px;
+    animation: loading-rotate 2s linear infinite;
+}
+
+.path {
+    animation: loading-dash 1.5s ease-in-out infinite;
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: 0;
+    stroke-width: 2;
+    stroke: #409eff;
+    stroke-linecap: round;
+}
+
+@keyframes loading-rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loading-dash {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35px;
+    }
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124px;
+    }
 }
 </style>
