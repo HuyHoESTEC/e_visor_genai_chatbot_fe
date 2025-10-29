@@ -18,14 +18,14 @@
               <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">{{ importVal }}</div>
-                <div class="metric-label">Phiếu nhập kho</div>
+                <div class="metric-label">Số lượng nhập kho</div>
               </div>
             </div>
             <div class="metric-card">
               <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">{{ exportVal }}</div>
-                <div class="metric-label">Phiếu xuất kho | lắp đặt</div>
+                <div class="metric-label">Số lượng xuất kho | lắp đặt</div>
               </div>
             </div>
             <div class="metric-card">
@@ -44,16 +44,14 @@
             </div>
           </div>
           <div class="charts-and-tables">
-            <div class="left-column">
+            <!-- <div class="left-column">
               <el-card header="Phiếu nhập kho">
                 <div class="card-header-filter">
                   <el-select placeholder="Tât cả kho" size="small" style="width: 120px;" />
                 </div>
                 <el-table :data="importSummaryData" border size="small">
-                  <el-table-column prop="total" label="Tổng" width="100" />
-                  <el-table-column prop="imported" label="Nhập kho" width="100" />
-                  <el-table-column prop="cutting" label="Đang cắt hàng" />
-                  <el-table-column prop="completed" label="Cắt hàng xong" />
+                  <el-table-column prop="project_code" label="Mã dự án" width="100" />
+                  <el-table-column prop="total_quantity" label="Số lượng" width="100" />
                 </el-table>
               </el-card>
 
@@ -62,20 +60,27 @@
                   <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
                 </div>
                 <el-table :data="exportSummaryData" border size="small">
-                  <el-table-column prop="total" label="Tổng" />
-                  <el-table-column prop="loading" label="Đang lấy hàng" />
-                  <el-table-column prop="pending" label="Chờ xuất kho" />
-                  <el-table-column prop="exported" label="Đã xuất kho" />
+                  <el-table-column prop="project_code" label="Mã dự án" width="100" />
+                  <el-table-column prop="total_quantity" label="Số lượng" width="100" />
                 </el-table>
               </el-card>
-            </div>
+            </div> -->
 
-            <div class="left-colum">
-              <el-card header="Tỷ lệ Nhập/Xuất (%)">
+            <div class="right-column">
+              <el-card class="transaction-chart-card" header="Tỷ lệ Nhập/Xuất (%)">
                 <PiedChart 
                   :pied-chart="piedChart" 
                   title-text="Biến Động Số Lượng"
                 />
+              </el-card>
+            </div>
+
+            <div class="right-column">
+              <el-card class="transaction-chart-card">
+                <DualChart 
+                  :chart-data="dualChartVal"
+                  :is-visible="activeTab === 'dashboard'" 
+              />
               </el-card>
             </div>
 
@@ -88,15 +93,6 @@
                   :langStore="langStore" 
                   class="mb-4"
                 />
-              </el-card>
-            </div>
-
-            <div class="left-colum">
-              <el-card class="transaction-chart-card mt-20">
-                <DualChart 
-                  :chart-data="transactionChartData"
-                  :is-visible="activeTab === 'dashboard'" 
-              />
               </el-card>
             </div>
           </div>
@@ -309,17 +305,17 @@
                   </div>
               </template>
           </el-table-column>
+          <el-table-column prop="part_no" label="Mã hàng hóa" min-width="300" sortable />
+          <el-table-column prop="product_name" label="Tên hàng hóa" min-width="600">
+            <template #default="{ row: productGroup }">
+              {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
+            </template>
+          </el-table-column>
           <el-table-column prop="part_no" label="Số lượng" min-width="100" sortable>
             <template #default="{ row: productGroup }">
               <el-tag size="small" type="info" style="margin-left: 10px;">
                 {{ productGroup.items.length }}
               </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="part_no" label="Mã hàng hóa" min-width="300" sortable />
-          <el-table-column prop="product_name" label="Tên hàng hóa" min-width="600">
-            <template #default="{ row: productGroup }">
-              {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
             </template>
           </el-table-column>
           <el-table-column prop="origin" label="Hãng" width="auto">
@@ -436,7 +432,8 @@ export default {
     InventoryChart,
     DualChart,
     Filter,
-    PiedChart
+    PiedChart,
+    DualChart
   },
   setup() {
     const langStore = useLanguageStore();
@@ -491,21 +488,6 @@ export default {
      const handleFilterByDate = () => {
       filteredDataByDate();
     };
-
-    const inventoryChartData = ref([
-      { date: '2024-02-12', quantity: 90000, value: 50000 },
-      { date: '2024-02-13', quantity: 40000, value: 5000 },
-      { date: '2024-02-14', quantity: 55000, value: 70000 },
-      { date: '2024-02-15', quantity: 95000, value: 45000 },
-      { date: '2024-02-16', quantity: 35000, value: 40000 },
-    ]);
-
-    const transactionChartData = ref({
-      dates: ['19/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025', '20/10/2025', '21/10/2025', '22/10/2025', '23/10/2025', '24/10/2025', '25/10/2025'],      importQuantity: [950, 250, 500, 500, 900, 350, 500],
-      exportQuantity: [850, 1050, 980, 400, 800, 700, 520, 1050, 980, 400, 800, 700, 520, 1050, 980, 400, 800, 700, 520],
-      importValue: [38000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000, 5000000, 20000000, 20000000, 40000000, 15000000, 20000000], 
-      exportValue: [40000000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000, 42000000, 40000000, 16000000, 38000000, 28000000, 20800000], 
-    });
     
     const showDetail = (item) => {
       selectedItem.value = item;
@@ -539,13 +521,13 @@ export default {
     const {
         filterByDateAction,
         inventoryChart,
-        // donutChart,
         piedChart,
         importVal,
         exportVal,
         totalPO,
         totalProject,
-        donutData
+        donutData,
+        dualChartVal,
     } = useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters);
 
     // Reactive variable to control display dialog upload
@@ -689,8 +671,6 @@ export default {
       startAndEndDateVal,
       importSummaryData,
       exportSummaryData,
-      inventoryChartData,
-      transactionChartData,
       paginatedItemsGroup,
       groupedItems,
       totalItemsForPagination,
@@ -716,7 +696,8 @@ export default {
       exportVal,
       totalPO,
       totalProject,
-      donutData
+      donutData,
+      dualChartVal
     };
   },
 };
@@ -829,6 +810,7 @@ export default {
 }
 
 .dashboard-content {
+  width: 100%;
   padding: 10px 0;
   height: auto;
 }
@@ -902,8 +884,9 @@ export default {
 .charts-and-tables {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Chia thành 2 cột */
+  width: 100%;
   gap: 20px;
-  margin-top: 20px;
+  margin: 0 auto;
 }
 
 .transaction-chart-card {
@@ -943,10 +926,17 @@ export default {
 }
 
 .left-column,
-.right-column-charts {
+.right-column {
   display: flex;
   flex-direction: column;
   gap: 20px; 
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.el-card{
+  width: 100%;
+  min-height: 300px;
 }
 
 .chart-value {
@@ -1012,5 +1002,36 @@ export default {
   overflow: scroll;
   overflow-y: hidden;
   overflow-x: hidden;
+}
+@media (max-width: 1200px) {
+  /* Chuyển sang hiển thị 1 cột khi chiều rộng màn hình <= 1200px */
+  .charts-and-tables {
+    grid-template-columns: 1fr; /* Chỉ còn 1 cột chiếm toàn bộ chiều rộng */
+  }
+}
+
+/* Media Query cho các Metric Card để không bị tràn */
+@media (max-width: 1000px) {
+    .metric-cards {
+        flex-wrap: wrap; /* Cho phép các card nhảy xuống hàng mới */
+        justify-content: center; /* Căn giữa các card */
+        gap: 15px; /* Khoảng cách giữa các card */
+    }
+    .metric-card {
+        width: 48%; /* Hoặc một giá trị cố định nhỏ hơn */
+        max-width: 300px;
+    }
+}
+
+/* Màn hình điện thoại */
+@media (max-width: 600px) {
+    .metric-cards {
+        flex-direction: column; /* Xếp thành một cột dọc */
+        align-items: center;
+    }
+    .metric-card {
+        width: 100%;
+        max-width: none;
+    }
 }
 </style>
