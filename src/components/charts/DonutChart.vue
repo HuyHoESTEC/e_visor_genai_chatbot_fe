@@ -16,7 +16,7 @@
       <div class="chart-item">
         <v-chart class="echart" :option="notinstallationChartOption" autoresize />
         <p class="chart-label">Chưa Lắp Đặt</p>
-      </div>>
+      </div>
     </div>
   </div>
 </template>

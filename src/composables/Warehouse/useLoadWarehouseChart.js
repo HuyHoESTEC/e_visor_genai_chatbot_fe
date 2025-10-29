@@ -2,7 +2,6 @@ import { onMounted, ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { getWarehouseDashboardApi } from "../../services/auth.service";
 import { ElMessage } from "element-plus";
-import BarChart from "../../components/charts/BarChart.vue";
 
 
 export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters) {
@@ -19,7 +18,8 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
 
 
     const inventoryChart = ref({
-        total_products: 0,
+        total_import_product: 0,
+        total_export_product: 0,
         import_by_date: 0,
         export_by_date: 0,
         not_installation_by_date: 0,
@@ -38,12 +38,18 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         installation_by_date: [],
     })
 
-    const barChart = ref ({
+    const dualChartVal = ref ({
             day: {datetime_data: [], import_data: [], export_data: []},
             week: {datetime_data: [], import_data: [], export_data: []},
             month: {datetime_data: [], import_data: [], export_data: []},
             quarter: {datetime_data: [], import_data: [], export_data: []},
             year: {datetime_data: [], import_data: [], export_data: []},
+    });
+
+    const projectList = ref ({
+        export: [],
+        import: [],
+        installation: [],
     });
 
     const currentTimestamp = new Date();
@@ -63,14 +69,16 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         try {
             const response = await getWarehouseDashboardApi(payload);
 
-            // const chartPoint = response.data.list;
+            const projectListPoint = response.data.list;
             const cardPoint = response.data.point;
             const piedChartPoint = response.data.chart;
-            const barChartPoint = response.data.chart.bar_chart;
+            const dualChartPoint = response.data.chart.dual_chart;
 
             if (response.data.status === 'success') {
+                // BIẾN ĐỘNG SỐ LƯỢNG
                 inventoryChart.value = {
-                    total_products: cardPoint.total_products,
+                    total_import_products: cardPoint.total_import_product,
+                    total_export_products: cardPoint.total_export_product,
                     import_by_date: cardPoint.import_by_date,
                     export_by_date: cardPoint.export_by_date,
                     not_installation_by_date: cardPoint.not_installation_by_date,
@@ -83,7 +91,7 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
                     import_quantity: piedChartPoint.pie_chart.import_quantity || 0, 
                     export_quantity: piedChartPoint.pie_chart.export_quantity || 0, 
                 }
-
+                 // THỐNG KÊ LẮP ĐẶT
                 donutData.value = ({
                     installation_by_date: [
                         { 
@@ -99,36 +107,44 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
                     ]
                 });    
                 
-                barChart.value = [{
+                // Lượng hàng giao dịch
+                dualChartVal.value = ({
                     day:{
-                        datetime_data: barChartPoint.day.datetime_data || [],
-                        import_data: barChartPoint.day.import_data || [],
-                        export_data: barChartPoint.day.export_data || [],
+                        datetime_data: dualChartPoint.day.datetime_data || [],
+                        import_data: dualChartPoint.day.import_data || [],
+                        export_data: dualChartPoint.day.export_data || [],
                     },
                     week:{
-                        datetime_data: barChartPoint.week.datetime_data || [],
-                        import_data: barChartPoint.week.import_data || [],
-                        export_data: barChartPoint.week.export_data || [],
+                        datetime_data: dualChartPoint.week.datetime_data || [],
+                        import_data: dualChartPoint.week.import_data || [],
+                        export_data: dualChartPoint.week.export_data || [],
                     },
                     month:{
-                        datetime_data: barChartPoint.month.datetime_data || [],
-                        import_data: barChartPoint.month.import_data || [],
-                        export_data: barChartPoint.month.export_data || [],
+                        datetime_data: dualChartPoint.month.datetime_data || [],
+                        import_data: dualChartPoint.month.import_data || [],
+                        export_data: dualChartPoint.month.export_data || [],
                     },
                     quarter:{
-                        datetime_data: barChartPoint.quarter.datetime_data || [],
-                        import_data: barChartPoint.quarter.import_data || [],
-                        export_data: barChartPoint.quarter.export_data || [],
+                        datetime_data: dualChartPoint.quarter.datetime_data || [],
+                        import_data: dualChartPoint.quarter.import_data || [],
+                        export_data: dualChartPoint.quarter.export_data || [],
                     },
                     year:{
-                        datetime_data: barChartPoint.year.datetime_data || [],
-                        import_data: barChartPoint.year.import_data || [],
-                        export_data: barChartPoint.year.export_data || [],
+                        datetime_data: dualChartPoint.year.datetime_data || [],
+                        import_data: dualChartPoint.year.import_data || [],
+                        export_data: dualChartPoint.year.export_data || [],
                     },
-                }]  
+                })
 
-                importVal.value = cardPoint.import_by_date;
-                exportVal.value = cardPoint.export_by_date;
+                projectList.value = {
+                        import: projectListPoint.import || [],
+                        export: projectListPoint.export || [],
+                        installation: projectListPoint.installation || [],
+                }
+                console.log("dualChartVal.value:", dualChartVal.value);
+
+                importVal.value = cardPoint.total_import_product;
+                exportVal.value = cardPoint.total_export_product;
                 totalPO.value = cardPoint.total_PO;
                 totalProject.value = cardPoint.total_project;
                
@@ -174,7 +190,7 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         inventoryChart,
         donutData,
         piedChart,
-        barChart,
+        dualChartVal,
         isLoading,
         error,
         fetchDashboardData,
