@@ -293,7 +293,7 @@ export default {
     };
 
     const tableRowClassName = ({ row, rowIndex }) => {
-      if (row.status === 5) {
+      if (Number(row.status) === 5) {
         return 'highlight-status-5-row';
       }
       return '';
@@ -450,11 +450,18 @@ export default {
     background-color: #f04b2b !important;
 }
 
-.tasks-table :deep(.el-table__row.el-table__row--striped.highlight-status-5-row) {
-    background-color: #f2e8e6 !important; 
+.tasks-table :deep(.el-table__row--striped.highlight-status-5-row:hover > td) {
+    background-color: #f04b2b !important;
 }
 
-.tasks-table :deep(.highlight-status-5-row td) {
-    color: #464646;
+/* Để đảm bảo dòng stripe (lẻ) cũng được tô màu, BẠN CẦN GHI ĐÈ LỚP el-table__row--striped */
+.tasks-table :deep(.el-table__row--striped.highlight-status-5-row) {
+     background-color: #f28874 !important; /* Dùng màu nhất quán */
+}
+
+/* Quy tắc ghi đè trên từng ô (td) để tránh xung đột màu nền mặc định của ô */
+.tasks-table :deep(.highlight-status-5-row > td) {
+    background-color: inherit !important;
+    color: #464646; 
 }
 </style>
