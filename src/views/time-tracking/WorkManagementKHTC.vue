@@ -18,6 +18,7 @@
           clearable
           @change="applyFilters"
           class="user-select"
+          style="width: 60%;"
           >
             <el-option
               v-for="user in uniqueUsers"
@@ -33,6 +34,7 @@
             clearable
             @change="applyFilters"
             class="project-code-select"
+            style="width: 50%;"
           >
             <el-option
               v-for="code in uniqueProjectCode"
@@ -48,6 +50,7 @@
             clearable
             @change="applyFilters"
             class="status-select"
+            style="width: 60%;"
           >
             <el-option
               v-for="status in taskStatuses"
@@ -63,6 +66,7 @@
             clearable
             @change="applyFilters"
             class="status-select"
+            style="width: 50%;"
           >
             <el-option
               v-for="version in uniqueVersion"
@@ -78,7 +82,8 @@
             :start-placeholder="langStore.t('StartDate')"
             :end-placeholder="langStore.t('EndDate')"
             value-format="YYYY-MM-DD HH:mm:ss"
-            style="width: 100%;" 
+            placement="bottom-start"
+            style="width: 100%;"
           />
           <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
         </div>
@@ -106,6 +111,7 @@
         v-loading="isLoading"
         :element-loading-text="langStore.t('WorkUploading')"
         @selection-change="handleSelectionChange"
+        :row-class-name="tableRowClassName"
       >
         <template #empty>
           <div v-if="emptyData" class="empty-data-message">
@@ -132,7 +138,7 @@
           <template #default="{ row }">
             <el-tag :type="getStatusTagType(row.status)" style="font-weight: bolder;">
               {{ getTranslatedStatusLabel(row.status, taskStatuses) }}
-            </el-tag>
+            </el-tag> 
           </template>
         </el-table-column>
         <el-table-column prop="site" :label="langStore.t('JobArea')" sortable>
@@ -286,6 +292,13 @@ export default {
       selectedRows.value = val;
     };
 
+    const tableRowClassName = ({ row, rowIndex }) => {
+      if (row.status === 5) {
+        return 'highlight-status-5-row';
+      }
+      return '';
+    };
+
     return {
       isLoading,
       error,
@@ -343,6 +356,7 @@ export default {
       loadTasksWithFilters,
       selectedVersion,
       uniqueVersion,
+      tableRowClassName,
     };
   },
 };
@@ -389,7 +403,7 @@ export default {
 }
 
 .user-select, .status-select, .project-code-select {
-  min-width: 200px;
+  min-width: 100px;
 }
 
 .tasks-table {
@@ -424,7 +438,23 @@ export default {
 .filter-area {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 5px;
   width: 100%;
+}
+
+.tasks-table :deep(.highlight-status-5-row) {
+  background-color: #f28874 !important;
+}
+
+.tasks-table :deep(.highlight-status-5-row:hover > td) {
+    background-color: #f04b2b !important;
+}
+
+.tasks-table :deep(.el-table__row.el-table__row--striped.highlight-status-5-row) {
+    background-color: #f2e8e6 !important; 
+}
+
+.tasks-table :deep(.highlight-status-5-row td) {
+    color: #464646;
 }
 </style>
