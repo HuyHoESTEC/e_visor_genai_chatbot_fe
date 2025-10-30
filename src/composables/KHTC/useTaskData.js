@@ -15,6 +15,7 @@ export function useTaskData() {
   const selectedUser = ref(null);
   const selectedProjectCode = ref(null);
   const selectedStatus = ref(null);
+  const selectedVersion = ref(null);
 
   // --- State cho phân trang ---
   const currentPage = ref(1);
@@ -26,6 +27,7 @@ export function useTaskData() {
       selectedUser.value = null;
       selectedProjectCode.value = null;
       startAndEndDateVal.value = null;
+      selectedVersion.value = null;
 
       await fetchDataAndInitialize();
       return;
@@ -123,6 +125,20 @@ export function useTaskData() {
     return Array.from(projCode.values());
   });
 
+  const uniqueVersion = computed(() => {
+    if (!allTasks.value || allTasks.value.length === 0) {
+      return [];
+    }
+    const versionList = new Map();
+    allTasks.value.forEach((task) => {
+      const versionVal = task.version;
+      if (versionVal && !versionList.has(versionVal)) {
+        versionList.set(versionVal, { id: versionVal, name: versionVal });
+      }
+    });
+    return Array.from(versionList.values());
+  })
+
   // --- Methods liên quan đến dữ liệu và lọc ---
 
   // Hàm áp dụng bộ lọc và cập nhật filteredTasks
@@ -147,6 +163,10 @@ export function useTaskData() {
 
     if (selectedStatus.value) {
       tempTasks = tempTasks.filter(task => task.status === selectedStatus.value);
+    }
+
+    if (selectedVersion.value) {
+      tempTasks = tempTasks.filter(task => task.version === selectedVersion.value);
     }
 
     filteredTasks.value = tempTasks; // Cập nhật ref filteredTasks
@@ -221,5 +241,7 @@ export function useTaskData() {
     taskSites,
     loadTasksWithFilters,
     startAndEndDateVal,
+    selectedVersion,
+    uniqueVersion,
   };
 }
