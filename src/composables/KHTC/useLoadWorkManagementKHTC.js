@@ -41,6 +41,7 @@ export function useLoadWorkManagementKHTC() {
                 project_code: [],
                 start_date: startDate.toISOString(),
                 end_date: endDate.toISOString(),
+                version: null,
             },
             pagination: 1,
             page_size: 999

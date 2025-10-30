@@ -7,64 +7,81 @@
       <div class="filter-section">
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
-          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
-          <el-button type="danger" v-on:click="exportTask" class="add-task-button" :icon="Printer"></el-button>
+          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus" disabled>{{ langStore.t('AddWork') }}</el-button>
+          <el-button type="danger" v-on:click="exportTask" class="add-task-button" :icon="Printer" disabled></el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
-        
-        <el-select
+        <div class="filter-area">
+          <el-select
           v-model="selectedUser"
           :placeholder="langStore.t('FilterBasedOnAssign')"
           clearable
           @change="applyFilters"
           class="user-select"
-        >
-          <el-option
-            v-for="user in uniqueUsers"
-            :key="user.id"
-            :label="user.name"
-            :value="user.id"
-          ></el-option>
-        </el-select>
+          >
+            <el-option
+              v-for="user in uniqueUsers"
+              :key="user.id"
+              :label="user.name"
+              :value="user.id"
+            ></el-option>
+          </el-select>
 
-        <el-select
-          v-model="selectedProjectCode"
-          :placeholder="langStore.t('FilterBasedOnProjectCode')"
-          clearable
-          @change="applyFilters"
-          class="project-code-select"
-        >
-          <el-option
-            v-for="code in uniqueProjectCode"
-            :key="code.id"
-            :label="code.name"
-            :value="code.id"
-          ></el-option>
-        </el-select>
+          <el-select
+            v-model="selectedProjectCode"
+            :placeholder="langStore.t('FilterBasedOnProjectCode')"
+            clearable
+            @change="applyFilters"
+            class="project-code-select"
+          >
+            <el-option
+              v-for="code in uniqueProjectCode"
+              :key="code.id"
+              :label="code.name"
+              :value="code.id"
+            ></el-option>
+          </el-select>
 
-        <el-select
-          v-model="selectedStatus"
-          :placeholder="langStore.t('FilterBasedOnStatus')"
-          clearable
-          @change="applyFilters"
-          class="status-select"
-        >
-          <el-option
-            v-for="status in taskStatuses"
-            :key="status.value"
-            :label="getTranslatedStatusLabel(status.value, taskStatuses)"
-            :value="status.value"
-          ></el-option>
-        </el-select>
-        <el-date-picker
-          v-model="startAndEndDateVal"
-          type="daterange"
-          :start-placeholder="langStore.t('StartDate')"
-          :end-placeholder="langStore.t('EndDate')"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          style="width: 100%;" 
-        />
-        <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
+          <el-select
+            v-model="selectedStatus"
+            :placeholder="langStore.t('FilterBasedOnStatus')"
+            clearable
+            @change="applyFilters"
+            class="status-select"
+          >
+            <el-option
+              v-for="status in taskStatuses"
+              :key="status.value"
+              :label="getTranslatedStatusLabel(status.value, taskStatuses)"
+              :value="status.value"
+            ></el-option>
+          </el-select>
+
+          <el-select
+            v-model="selectedVersion"
+            placeholder="Lọc theo version"
+            clearable
+            @change="applyFilters"
+            class="status-select"
+          >
+            <el-option
+              v-for="version in uniqueVersion"
+              :key="version.id"
+              :label="version.name"
+              :value="version.id"
+            ></el-option>
+          </el-select>
+
+          <el-date-picker
+            v-model="startAndEndDateVal"
+            type="daterange"
+            :start-placeholder="langStore.t('StartDate')"
+            :end-placeholder="langStore.t('EndDate')"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            style="width: 100%;" 
+          />
+          <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
+        </div>
       </div>
 
       <div v-if="advanceDeleteVisible" class="advance-option-delete">
@@ -202,6 +219,8 @@ export default {
       taskSites,
       startAndEndDateVal,
       loadTasksWithFilters,
+      selectedVersion,
+      uniqueVersion
     } = useTaskData();
 
     const {
@@ -322,6 +341,8 @@ export default {
       currentDeleteMode,
       deleteButtonLabel,
       loadTasksWithFilters,
+      selectedVersion,
+      uniqueVersion,
     };
   },
 };
@@ -351,10 +372,10 @@ export default {
 
 .filter-section {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 20px;
   align-items: center;
-  flex-direction: row;
 }
 
 .action-area {
@@ -398,5 +419,12 @@ export default {
   margin-bottom: 20px;
   align-items: center;
   flex-direction: row;
+}
+
+.filter-area {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
 }
 </style>
