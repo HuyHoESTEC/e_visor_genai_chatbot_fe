@@ -293,11 +293,14 @@ export default {
     };
 
     const tableRowClassName = ({ row, rowIndex }) => {
-      if (Number(row.status) === 5) {
+      const status = Number(row.status);
+
+      if (status === 5) {
         return 'highlight-status-5-row';
-      } else if (Number(row.status) === 6) {
+      } else if (status === 6) {
         return 'highlight-status-6-row';
       }
+
       return '';
     };
 
@@ -444,41 +447,57 @@ export default {
   width: 100%;
 }
 
-.tasks-table :deep(.highlight-status-5-row) {
-  background-color: #f28874 !important;
-}
-
-.tasks-table :deep(.el-table__row--striped.highlight-status-5-row:hover > td) {
-    background-color: #f04b2b !important;
-}
-
-/* Để đảm bảo dòng stripe (lẻ) cũng được tô màu, BẠN CẦN GHI ĐÈ LỚP el-table__row--striped */
+/* 1. Áp dụng màu highlight lên thẻ TR (cho cả dòng thường và dòng stripe) */
+.tasks-table :deep(.highlight-status-5-row),
 .tasks-table :deep(.el-table__row--striped.highlight-status-5-row) {
-     background-color: #f28874 !important; /* Dùng màu nhất quán */
+    background-color: #f28874 !important; 
 }
 
-/* Quy tắc ghi đè trên từng ô (td) để tránh xung đột màu nền mặc định của ô */
+/* 2. Ghi đè màu nền trên TỪNG Ô TD */
+/* Đây là bước quan trọng để đảm bảo màu highlight không bị ghi đè bởi màu TD mặc định */
 .tasks-table :deep(.highlight-status-5-row > td) {
-    background-color: inherit !important;
-    color: #464646; 
+    background-color: #f28874 !important; /* Lặp lại màu TR */
+    color: #464646 !important;
 }
 
-.tasks-table :deep(.highlight-status-6-row) {
-  background-color: #A9E8B9 !important;
-}
+/* --- Status 6 --- */
 
-.tasks-table :deep(.el-table__row--striped.highlight-status-6-row > td) {
+/* 1. Áp dụng màu highlight lên thẻ TR (cho cả dòng thường và dòng stripe) */
+.tasks-table :deep(.highlight-status-6-row),
+.tasks-table :deep(.el-table__row--striped.highlight-status-6-row) {
     background-color: #A9E8B9 !important;
 }
 
-/* Để đảm bảo dòng stripe (lẻ) cũng được tô màu, BẠN CẦN GHI ĐÈ LỚP el-table__row--striped */
-.tasks-table :deep(.el-table__row--striped.highlight-status-6-row) {
-     background-color: #A9E8B9 !important; /* Dùng màu nhất quán */
+/* 2. Ghi đè màu nền trên TỪNG Ô TD */
+.tasks-table :deep(.highlight-status-6-row > td) {
+    background-color: #A9E8B9 !important; /* Lặp lại màu TR */
+    color: #464646 !important;
 }
 
-/* Quy tắc ghi đè trên từng ô (td) để tránh xung đột màu nền mặc định của ô */
-.tasks-table :deep(.highlight-status-6-row > td) {
-    background-color: inherit !important;
-    color: #464646; 
+.tasks-table :deep(.el-table__row:not(.highlight-status-5-row):not(.highlight-status-6-row) > td) {
+    /* Bỏ hoàn toàn quy tắc này hoặc dùng cách sau (rất cụ thể): */
+    /* Để Element Plus tự quản lý màu nền, đặc biệt là màu stripe */
+    background-color: var(--el-table-tr-bg-color) !important; /* Dành cho dòng chẵn */
+}
+
+.tasks-table :deep(.el-table__row--striped:not(.highlight-status-5-row):not(.highlight-status-6-row) > td) {
+    background-color: var(--el-table-fill-base) !important; /* Dành cho dòng lẻ (stripe) */
+}
+
+.tasks-table :deep(.el-table__cell) {
+    /* Cho phép văn bản bị cắt và xuống dòng */
+    white-space: normal; 
+    word-break: break-word; /* Đảm bảo từ dài cũng được ngắt */
+    /* Quan trọng: Tăng chiều cao dòng mặc định của bảng để chứa được nhiều dòng */
+    padding: 8px 0; /* Tăng padding trên/dưới nếu cần */
+}
+
+/* Áp dụng cho el-tag bên trong cột "Job Area" */
+.tasks-table :deep(.el-tag) {
+    /* el-tag là inline-block, cần cho phép nội dung bên trong nó xuống dòng nếu cần */
+    white-space: normal !important;
+    height: auto; /* Cho phép chiều cao tự động giãn ra */
+    line-height: normal; /* Đảm bảo line-height không bị cứng */
+    display: inline-flex; /* Tùy chọn: giúp căn chỉnh nội dung tốt hơn */
 }
 </style>
