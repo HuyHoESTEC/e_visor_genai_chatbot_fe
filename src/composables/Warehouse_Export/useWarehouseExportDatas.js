@@ -3,7 +3,7 @@ import { useLoadWarehouseExport } from "./useLoadWarehouseExport";
 import { useDateFormat } from "../utils/useDateFormat";
 
 export function useWarehouseExportDatas() {
-    const { tableData: allItemsFromComposable, isLoading, error, fetchImportDataTable } = useLoadWarehouseExport();
+    const { tableData: allItemsFromComposable, isLoading, error, fetchExportDataTable } = useLoadWarehouseExport();
     // Define a new ref to save data was fetched
     const allItemsExport = ref([]);
     const filteredItems = ref([]);
@@ -13,8 +13,9 @@ export function useWarehouseExportDatas() {
     const selectedProductCode = ref(null);
     const selectedImportDate = ref(null);
     const selectedProjectCode = ref(null);
-    const selectedBrand = ref(null);
+    const selectedLocationCode = ref(null);
     const selectedExportId = ref(null);
+    const selectedStatus = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -28,6 +29,9 @@ export function useWarehouseExportDatas() {
 
     const projectCodeOptions = ref([]);
     const loadingProjectCode = ref(false);
+
+    const locationOptions = ref([]);
+    const loadingLocation = ref(false);
 
     const exportIdOptions = ref([]);
     const loadingExportId = ref(false);
@@ -119,7 +123,7 @@ export function useWarehouseExportDatas() {
             productCodeOptions.value = '';
         }
     };
-
+    
     const uniqueProjectCode = computed(() => {
         if (!allItemsExport.value || allItemsExport.value.length === 0) {
             return [];
@@ -149,6 +153,37 @@ export function useWarehouseExportDatas() {
             projectCodeOptions.value = '';
         }
     };
+
+    const remoteSearchLocation = (query) => {
+        if (query) {
+            loadingLocation.value = true;
+            setTimeout(() => {
+                loadingLocation.value = false;
+                locationOptions.value = uniqueLocation.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                })
+            }, 200);
+        } else {
+            locationOptions.value = '';
+        }
+    };
+        console.log("remoteSearchLocation:", remoteSearchLocation);
+
+    const uniqueLocation = computed(() => {
+        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+            return [];
+        }
+
+        const itemLocation = new Map();
+        allItemsExport.value.forEach((item) => {
+            const Location = item.location;
+            if (Location && !itemLocation.has(Location)) {
+                itemLocation.set(Location, { id: Location, name: Location })
+            }
+        });
+
+        return Array.from(itemLocation.values());
+    });
 
     const uniqueExportId = computed(() => {
         if (!allItemsExport.value || allItemsExport.value.length === 0) {
@@ -205,14 +240,19 @@ export function useWarehouseExportDatas() {
             tempItems = tempItems.filter(item => item.project_code === filterProjectCode);
         }
 
-        if (selectedBrand.value) {
-            const brandValue = selectedBrand.value;
-            tempItems = tempItems.filter(item => item.origin === brandValue);
+        if (selectedLocationCode.value) {
+            const filterLocationValue = selectedLocationCode.value;
+            tempItems = tempItems.filter(item => item.location === filterLocationValue);
         }
 
         if (selectedExportId.value) {
             const exportIdVal = selectedExportId.value;
             tempItems = tempItems.filter(item => item.export_id === exportIdVal);
+        }
+
+        if (selectedStatus.value) {
+            const exportStatus = selectedStatus.value;
+            tempItems = tempItems.filter(item => item.status === exportStatus);
         }
 
         filteredItems.value = tempItems;
@@ -222,34 +262,59 @@ export function useWarehouseExportDatas() {
     const groupedItems = computed(() => {
         if (!Array.isArray(filteredItems.value)) {
             return [];
-        }
-        
+        }        
         const groups = new Map();
         filteredItems.value.forEach(item => {
-            const projectCode = item.project_code || 'Chưa phân loại';
-            if (!groups.has(projectCode)) {
-                groups.set(projectCode, {
-                    project_code: projectCode,
+            const locationCode = item.location || 'Chưa phân loại';
+            if (!groups.has(locationCode)) {
+                groups.set(locationCode, {
+                    location: locationCode,
                     items: [],
                     total_quantity: 0
                 });
             }
 
-            const group = groups.get(projectCode);
+            const group = groups.get(locationCode);
             group.items.push(item);
             group.total_quantity += item.quantity || 0;
         });
 
         return Array.from(groups.values());
     });
-
+    
     const totalItemsForPagination = computed(() => {
         return groupedItems.value.length
     })
 
+    const groupedStatus = computed(() => {
+        if (!Array.isArray(filteredItems.value)) {
+            return [];
+        }        
+        const groups = new Map();
+        filteredItems.value.forEach(item => {
+            const Status = item.status;
+            if (!groups.has(Status)) {
+                groups.set(Status, {
+                    status: Status,
+                    items: [],
+                    total_quantity: 0
+                });
+            }
+
+            const group = groups.get(Status);
+            group.items.push(item);
+            group.total_quantity += item.quantity || 0;
+        });
+        return Array.from(groups.values());
+    });
+
+    const totalStatusForPagination = computed(() => {
+        return groupedStatus.value.length
+    })
+
     // Function to load data and modify values
     const fetchDataAndInitialize = async () => {
-        await fetchImportDataTable();
+        await fetchExportDataTable();
     };
 
     watch(allItemsFromComposable, (newValue) => {
@@ -269,6 +334,7 @@ export function useWarehouseExportDatas() {
             projectCodeOptions.value = uniqueProjectCode.value;
             exportIdOptions.value = uniqueExportId.value;
             brandOptions.value = uniqueBrand.value;
+            locationOptions.value = uniqueLocation.value;
         } else {
             allItemsExport.value = [];
             filteredItems.value = [];
@@ -300,17 +366,23 @@ export function useWarehouseExportDatas() {
         loadingProductCode,
         remoteSearchProductCode,
         groupedItems,
+        groupedStatus,
         totalItemsForPagination,
+        totalStatusForPagination,
         projectCodeOptions,
         loadingProjectCode,
         remoteSearchProjectCode,
-        selectedBrand,
         selectedExportId,
+        selectedStatus,
         exportIdOptions,
         loadingExportId,
         remoteSearchExportId,
+        remoteSearchLocation,
         brandOptions,
         loadingBrand,
         remoteSearchBrand,
+        locationOptions,
+        loadingLocation,
+        uniqueLocation,
     }
 }

@@ -67,10 +67,10 @@
             </div> -->
 
             <div class="right-column">
-              <el-card class="transaction-chart-card" header="Tỷ lệ Nhập/Xuất (%)">
+              <el-card style="height: 100%;" class="transaction-chart-card">
                 <PiedChart 
                   :pied-chart="piedChart" 
-                  title-text="Biến Động Số Lượng"
+                  title-text="Biến Động Số Lượng (%)"
                 />
               </el-card>
             </div>

@@ -1,6 +1,6 @@
 import { onMounted, ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
-import { loadingExportDataWarehouse } from "../../services/auth.service";
+import { loadingWarehouseInstallationApi } from "../../services/auth.service";
 
 export function useLoadWarehouseExport() {
     const authStore = useAuthStore();
@@ -10,21 +10,29 @@ export function useLoadWarehouseExport() {
     const isLoading = ref(false);
     const error = ref(null);
     
-    const fetchImportDataTable = async () => {
+    const fetchExportDataTable = async () => {
         isLoading.value = true;
         error.value = null;
 
         const payload = {
             request_id: "evisor-" + Date.now(),
             owner: loggedInUserId,
-            option: "export"
+            filter: {
+                cabinet_no: null,
+                project_code: null,
+                seri_number: null,
+                part_no: null,
+                installed: null,
+            }
         };
         try {
-            const response = await loadingExportDataWarehouse(payload);
-            if (Array.isArray(response.data)) {
-                tableData.value = response.data;
+            const response = await loadingWarehouseInstallationApi(payload);
+            const dataVal = response.data.data;
+            
+            if (response.data.status === "success" && Array.isArray(dataVal)) {
+                tableData.value = dataVal;
             } else {
-                console.warn('API did not return an array for tableData:', response.data);
+                console.warn('API did not return an array for tableData:', dataVal);
                 tableData.value = [];
             }
         } catch (e) {
@@ -34,15 +42,15 @@ export function useLoadWarehouseExport() {
             isLoading.value = false;
         }
     };
-
+        
     onMounted(() => {
-        fetchImportDataTable();
+        fetchExportDataTable();
     })
 
     return {
         tableData,
         isLoading,
         error,
-        fetchImportDataTable,
+        fetchExportDataTable,
     }
 }
