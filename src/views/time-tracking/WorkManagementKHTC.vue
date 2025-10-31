@@ -295,6 +295,8 @@ export default {
     const tableRowClassName = ({ row, rowIndex }) => {
       if (Number(row.status) === 5) {
         return 'highlight-status-5-row';
+      } else if (Number(row.status) === 6) {
+        return 'highlight-status-6-row';
       }
       return '';
     };
@@ -446,10 +448,6 @@ export default {
   background-color: #f28874 !important;
 }
 
-.tasks-table :deep(.highlight-status-5-row:hover > td) {
-    background-color: #f04b2b !important;
-}
-
 .tasks-table :deep(.el-table__row--striped.highlight-status-5-row:hover > td) {
     background-color: #f04b2b !important;
 }
@@ -461,6 +459,25 @@ export default {
 
 /* Quy tắc ghi đè trên từng ô (td) để tránh xung đột màu nền mặc định của ô */
 .tasks-table :deep(.highlight-status-5-row > td) {
+    background-color: inherit !important;
+    color: #464646; 
+}
+
+.tasks-table :deep(.highlight-status-6-row) {
+  background-color: #A9E8B9 !important;
+}
+
+.tasks-table :deep(.el-table__row--striped.highlight-status-6-row > td) {
+    background-color: #A9E8B9 !important;
+}
+
+/* Để đảm bảo dòng stripe (lẻ) cũng được tô màu, BẠN CẦN GHI ĐÈ LỚP el-table__row--striped */
+.tasks-table :deep(.el-table__row--striped.highlight-status-6-row) {
+     background-color: #A9E8B9 !important; /* Dùng màu nhất quán */
+}
+
+/* Quy tắc ghi đè trên từng ô (td) để tránh xung đột màu nền mặc định của ô */
+.tasks-table :deep(.highlight-status-6-row > td) {
     background-color: inherit !important;
     color: #464646; 
 }

@@ -69,6 +69,7 @@ export function useTaskData() {
     { value: 3, label: 'Hoàn thành' },
     { value: 4, label: 'Đã hủy' },
     { value: 5, label: 'Đã chỉnh sửa' },
+    { value: 6, label: 'Thêm mới' },
   ];
 
   /**
