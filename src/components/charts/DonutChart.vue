@@ -2,7 +2,6 @@
   <div class="donut-chart-container">
     <div class="chart-header">
       <h3 class="chart-title">Thống kê Lắp đặt</h3>
-      <p class="chart-subtitle">Theo danh mục sản phẩm</p>
     </div>
     <div v-if="!hasData" class="no-data-message">
       <p>Không có dữ liệu biểu đồ để hiển thị.</p>
@@ -33,8 +32,6 @@ import {
 } from 'echarts/components';
 import VChart from 'vue-echarts';
 import { computed } from 'vue';
-import { Position } from '@element-plus/icons-vue';
-import { toPadding } from 'chart.js/helpers';
 
 use([
   CanvasRenderer,

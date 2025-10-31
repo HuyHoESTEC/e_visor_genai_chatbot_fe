@@ -1,364 +1,514 @@
 <template>
   <div class="dual-chart-container">
     <div class="chart-header">
-      <h3 class="chart-title">Lượng Hàng Giao Dịch</h3> 
-      <div class="time-filter-group">
-        <el-button 
-          v-for="time in timeOptions" 
-          :key="time.key" 
-          :class="{ 'is-active': timeFilter === time.key }"
+      <h3 class="chart-title">Lượng Hàng Giao Dịch</h3>
+      <div class="header-controls">
+        <el-button
+          :class="{ 'is-active-btn': viewMode === 'table' }"
           size="small"
-          @click="setTimeFilter(time.key)"
+          @click="viewMode = viewMode === 'table' ? 'chart' : 'table'"
         >
-          {{ time.label }}
+          <i :class="viewMode === 'table' ? 'el-icon-data-board' : 'el-icon-list'"></i> 
+          {{ viewMode === 'table' ? 'Xem Biểu Đồ' : 'Xem Bảng' }}
         </el-button>
+
+        <div class="time-filter-group">
+          <el-button
+            v-for="time in timeOptions"
+            :key="time.key"
+            :class="{ 'is-active': timeFilter === time.key }"
+            size="small"
+            @click="setTimeFilter(time.key)"
+          >
+            {{ time.label }}
+          </el-button>
+        </div>
       </div>
     </div>
-    <div ref="chartRef" class="dual-chart-body"></div>
+
+    <div v-if="viewMode === 'chart'" ref="chartRef" class="dual-chart-body"></div>
+
+    <div v-if="viewMode === 'table'" class="dual-chart-body table-view">
+        <div v-if="currentChartData.dates.length === 0" class="no-data-message">
+            Không có dữ liệu chi tiết cho chế độ xem này.
+        </div>
+        <table v-else class="data-table">
+            <thead>
+                <tr>
+                    <th>Thời Gian ({{ timeOptions.find(t => t.key === timeFilter).label }})</th>
+                    <th>Số Lượng Nhập (sp)</th>
+                    <th>Số Lượng Xuất (sp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(date, index) in currentChartData.dates" :key="index">
+                    <td>{{ formatDate(date, timeFilter) }}</td>
+                    <td class="text-right">{{ formatNumberWithComma(currentChartData.importQuantity[index]) }}</td>
+                    <td class="text-right">{{ formatNumberWithComma(currentChartData.exportQuantity[index]) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
   </div>
-</template>=
+</template>
+
 <script>
 import { ref, onMounted, watch, onBeforeUnmount, nextTick, computed } from 'vue';
-import * as echarts from 'echarts'; 
+import * as echarts from 'echarts';
 
-// --- Cấu hình Màu sắc ---
-const COLORS = {
-  importQty: '#007AFF', // Xanh Dương (Blue) hiện đại
-  exportQty: '#34C759', // Xanh Lá (Green) tươi tắn
+const BASE_COLORS = {
+  importQty: '#007AFF', 
+  exportQty: '#34C759', 
+  lightBlue: '#5AC8FA',
+  lightGreen: '#30D158',
+  shadow: 'rgba(0, 0, 0, 0.2)',
 };
 
-// --- Hàm Định dạng Số Lớn Cho Trục Y (Giúp dễ đọc) ---
+const createGradient = (colorStart, colorEnd) => {
+  return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    { offset: 0, color: colorStart },
+    { offset: 1, color: colorEnd }
+  ]);
+};
+
+const COLORS = {
+    importGradient: createGradient(BASE_COLORS.importQty, BASE_COLORS.lightBlue),
+    exportGradient: createGradient(BASE_COLORS.exportQty, BASE_COLORS.lightGreen),
+    axisLine: '#E0E0E0',
+    splitLine: '#F0F0F0',
+};
+
 const formatLargeNumber = (value) => {
-    // Định dạng số hàng nghìn/triệu (ví dụ: 1000 -> 1K)
-    if (value >= 1000000) {
-        return (value / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (value === null || value === undefined) return '';
+  if (value >= 1000000) {
+    return (value / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  }
+  if (value >= 1000) {
+    return (value / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return value.toLocaleString('vi-VN');
+};
+
+const formatNumberWithComma = (value) => {
+    if (value === null || value === undefined) return '0';
+    return value.toLocaleString('vi-VN');
+};
+
+const formatDate = (dateStr, filter) => {
+  if (!dateStr) return '';
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return dateStr;
     }
-    if (value >= 1000) {
-        return (value / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+
+    switch (filter) {
+      case 'day':
+        return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      case 'week':
+        return date.toLocaleDateString('vi-VN', { month: 'short' });
+      case 'month':
+        return date.toLocaleDateString('vi-VN', { month: 'short', year: '2-digit' });
+      case 'quarter':
+      case 'year':
+        return date.toLocaleDateString('vi-VN', { year: 'numeric' });
+      default:
+        return dateStr;
     }
-    // Định dạng số thông thường
-    return value.toLocaleString('vi-VN'); 
+  } catch (e) {
+    return dateStr;
+  }
+};
+
+const calculateNiceMax = (maxVal) => {
+    if (maxVal <= 0) return { niceMax: 100, qtyInterval: 20 };
+    const exponent = Math.floor(Math.log10(maxVal));
+    const tenPower = Math.pow(10, exponent);
+    const roughInterval = tenPower / 5;
+    const niceMax = Math.ceil(maxVal / roughInterval) * roughInterval;
+    const qtyInterval = niceMax / 5;
+    if (niceMax === 0) return { niceMax: 100, qtyInterval: 20 };
+    return { niceMax, qtyInterval };
 };
 
 export default {
-  name: 'DualChart',
-  props: {
-    chartData: { 
-      type: Object,
-      default: () => ({
-        day: { datetime_data: [], import_data: [], export_data: [] },
-        week: { datetime_data: [], import_data: [], export_data: [] },
-        month: { datetime_data: [], import_data: [], export_data: [] },
-        quarter: { datetime_data: [], import_data: [], export_data: [] },
-        year: { datetime_data: [], import_data: [], export_data: [] },
-      }),
-    },
-    isVisible: { 
-        type: Boolean,
-        default: true,
-    }
-  },
-  setup(props) {
-    const chartRef = ref(null);
-    let myChart = null;
-    // Đặt mặc định là 'day' để khớp với dữ liệu ví dụ trong ảnh
-    const timeFilter = ref('day'); 
-    
-    const timeOptions = [
-      { key: 'day', label: 'Ngày' }, 
-      { key: 'week', label: 'Tuần' },
-      { key: 'month', label: 'Tháng' },
-      { key: 'quarter', label: 'Quý' },
-      { key: 'year', label: 'Năm' }, 
-    ];
-    
-    // Hàm resize biểu đồ
-    const resizeChart = () => {
-        if (myChart) {
-            myChart.resize();
-        }
-    };
-    
-    // Lấy dữ liệu theo bộ lọc thời gian hiện tại
-    const getChartDataByFilter = (filter) => {
-        const quantityData = props.chartData[filter] || { datetime_data: [], import_data: [], export_data: [] };
+  name: 'DualChart',
+  props: {
+    chartData: {
+      type: Object,
+      default: () => ({
+        day: { datetime_data: [], import_data: [], export_data: [] },
+        week: { datetime_data: [], import_data: [], export_data: [] },
+        month: { datetime_data: [], import_data: [], export_data: [] },
+        quarter: { datetime_data: [], import_data: [], export_data: [] },
+        year: { datetime_data: [], import_data: [], export_data: [] },
+      }),
+    },
+    isVisible: {
+      type: Boolean,
+      default: true,
+    }
+  },
+  setup(props) {
+    const chartRef = ref(null);
+    let myChart = null;
 
-        return {
-            dates: quantityData.datetime_data || [],
-            importQuantity: quantityData.import_data || [],
-            exportQuantity: quantityData.export_data || [],
-        };
-    };
+    const timeFilter = ref('day');
+    const viewMode = ref('chart'); 
 
-    // Dữ liệu biểu đồ hiện tại (sử dụng computed để phản ứng với thay đổi filter)
-    const currentChartData = computed(() => {
-        return getChartDataByFilter(timeFilter.value);
-    });
+    const timeOptions = [
+      { key: 'day', label: 'Ngày' },
+      { key: 'week', label: 'Tuần' },
+      { key: 'month', label: 'Tháng' },
+      { key: 'quarter', label: 'Quý' },
+      { key: 'year', label: 'Năm' },
+    ];
 
-    // Hàm Cập nhật Biểu đồ (chứa tất cả cấu hình ECharts)
-    const updateChart = (data) => {
-      if (!chartRef.value || !data || data.dates.length === 0) {
-        if (myChart) myChart.dispose();
-        myChart = null;
-        return;
-      }
-      
-      if (!myChart) {
-        myChart = echarts.init(chartRef.value);
-      }
-      
-      // --- Logic tính toán Max và Interval cho Trục Y (Tối ưu hiển thị) ---
-      const allQty = [...data.importQuantity, ...data.exportQuantity].filter(v => typeof v === 'number');
-      const maxVal = allQty.length > 0 ? Math.max(...allQty) : 0;
-      
-      // Tính Max làm tròn lên 10% và bội số của 5 để trục Y đẹp hơn
-      const niceMax = maxVal === 0 ? 100 : Math.ceil(maxVal * 1.1 / 5) * 5; 
-      const qtyInterval = niceMax / 5 > 0 ? niceMax / 5 : 20; 
-      
-      const option = {
-            // --- Animation & Hiệu ứng ---
-            animation: true, 
-            animationDuration: 1200, // Kéo dài thời gian animation
-            animationEasing: 'cubicOut',
+    const resizeChart = () => {
+      if (myChart) {
+        myChart.resize();
+      }
+    };
 
-        title: { show: false },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: { 
-                type: 'shadow',
-                shadowStyle: { 
-                    opacity: 0.1 
-                }
-            },
-            // --- Định dạng Tooltip chi tiết hơn ---
-          formatter: (params) => {
-            let tooltip = `<div style="font-weight: bold; margin-bottom: 4px; font-size: 14px;">${params[0].name}</div>`;
-            params.forEach(item => {
-              let value = item.value.toLocaleString('vi-VN');
-              
-              tooltip += `
+    const getChartDataByFilter = (filter) => {
+      const quantityData = props.chartData[filter] || { datetime_data: [], import_data: [], export_data: [] };
+
+      return {
+        dates: quantityData.datetime_data || [],
+        importQuantity: quantityData.import_data || [],
+        exportQuantity: quantityData.export_data || [],
+        filter: filter,
+      };
+    };
+
+    const currentChartData = computed(() => {
+      return getChartDataByFilter(timeFilter.value);
+    });
+
+    const updateChart = (data) => {
+      if (!chartRef.value || !data || data.dates.length === 0 || viewMode.value === 'table') {
+        if (myChart) myChart.dispose();
+        myChart = null;
+        return;
+      }
+
+      if (!myChart) {
+        myChart = echarts.init(chartRef.value, null, { renderer: 'svg' });
+      }
+
+      const allQty = [...data.importQuantity, ...data.exportQuantity].filter(v => typeof v === 'number');
+      const maxVal = allQty.length > 0 ? Math.max(...allQty) : 0;
+      const { niceMax, qtyInterval } = calculateNiceMax(maxVal);
+
+      const option = {
+        animation: true,
+        animationDuration: 1200, 
+        animationEasing: 'bounceOut', 
+
+        title: { show: false },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow',
+            shadowStyle: { opacity: 0.1 }
+          },
+          formatter: (params) => {
+            const formattedDate = formatDate(params[0].name, data.filter); 
+            let tooltip = `<div style="font-weight: bold; margin-bottom: 4px; font-size: 14px;">${formattedDate}</div>`;
+            
+            params.forEach(item => {
+              let value = item.value.toLocaleString('vi-VN');
+
+              tooltip += `
                 <div style="display: flex; justify-content: space-between; align-items: center; line-height: 1.5; font-size: 13px;">
-                    <span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${item.color};"></span>
-                    ${item.seriesName}: 
-                    <span style="font-weight: bold; margin-left: 10px; color: ${item.color};">${value} (sp)</span>
+                  <span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${item.color};"></span>
+                  ${item.seriesName}:
+                  <span style="font-weight: bold; margin-left: 10px; color: ${item.color};">${value} (sp)</span>
                 </div>
               `;
-            });
-            return tooltip;
-          }
-        },
-        legend: {
-          data: ['Số lượng nhập', 'Số lượng xuất'],
-          top: 10, // Đặt Legend lên trên
+            });
+            return tooltip;
+          }
+        },
+        legend: {
+          data: ['Số lượng nhập', 'Số lượng xuất'],
+          top: 10,
           right: '5%',
-          itemGap: 25, 
-          icon: 'roundRect', // Icon Legend hình chữ nhật bo tròn
-          textStyle: { color: '#303133' }
-        },
-        grid: {
-          left: '3%',
-          right: '5%',
-          bottom: '5%', 
-          top: '20%', 
-          containLabel: true
-        },
-        xAxis: [
-          {
-            type: 'category',
-            data: data.dates,
-            axisPointer: { type: 'shadow' },
-            boundaryGap: true,
-            axisLabel: {
-                rotate: 30, // Xoay chữ trục X nếu cần
-                interval: 0, 
-                color: '#606266', 
-            },
-          	axisLine: { lineStyle: { color: '#DCDFE6' } }
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value',
-            // Tên trục Y rõ ràng hơn
-            name: 'Số lượng', 
-            min: 0,
-            max: niceMax, 
-            interval: qtyInterval, 
-            axisLabel: { 
-                // Định dạng số lớn (K, M) cho trục Y dễ đọc
-                formatter: formatLargeNumber, 
-                color: '#606266',
-            },
-          	nameTextStyle: { fontWeight: 'bold', padding: [0, 0, 10, 0], color: '#303133' },
-          	splitLine: { lineStyle: { type: 'solid', color: '#EBEEF5', opacity: 0.6 } } 
-          },
-        ],
-        series: [
-          {
-            name: 'Số lượng nhập',
-            type: 'bar',
-            barGap: '0%', 
-            barCategoryGap: '20%',
-            data: data.importQuantity, 
-          	itemStyle: { 
-                color: COLORS.importQty, 
-                borderRadius: [5, 5, 0, 0], // Bo tròn góc trên cột
-                opacity: 0.9
-            }, 
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.3)', // Hiệu ứng đổ bóng khi hover
-                    opacity: 1
-                }
+          itemGap: 25,
+          icon: 'roundRect',
+          textStyle: { color: '#303133', fontWeight: '500' }
+        },
+        grid: {
+          left: '3%',
+          right: '5%',
+          bottom: '10%', 
+          top: '20%',
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: data.dates.map(date => formatDate(date, data.filter)), 
+            axisPointer: { type: 'shadow' },
+            boundaryGap: true,
+            axisLabel: {
+              rotate: data.dates.length > 7 ? 45 : 0, 
+              interval: data.dates.length > 20 ? 'auto' : 0, 
+              color: '#606266',
+              fontSize: 11,
             },
-            animationEasing: 'elasticOut', // Hiệu ứng bật nảy cho cột
-            yAxisIndex: 0, 
-          },
-          {
-            name: 'Số lượng xuất',
-            type: 'bar',
-            data: data.exportQuantity, 
-          	itemStyle: { 
-                color: COLORS.exportQty,
-                borderRadius: [5, 5, 0, 0],
-                opacity: 0.9
-            }, 
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.3)',
-                    opacity: 1
-                }
+            axisLine: { lineStyle: { color: COLORS.axisLine, width: 1 } }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: 'Số lượng',
+            min: 0,
+            max: niceMax,
+            interval: qtyInterval, 
+            axisLabel: {
+              formatter: formatLargeNumber, 
+              color: '#606266',
             },
-            animationEasing: 'elasticOut', 
-            yAxisIndex: 0, 
-          },
-        ]
-      };
+            nameTextStyle: { fontWeight: 'bold', padding: [0, 0, 10, 0], color: '#303133' },
+            splitLine: { lineStyle: { type: 'dashed', color: COLORS.splitLine, opacity: 0.8 } },
+            axisLine: { show: false }, 
+            axisTick: { show: false }
+          },
+        ],
+        series: [
+          {
+            name: 'Số lượng nhập',
+            type: 'bar',
+            barGap: '0%',
+            barCategoryGap: '25%',
+            data: data.importQuantity,
+            itemStyle: {
+              color: COLORS.importGradient,
+              borderRadius: [6, 6, 0, 0],
+              opacity: 0.95
+            },
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowOffsetY: -5,
+                shadowColor: BASE_COLORS.shadow,
+                opacity: 1
+              }
+            },
+            animationEasing: 'bounceOut', 
+            yAxisIndex: 0,
+          },
+          {
+            name: 'Số lượng xuất',
+            type: 'bar',
+            data: data.exportQuantity,
+            itemStyle: {
+              color: COLORS.exportGradient,
+              borderRadius: [6, 6, 0, 0],
+              opacity: 0.95
+            },
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowOffsetY: -5,
+                shadowColor: BASE_COLORS.shadow,
+                opacity: 1
+              }
+            },
+            animationEasing: 'bounceOut',
+            yAxisIndex: 0,
+          },
+        ]
+      };
 
-      myChart.setOption(option, true);
-      myChart.resize(); 
-    };
-    
-    // Watcher: Cập nhật biểu đồ khi dữ liệu thay đổi
-    watch(currentChartData, (newData) => {
-        if (props.isVisible) {
-            updateChart(newData);
-        }
-    }, { deep: true, immediate: true }); 
+      myChart.setOption(option, true);
+      myChart.resize();
+    };
 
-    const setTimeFilter = (key) => {
-        timeFilter.value = key;
-    }
-    
-    // Cập nhật khi component hiển thị (khi dùng trong tab/modal)
-    watch(() => props.isVisible, (newVal) => {
-        if (newVal) {
-            nextTick(() => {
-                updateChart(currentChartData.value); 
-            });
-        }
-    });
+    watch([currentChartData, viewMode], ([newData]) => {
+      if (props.isVisible && viewMode.value === 'chart') {
+        updateChart(newData);
+      } else if (viewMode.value === 'table') {
+         if (myChart) myChart.dispose();
+         myChart = null;
+      }
+    }, { deep: true, immediate: true });
 
-    // Lifecycle: Xử lý resize cửa sổ
-    onMounted(() => {
-        window.addEventListener('resize', resizeChart);
-    });
+    const setTimeFilter = (key) => {
+      timeFilter.value = key;
+    }
 
-    onBeforeUnmount(() => {
-        window.removeEventListener('resize', resizeChart);
-        if (myChart) {
-            myChart.dispose();
-        }
-    });
-  
-    return {
-      chartRef,
-      timeFilter,
-      timeOptions,
-      setTimeFilter,
-    };
-  }
+    watch(() => props.isVisible, (newVal) => {
+      if (newVal) {
+        nextTick(() => {
+          if (viewMode.value === 'chart') {
+             updateChart(currentChartData.value);
+          }
+        });
+      }
+    });
+
+    onMounted(() => {
+      window.addEventListener('resize', resizeChart);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', resizeChart);
+      if (myChart) {
+        myChart.dispose();
+      }
+    });
+
+    return {
+      chartRef,
+      timeFilter,
+      timeOptions,
+      viewMode, // Export viewMode
+      setTimeFilter,
+      formatDate, // Export formatDate để dùng trong bảng
+      formatNumberWithComma, // Export formatNumberWithComma để dùng trong bảng
+    };
+  }
 };
 </script>
 
 <style scoped>
-/* --- Style Bổ sung để làm đẹp giao diện --- */
 .dual-chart-container {
-    padding: 0; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Thêm đổ bóng nhẹ */
-    background-color: #FFFFFF;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); 
+  background-color: #FFFFFF;
+  transition: box-shadow 0.3s ease;
+}
+
+.dual-chart-container:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); 
 }
 
 .chart-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; 
+  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px; 
+  border-bottom: 1px solid #EBEEF5;
+}
+
+.header-controls {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    justify-content: space-between;
+    gap: 15px;
     align-items: center;
-    padding: 15px 20px 10px 20px; 
-    border-bottom: 1px solid #EBEEF5; 
 }
 
 .chart-title {
-    margin: 0;
-    font-size: 1.4em; 
-    font-weight: 700; 
-    color: #303133; 
+  margin: 0;
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #303133;
 }
 
-/* --- Style cho nhóm nút lọc thời gian --- */
+.el-button {
+    font-weight: 500;
+}
+.el-button.is-active-btn {
+    background-color: #F2F6FC;
+    color: #007AFF;
+    border-color: #007AFF;
+}
+
 .time-filter-group {
-    display: inline-flex;
-    border-radius: 6px; 
-    overflow: hidden; 
-    border: 1px solid #DCDFE6; 
+  display: inline-flex;
+  border-radius: 8px; 
+  overflow: hidden;
+  border: 1px solid #DCDFE6;
 }
 
 .time-filter-group .el-button {
-    /* Style cơ bản */
-    margin-left: 0 !important; 
-    border-radius: 0;
-    padding: 6px 15px; 
-    border: none !important; 
-    color: #606266;
-    background-color: white;
-    transition: all 0.2s ease-in-out; 
-    position: relative;
+  margin-left: 0 !important;
+  border-radius: 0;
+  padding: 6px 15px;
+  border: none !important;
+  color: #606266;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+  position: relative;
 }
 
-/* Nút được chọn */
 .time-filter-group .el-button.is-active {
-    background-color: #007AFF !important; /* Màu xanh hiện đại */
-    color: white !important;
-    font-weight: bold;
+  background-color: #007AFF !important; 
+  color: white !important;
+  font-weight: 600;
 }
 
-/* Hover cho nút không được chọn */
 .time-filter-group .el-button:not(.is-active):hover {
-    color: #007AFF;
-    background-color: #F2F6FC; 
+  color: #007AFF;
+  background-color: #F2F6FC;
 }
 
-/* Đường phân cách giữa các nút */
-/* Dùng pseudo-element để tạo đường kẻ đứng đẹp mắt hơn */
-.time-filter-group .el-button:not(:last-child)::after { 
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 20%;
-    height: 60%;
-    width: 1px;
-    background-color: #DCDFE6;
+.time-filter-group .el-button:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background-color: #DCDFE6;
 }
 
 .dual-chart-body {
+  width: 100%;
+  height: 480px; 
+  padding: 15px;
+}
+
+.table-view {
+    overflow-y: auto;
+    padding: 20px 25px;
+}
+
+.data-table {
     width: 100%;
-    height: 450px; /* Tăng chiều cao để biểu đồ thoáng hơn */
-    padding: 15px; 
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #303133;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #EBEEF5;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #F5F7FA;
+    font-weight: 600;
+    color: #606266;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.data-table tbody tr:hover {
+    background-color: #F9F9FC;
+}
+
+.text-right {
+    text-align: right;
+    font-weight: 500;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 50px;
+    color: #909399;
+    font-size: 16px;
 }
 </style>

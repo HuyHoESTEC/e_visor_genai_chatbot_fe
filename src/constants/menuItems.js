@@ -109,7 +109,7 @@ const MENU_ITEMS = [
           },
           {
             name: "ExportWarehouse",
-            label: "Xuất kho",
+            label: "Xuất kho | Lắp đặt",
             routeName: "ExportWarehouseRoute",
             iconComponent: "Van",
             isActive: false,

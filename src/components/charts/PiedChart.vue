@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { toLineHeight } from 'chart.js/helpers';
 import * as echarts from 'echarts';
 import { defineComponent, ref, onMounted, watch, onBeforeUnmount } from 'vue';
 
@@ -19,7 +20,7 @@ export default defineComponent({
     },
     titleText: {
       type: String,
-      default: 'BIẾN ĐỘNG SỐ LƯỢNG', 
+      default: 'BIẾN ĐỘNG SỐ LƯỢNG (%)', 
     },
   },
 
@@ -28,13 +29,13 @@ export default defineComponent({
     let myChart = null;
 
     const COLORS = {
-      // Xanh cho Nhập Kho (IMPORT)
       IMPORT: ['#04A25F', '#58D68D'], 
-      // Đỏ cho Xuất Kho (EXPORT)
       EXPORT: ['#E74C3C', '#F1948A'], 
       NO_DATA: '#ccc',
       TEXT_COLOR: '#333333',
       SHADOW_COLOR: 'rgba(0, 0, 0, 0.3)', 
+      IMPORT_TEXT: '#00703C',
+      EXPORT_TEXT: '#B03A2E',
     };
 
     const createGradient = (colors) => {
@@ -45,19 +46,24 @@ export default defineComponent({
     };
 
     const getChartOptions = (data) => {
-
       const importVal = Number(data?.import_quantity) || 0;
       const exportVal = Number(data?.export_quantity) || 0;
+
+      const subtextImport = `Nhập Kho: ${importVal.toLocaleString()}`;
+      const subtextExport = `Xuất Kho: ${exportVal.toLocaleString()}`;
+      const totalSubtext = `${subtextImport} | ${subtextExport}`;
 
       const rawChartData = [
         { 
           value: importVal, 
           name: 'Nhập Kho', 
+          label: { align: 'left', position: 'outside' },
           itemStyle: { color: createGradient(COLORS.IMPORT), shadowBlur: 8, shadowColor: COLORS.SHADOW_COLOR, shadowOffsetX: 0, shadowOffsetY: 5 }
         },
         { 
           value: exportVal, 
           name: 'Xuất Kho',
+          label: { align: 'left', position: 'outside' },
           itemStyle: { color: createGradient(COLORS.EXPORT), shadowBlur: 8, shadowColor: COLORS.SHADOW_COLOR, shadowOffsetX: 0, shadowOffsetY: 5 }
         },
       ];
@@ -67,16 +73,15 @@ export default defineComponent({
 
       const finalChartData = hasData ? chartData : [
           {
-              value: 1, 
-              name: 'Không có dữ liệu',
-              itemStyle: { color: COLORS.NO_DATA },
-              tooltip: { show: false }, 
-              label: { 
-                  show: true, formatter: 'KHÔNG CÓ DỮ LIỆU', color: COLORS.TEXT_COLOR,
-                  fontSize: 18, 
-                  // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản (light)
-                  fontWeight: 'light' 
-              }
+            value: 1, 
+            name: 'Không có dữ liệu',
+            itemStyle: { color: COLORS.NO_DATA },
+            tooltip: { show: false }, 
+            label: { 
+              show: true, formatter: 'KHÔNG CÓ DỮ LIỆU', color: COLORS.TEXT_COLOR,
+              fontSize: 18, 
+              fontWeight: 'light' 
+            }
           }
       ];
       
@@ -89,18 +94,21 @@ export default defineComponent({
           {
             query: { maxWidth: 768 },
             option: {
-              title: { fontSize: 18, top: '2%' },
+              title: { 
+                fontSize: 18, 
+                top: '2%',
+                subtext: totalSubtext.replace('\n', ' | '),
+                subtextStyle: { fontSize: 16, top: '2%', left: 'center', fontWeight:'bold' }
+              },
               legend: {
                 data: ['Xuất Kho', 'Nhập Kho'], 
                 left: 'center', top: 'bottom', orient: 'horizontal', itemGap: 10, 
-                // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản
-                fontSize: 12,
+                fontSize: 18,
               },
               series: [{
-                radius: ['40%', '65%'], center: ['50%', '45%'], 
+                radius: ['30%', '50%'], center: ['50%', '45%'], 
                 label: { 
-                    // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản
-                    fontSize: 12,
+                  fontSize: 16,
                 },
                 labelLine: { length: 8, length2: 8 }
               }]
@@ -114,8 +122,7 @@ export default defineComponent({
               series: [{
                 radius: ['35%', '60%'], center: ['50%', '45%'],
                 label: { 
-                    // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản
-                    fontSize: 10,
+                  fontSize: 16,
                 },
                 labelLine: { length: 5, length2: 5 }
               }]
@@ -127,15 +134,28 @@ export default defineComponent({
           text: props.titleText.toUpperCase(), 
           left: 'center',
           top: '5%', 
+          subtext: totalSubtext,
+          subtextStyle: {
+            import:{
+              color: COLORS.IMPORT_TEXT,
+              fontWeight: 'bold',
+              fontSize: 18,
+            },
+            export:{
+              color: COLORS.EXPORT_TEXT,
+              fontWeight: 'bold',
+              fontSize: 18,
+            }
+          },
           textStyle: {
             color: COLORS.TEXT_COLOR, 
             fontSize: 24, 
-            // Giữ lại 'bold' cho tiêu đề theo yêu cầu trước
+            LineHeight: 30,
             fontWeight: 'bold', 
             textShadowBlur: 0, 
             textShadowColor: 'rgba(0, 0, 0, 0.0)', 
-            // ✨ ĐÃ CẬP NHẬT: Thêm fontFamily để sử dụng font chữ sans-serif đơn giản
-            fontFamily: 'sans-serif' 
+            fontFamily: 'sans-serif',
+            align:'left' 
           }
         },
         tooltip: {
@@ -146,37 +166,20 @@ export default defineComponent({
           borderWidth: 1,
           textStyle: {
             color: COLORS.TEXT_COLOR,
-            // ✨ ĐÃ CẬP NHẬT: Đảm bảo font chữ đơn giản
             fontWeight: 'normal',
             fontFamily: 'sans-serif',
             fontSize: 14 
           }
         },
 
-        legend: hasData ? {
-          data: legendDataNames, 
-          left: 'center', 
-          top: 'bottom', 
-          padding: [10, 0, 10, 0], 
-          itemGap: 20, 
-          textStyle: {
-            color: COLORS.TEXT_COLOR, 
-            fontSize: 16, 
-            // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản
-            fontWeight: 'normal', 
-            fontFamily: 'sans-serif',
-          },
-          icon: 'circle', 
-        } : { show: false }, 
-
         series: [
           {
             name: 'Số Lượng',
             type: 'pie',
             radius: ['50%', '75%'], 
-            center: ['50%', '50%'], 
+            center: ['50%', '45%'], 
             avoidLabelOverlap: false,
-            data: finalChartData,
+            data: finalChartData, 
             
             animation: hasData,
             animationType: 'scale',
@@ -192,8 +195,7 @@ export default defineComponent({
             label: {
               show: hasData, 
               position: 'outside',
-              formatter: hasData ? '{b}\n{d}%' : '{a}', 
-              // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản
+              formatter: hasData ? '{b}\n{c} ({d}%)' : '{a}',
               fontWeight: 'normal',
               fontFamily: 'sans-serif',
               fontSize: 16, 
@@ -205,8 +207,8 @@ export default defineComponent({
             
             labelLine: {
               show: hasData,
-              length: 15,
-              length2: 15,
+              length: 20,
+              length2: 20,
               lineStyle: {
                 color: COLORS.TEXT_COLOR,
                 width: 1
@@ -224,7 +226,6 @@ export default defineComponent({
               label: {
                 show: true,
                 fontSize: 18,
-                // ✨ ĐÃ CẬP NHẬT: Font chữ đơn giản
                 fontWeight: 'bold', 
                 fontFamily: 'sans-serif',
               }
@@ -281,12 +282,13 @@ export default defineComponent({
 <style scoped>
 .pie-chart-container {
   width: 100%;
+  height: 500px;
   max-height: 80vh; 
-  min-height: 350px;
+  min-height: 400px;
 }
 @media(max-width: 768px){
   .pie-chart-container{
-    height: 300px;
+    height: 350px;
   }
 }
 </style>
