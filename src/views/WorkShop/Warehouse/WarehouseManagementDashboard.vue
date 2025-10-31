@@ -1,5 +1,54 @@
 <template>
   <div class="warehouse_management_container">
+  <div class="filter-section">
+    <div class="action-area">
+      <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
+      <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
+      <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+    </div>
+    <el-select
+      v-model="selectedProductCode"
+      placeholder="Lọc theo mã code sản phẩm"
+      clearable
+      @change="applyFilters"
+      class="barcode-select"
+      filterable
+      remote
+      :remote-method="remoteSearchProductCode"
+      :loading="loadingProductCode"
+    >
+      <el-option
+        v-for="barcode in productCodeOptions"
+        :key="barcode.id"
+        :label="barcode.name"
+        :value="barcode.id"
+      />
+    </el-select>
+    <el-select
+      v-model="selectedBrand"
+      placeholder="Lọc theo hãng"
+      clearable
+      @change="applyFilters"
+      class="barcode-select"
+    >
+      <el-option
+        v-for="barcode in uniqueBrand"
+        :key="barcode.id"
+        :label="barcode.name"
+        :value="barcode.id"
+      />
+    </el-select>
+    <!-- <el-date-picker
+      v-model="selectedEnteredDate"
+      type="date"
+      placeholder="Chọn ngày nhập phiếu"
+      format="YYYY-MM-DD"
+      value-format="YYYY-MM-DD"
+      clearable
+      style="width: 100%;"
+    />
+    <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
+  </div>
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
       <el-tab-pane label="Thống kê" name="dashboard" class="dashboard-tab-pane">
         <div class="dashboard-content">
@@ -203,59 +252,10 @@
       </el-tab-pane> -->
     
       <el-tab-pane label="Thông tin chi tiết của hàng hóa" name="grouped" class="grouped-tab-pane">
-        <div class="filter-section">
-          <div class="action-area">
-            <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
-            <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
-            <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
-          </div>
-          <el-select
-            v-model="selectedProductCode"
-            placeholder="Lọc theo mã code sản phẩm"
-            clearable
-            @change="applyFilters"
-            class="barcode-select"
-            filterable
-            remote
-            :remote-method="remoteSearchProductCode"
-            :loading="loadingProductCode"
-          >
-            <el-option
-              v-for="barcode in productCodeOptions"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
-            />
-          </el-select>
-          <el-select
-            v-model="selectedBrand"
-            placeholder="Lọc theo hãng"
-            clearable
-            @change="applyFilters"
-            class="barcode-select"
-          >
-            <el-option
-              v-for="barcode in uniqueBrand"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
-            />
-          </el-select>
-          <!-- <el-date-picker
-            v-model="selectedEnteredDate"
-            type="date"
-            placeholder="Chọn ngày nhập phiếu"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            clearable
-            style="width: 100%;"
-          />
-          <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
-        </div>
         <el-table
           :data="paginatedItemsGroup"
           border
-          style="width: 100%; height: 90%"
+          style="width: 100%; height: 88%"
           stripe
           class="items-table"
         >
@@ -716,7 +716,7 @@ export default {
 .warehouse_management_container .el-tabs {
     flex-grow: 1;
     width: 100%;
-    height: -webkit-fill-available;
+    height: 88%;
 }
 
 .table-data {
