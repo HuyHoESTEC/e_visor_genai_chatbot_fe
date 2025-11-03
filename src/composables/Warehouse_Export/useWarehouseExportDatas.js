@@ -167,7 +167,6 @@ export function useWarehouseExportDatas() {
             locationOptions.value = '';
         }
     };
-        console.log("remoteSearchLocation:", remoteSearchLocation);
 
     const uniqueLocation = computed(() => {
         if (!allItemsExport.value || allItemsExport.value.length === 0) {
@@ -215,6 +214,21 @@ export function useWarehouseExportDatas() {
         }
     };
 
+    const uniqueStatus = computed(() => {
+        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+            return [];
+        }
+        const itemStatus = new Map();
+        allItemsExport.value.forEach((item) => {
+            const statusVal = item.status;
+            if (statusVal !== null && statusVal !== undefined && !itemStatus.has(statusVal)) {
+                itemStatus.set(statusVal, { id: statusVal, name: statusVal });
+            }
+        });
+        
+        return Array.from(itemStatus.values());
+    });
+
     // Function use filter and update filteredItems
     const applyFilters = () => {
         let tempItems = Array.isArray(allItemsExport.value) ? [...allItemsExport.value] : [];
@@ -225,6 +239,10 @@ export function useWarehouseExportDatas() {
 
         if (selectedSeriNumber.value) {
             tempItems = tempItems.filter(item => item.seri_number === selectedSeriNumber.value);
+        }
+
+        if (selectedStatus.value !== null && selectedStatus.value !== undefined) {
+            tempItems = tempItems.filter(item => item.status === selectedStatus.value);        
         }
 
         if (selectedImportDate.value) {
@@ -248,11 +266,6 @@ export function useWarehouseExportDatas() {
         if (selectedExportId.value) {
             const exportIdVal = selectedExportId.value;
             tempItems = tempItems.filter(item => item.export_id === exportIdVal);
-        }
-
-        if (selectedStatus.value) {
-            const exportStatus = selectedStatus.value;
-            tempItems = tempItems.filter(item => item.status === exportStatus);
         }
 
         filteredItems.value = tempItems;
@@ -351,6 +364,7 @@ export function useWarehouseExportDatas() {
         filteredItems,
         selectedProductCode,
         selectedSeriNumber,
+        selectedStatus,
         currentPage,
         pageSize,
         dummyItems,
@@ -384,5 +398,7 @@ export function useWarehouseExportDatas() {
         locationOptions,
         loadingLocation,
         uniqueLocation,
+        uniqueStatus,
+        selectedLocationCode,
     }
 }

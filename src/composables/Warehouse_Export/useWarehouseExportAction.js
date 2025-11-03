@@ -17,24 +17,27 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
     };
 
     const saveItem = async (itemData) => {
+        console.log("itemData:", itemData);
         const payload = {
             "request_id": `evisor-${Date.now()}`,
             'owner': loggedInUserId,
-            'option': "export",
-            'dml_action': "update",
+            'dml_action': 'update',
             form: {
                 "id": itemData.id || '',
-                "ticket_id": itemData.export_id || '',
-                "time": itemData.time || '',
-                "ticket_time": itemData.export_time || '',
-                "project_code": itemData.project_code || '',
-                "product_name": itemData.product_name || '',
-                "part_no": itemData.part_no || '',
-                "origin": itemData.origin || '',
+                "location": itemData.location || '',
+                "dt": itemData.dt || '',
                 "quantity": itemData.quantity || '',
-                "seri_number": itemData.seri_number || ''
-            }
-        };
+                "description": itemData.description || '',
+                "part_no": itemData.part_no || '',
+                "seri_number": itemData.seri_number || '',
+                "manufacturer": itemData.manufacturer || '',
+                "project_code": itemData.project_code || '',
+                "cabinet_no": itemData.cabinet_no || '',
+                "status": itemData.status || 0,
+                "higher_lever_function": itemData.higher_lever_function || '',
+            },
+        };  
+        console.log("payload:",payload );
 
         try {
             await updateExportDataWarehouseApi(payload);
@@ -56,24 +59,26 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
         dialogVisible.value = false;
     };
 
+
     const deleteItemApi = async (itemData) => {
         const deletePayload = {
             "request_id": `evisor-${Date.now()}`,
             'owner': loggedInUserId,
-            'option': "export",
-            'dml_action': "delete",
+            'dml_action': 'delete',
             form: {
                 "id": itemData.id || '',
-                "ticket_id": itemData.export_id || '',
-                "time": itemData.time || '',
-                "ticket_time": itemData.export_time || '',
-                "project_code": itemData.project_code || '',
-                "product_name": itemData.product_name || '',
-                "part_no": itemData.part_no || '',
-                "origin": itemData.origin || '',
+                "location": itemData.location || '',
+                "dt": itemData.dt || '',
                 "quantity": itemData.quantity || '',
-                "seri_number": itemData.seri_number || ''
-            }
+                "description": itemData.description || '',
+                "part_no": itemData.part_no || '',
+                "seri_number": itemData.seri_number || '',
+                "manufacturer": itemData.manufacturer || '',
+                "project_code": itemData.project_code || '',
+                "cabinet_no": itemData.cabinet_no || '',
+                "status": itemData.status || 0,
+                "higher_lever_function": itemData.higher_lever_function || '',
+            },
         };
         await deleteExportDataWarehouseApi(deletePayload);
     };

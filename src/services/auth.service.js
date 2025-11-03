@@ -357,7 +357,7 @@ export const uploadExportDataWarehouseApi = async (payload, signal) => {
 
 export const updateExportDataWarehouseApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`, payload, {
             signal,
             headers: {
                 'Content-Type': 'application/json'
@@ -372,7 +372,7 @@ export const updateExportDataWarehouseApi = async (payload, signal) => {
 
 export const deleteExportDataWarehouseApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`,
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`,
         payload, {
             signal,
             headers: {
