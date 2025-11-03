@@ -530,11 +530,11 @@ export default {
 
     const getInstallationStatusName = (statusValue) => {
       if (statusValue === 0) {
-        return "Chưa lắp đặt";
+        return "Đã lắp đặt";
       }
 
       if (statusValue === 1) {
-        return "Đã lắp đặt";
+        return "Chưa lắp đặt";
       }
 
       return "Không xác định";
