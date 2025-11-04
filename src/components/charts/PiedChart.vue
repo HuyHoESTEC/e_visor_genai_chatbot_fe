@@ -6,6 +6,7 @@
 import { toLineHeight } from 'chart.js/helpers';
 import * as echarts from 'echarts';
 import { defineComponent, ref, onMounted, watch, onBeforeUnmount } from 'vue';
+import { useLanguageStore } from '../../stores/language';
 
 export default defineComponent({
   name: 'PiedChart',
@@ -25,6 +26,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    const langStore = useLanguageStore();
     const chartContainer = ref(null);
     let myChart = null;
 
@@ -274,6 +276,7 @@ export default defineComponent({
 
     return {
       chartContainer,
+      langStore
     };
   },
 });

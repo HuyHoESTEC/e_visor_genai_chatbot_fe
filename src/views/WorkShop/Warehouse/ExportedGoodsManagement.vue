@@ -7,14 +7,14 @@
       <div class="filter-section">
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
-            >Tải lên mẫu phiếu</el-button
+            >{{ langStore.t("uploadTemplateButton") }}</el-button
           >
-          <el-button type="danger" v-on:click="downloadFile" :icon="Download">Tải xuống</el-button>
+          <el-button type="danger" v-on:click="downloadFile" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <el-select
           v-model="selectedProductCode"
-          placeholder="Lọc theo mã hàng hóa"
+          :placeholder="langStore.t('filterByProductCodePlaceholder')"
           clearable
           @change="applyFilters"
           class="barcode-select"
@@ -32,7 +32,7 @@
         </el-select>
         <el-select
           v-model="selectedLocationCode"
-          placeholder="Lọc theo mã tủ"
+          :placeholder="langStore.t('filterByLocationCodePlaceholder')"
           clearable
           @change="applyFilters"
           class="barcode-select"
@@ -50,7 +50,7 @@
         </el-select>
         <el-select
           v-model="selectedProjectCode"
-          placeholder="Lọc theo mã dự án"
+          :placeholder="langStore.t('filterByProjectCodePlaceholder')"
           clearable
           @change="applyFilters"
           class="barcode-select"
@@ -68,7 +68,7 @@
         </el-select>
         <el-select
           v-model="selectedStatus"
-          placeholder="Lọc theo số trạng thái"
+          :placeholder="langStore.t('filterByStatusNumberPlaceholder')"
           clearable
           @change="applyFilters"
           class="barcode-select"
@@ -92,7 +92,7 @@
         /> -->
       </div>
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
-        <el-tab-pane label="Danh sách chi tiết" name="flat">
+        <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
             <el-table
                 :data="paginatedItemsFlat"
                 border
@@ -106,16 +106,16 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column fixed prop="id" label="ID" width="auto" sortable />
-                <el-table-column prop="project_code" label="Mã dự án" width="auto" />
-                <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-                <el-table-column prop="manufacturer" label="Hãng" width="auto" />                
-                <el-table-column prop="description" label="Mô tả" width="auto" />
-                <el-table-column prop="quantity" label="Số lượng" width="auto" />
-                <el-table-column prop="seri_number" label="Seri No." width="auto" />
-                <el-table-column prop="location" label="Mã tủ" width="auto" />
-                <el-table-column prop="status" label="Trạng thái" width="auto" :formatter="statusFormatter" />
-                <el-table-column fixed="right" label="Hành động" min-width="auto">
+                <el-table-column fixed prop="id" :label="langStore.t('detailIdLabel')" width="auto" sortable />
+                <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
+                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                
+                <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
+                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
+                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" width="auto" :formatter="statusFormatter" />
+                <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                 <template #default="{ row }">
                     <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                     <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
@@ -137,7 +137,7 @@
             </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="Danh sách nhóm theo tủ" name="grouped">
+        <el-tab-pane :label="langStore.t('groupedByLocationTabLabel')" name="grouped">
             <el-table
                 :data="paginatedItemsGroup"
                 border
@@ -148,24 +148,24 @@
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
-                        <el-empty description="No Data" />
+                        <el-empty :description="langStore.t('NoData')" />
                     </div>
                 </template>
                 <el-table-column type="expand">
                     <template #default="{ row: locationGroup }">
                         <div style="padding: 0 20px;">
-                            <h4>Chi tiết hàng hóa thuộc tủ / dự án: {{ locationGroup.location }}</h4>
+                            <h4>{{ langStore.t('detailGroupTitle') }} {{ locationGroup.location }}</h4>
                             <el-table :data="locationGroup.items" border size="small">
-                                <el-table-column prop="id" label="ID" width="auto" />
-                                <el-table-column prop="project_code" label="Mã dự án" width="auto" />
-                                <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-                                <el-table-column prop="manufacturer" label="Hãng" width="auto" />
-                                <el-table-column prop="quantity" label="Số lượng" width="120" />
-                                <el-table-column prop="seri_number" label="Seri No." width="auto" />
-                                <el-table-column prop="status" label="Trạng thái" width="auto" />
-                                <el-table-column prop="cabinet_no" label="Mã Dãy" width="auto" />
-                                <el-table-column prop="location" label="Mã Tủ" width="auto" />
-                                <el-table-column fixed="right" label="Hành động" min-width="auto">
+                                <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
+                                <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
+                                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />
+                                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
+                                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" width="auto" />
+                                <el-table-column prop="cabinet_no" :label="langStore.t('tableHeaderCabinetNo')" width="auto" />
+                                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                                <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                                       <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
@@ -176,7 +176,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />
+                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" min-width="600" sortable />
             </el-table>
             <el-pagination
                 background
@@ -192,7 +192,7 @@
           </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="Danh sách trạng thái thiết bị" name="Status">
+        <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="Status">
             <el-table
                 :data="paginatedStatusGroup"
                 border
@@ -203,22 +203,22 @@
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
-                        <el-empty description="No Data" />
+                        <el-empty :description="langStore.t('NoData')" />
                     </div>
                 </template>
                 <el-table-column type="expand">
                     <template #default="{ row: statusGroup }">
                         <div style="padding: 0 20px;">
-                            <h4>Chi tiết hàng hóa thuộc tủ: {{ getInstallationStatusName(statusGroup.status) }}</h4>
+                            <h4>{{ langStore.t('detailGroupStatusTitle') }} {{ getInstallationStatusName(statusGroup.status) }}</h4>
                             <el-table :data="statusGroup.items" border size="small">
-                                <el-table-column prop="id" label="ID" width="auto" />
-                                <el-table-column prop="project_code" label="Mã dự án" width="auto" />
-                                <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
-                                <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-                                <el-table-column prop="origin" label="Hãng" width="auto" />
-                                <el-table-column prop="quantity" label="Số lượng" width="120" />
-                                <el-table-column prop="seri_number" label="Seri No." width="auto" />
-                                <el-table-column fixed="right" label="Hành động" min-width="auto">
+                                <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
+                                <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
+                                <el-table-column prop="product_name" :label="langStore.t('detailProductNameLabel')" width="auto" />
+                                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                                <el-table-column prop="origin" :label="langStore.t('detailOriginLabel')" width="auto" />
+                                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
+                                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                                <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                                       <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
@@ -229,7 +229,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="status" label="Trạng thái" min-width="600" sortable :formatter="statusFormatter" />
+                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" min-width="600" sortable :formatter="statusFormatter" />
             </el-table>
             <el-pagination
                 background
@@ -245,21 +245,21 @@
           </el-pagination>
         </el-tab-pane>
       </el-tabs>
-      <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
+      <detail-popup v-model="isDetailVisible" :title="langStore.t('detailPopupTitle')">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item label="Mã dự án">{{ selectedItem.project_code }}</el-descriptions-item>
-          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
-          <el-descriptions-item label="Hãng">{{ selectedItem.manufacturer }}</el-descriptions-item>
-          <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
-          <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
-          <el-descriptions-item label="Mã tủ">{{ selectedItem.location }}</el-descriptions-item>
-          <el-descriptions-item label="Trạng thái">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailIdLabel')">{{ selectedItem.id }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
         </el-descriptions>
         <div class="barcode-area">
-            <h4 class="barcode-label">Mã Barcode:</h4>
+            <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
             <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
                 <el-button 
                     type="primary" 
@@ -268,13 +268,13 @@
                     :disabled="generatedBarcode === 'N/A'"
                     @click="downloadBarcodeSvg"
                 >
-                    Tải về SVG
+                    {{ langStore.t('downloadSvgButton') }}
                 </el-button>
                 <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
                     <svg ref="barcodeRef"></svg> 
                 </div>
             </div>
-            <p v-else class="barcode-value-error">Không có thông tin Part No. hoặc Seri No. để tạo Barcode.</p>
+            <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
         </div>
       </div>
     </detail-popup>
@@ -292,20 +292,20 @@
   </div>
   <el-dialog
     v-model="downloadDialogVisible"
-    title="Tải về phiếu nhập kho"
+    :title="langStore.t('downloadDialogTitle')"
     width="300px"
     center
     :close-on-click-modal="false"
   >
     <div v-if="downloadFileName" style="text-align: center;">
-      <p>File đã sẵn sàng để tải</p>
+      <p>{{ langStore.t('downloadReadyMessage') }}</p>
       <p style="font-weight: bold; margin-bottom: 20px;">{{ downloadFileName }}</p>
       <el-button type="primary" :icon="Download" v-on:click="confirmDownloadFile">
-        Tải File
+        {{ langStore.t('downloadFileButton') }}
       </el-button>
     </div>
     <div v-else style="text-align: center;">
-      <p>Đang chuẩn bị file...</p>
+      <p>{{ langStore.t('downloadPreparingMessage') }}</p>
     </div>
   </el-dialog>
 </template>

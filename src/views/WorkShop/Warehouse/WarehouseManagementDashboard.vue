@@ -8,7 +8,7 @@
     </div>
     <el-select
       v-model="selectedProductCode"
-      placeholder="Lọc theo mã code sản phẩm"
+      :placeholder="langStore.t('filterByProductCodePlaceholder')"
       clearable
       @change="applyFilters"
       class="barcode-select"
@@ -26,7 +26,7 @@
     </el-select>
     <el-select
       v-model="selectedBrand"
-      placeholder="Lọc theo hãng"
+      :placeholder="langStore.t('filterByBrandPlaceholder')"
       clearable
       @change="applyFilters"
       class="barcode-select"
@@ -50,15 +50,15 @@
     <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
   </div>
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
-      <el-tab-pane label="Thống kê" name="dashboard" class="dashboard-tab-pane">
+      <el-tab-pane :label="langStore.t('dashboardTabLabel')" name="dashboard" class="dashboard-tab-pane">
         <div class="dashboard-content">
           <div class="header-filters">
             <el-date-picker
               v-model="startAndEndDateVal"
               type="daterange"
               range-separator="To"
-              start-placeholder="Ngày bắt đầu"
-              end-placeholder="Ngày kết thúc"
+              :start-placeholder="langStore.t('startDatePlaceholder')"
+              :end-placeholder="langStore.t('endDatePlaceholder')"
             />
             <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
           </div>
@@ -67,28 +67,35 @@
               <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">{{ importVal }}</div>
-                <div class="metric-label">Số lượng nhập kho</div>
+                <div class="metric-label">{{ langStore.t('importQuantityMetric') }}</div>
               </div>
             </div>
+            <!-- <div class="metric-card">
+              <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
+              <div class="metric-data">
+                <div class="metric-value">{{ installationVal }} | {{ notInstallationVal }}</div>
+                <div class="metric-label">Lắp đặt | Chưa lắp đặt</div>
+              </div>
+            </div> -->
             <div class="metric-card">
               <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
-                <div class="metric-value">{{ exportVal }}</div>
-                <div class="metric-label">Số lượng xuất kho | lắp đặt</div>
+                <div class="metric-value">{{ installationVal }}</div>
+                <div class="metric-label">Lắp đặt</div>
               </div>
             </div>
             <div class="metric-card">
               <div class="metric-icon metric-icon-export"><el-icon><Tickets /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">{{ totalPO }}</div>
-                <div class="metric-label">Số lượng PO</div>
+                <div class="metric-label">{{ langStore.t('totalPOMetric') }}</div>
               </div>
             </div>
             <div class="metric-card">
               <div class="metric-icon metric-icon-request"><el-icon><Files /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">{{ totalProject }}</div>
-                <div class="metric-label">Số lượng mã dự án</div>
+                <div class="metric-label">{{ langStore.t('totalProjectMetric') }}</div>
               </div>
             </div>
           </div>
@@ -118,8 +125,9 @@
             <div class="right-column">
               <el-card style="height: 100%;" class="transaction-chart-card">
                 <PiedChart 
+                  :key="langStore.currentLanguage"
                   :pied-chart="piedChart" 
-                  title-text="Biến Động Số Lượng (%)"
+                  :title-text="langStore.t('quantityFluctuationChartTitle')"
                 />
               </el-card>
             </div>
@@ -251,7 +259,7 @@
         </div>
       </el-tab-pane> -->
     
-      <el-tab-pane label="Thông tin chi tiết của hàng hóa" name="grouped" class="grouped-tab-pane">
+      <el-tab-pane :label="langStore.t('groupedItemsTabLabel')" name="grouped" class="grouped-tab-pane">
         <el-table
           :data="paginatedItemsGroup"
           border
@@ -267,7 +275,7 @@
           <el-table-column type="expand">
               <template #default="{ row: productGroup }">
                   <div style="padding: 0 20px;">
-                      <h4>Chi tiết hàng hóa thuộc : {{ productGroup.part_no }}</h4>
+                      <h4>{{ langStore.t('productGroupDetailTitle') }} : {{ productGroup.part_no }}</h4>
                       <el-table
                         :data="getPaginatedChildItems(productGroup)" border
                         style="width: 100%; height: 100%"
@@ -275,14 +283,14 @@
                         class="items-table"
                       >
                         <el-table-column fixed prop="id" label="ID" width="80" sortable />
-                        <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
-                        <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-                        <el-table-column prop="origin" label="Hãng" width="auto" />
-                        <el-table-column prop="quantity_import" label="Nhập kho" width="auto" />
-                        <el-table-column prop="quantity_export" label="Xuất kho" width="auto" />
-                        <el-table-column prop="quantity_stock" label="Còn lại" width="auto" />
-                        <el-table-column prop="seri_number" label="Seri No." width="auto" />
-                        <el-table-column fixed="right" label="Hành động" min-width="auto">
+                        <el-table-column prop="product_name" :label="langStore.t('itemNameColumn')" width="auto" />
+                        <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" width="auto" />
+                        <el-table-column prop="origin" :label="langStore.t('brandColumn')" width="auto" />
+                        <el-table-column prop="quantity_import" :label="langStore.t('detailImportQuantityLabel')" width="auto" />
+                        <el-table-column prop="quantity_export" :label="langStore.t('detailExportQuantityLabel')" width="auto" />
+                        <el-table-column prop="quantity_stock" :label="langStore.t('detailStockQuantityLabel')" width="auto" />
+                        <el-table-column prop="seri_number" :label="langStore.t('detailSeriNumberLabel')" width="auto" />
+                        <el-table-column fixed="right" :label="langStore.t('JobAction')" min-width="auto">
                           <template #default="{ row }">
                               <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                               <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
@@ -305,25 +313,25 @@
                   </div>
               </template>
           </el-table-column>
-          <el-table-column prop="part_no" label="Mã hàng hóa" min-width="300" sortable />
-          <el-table-column prop="product_name" label="Tên hàng hóa" min-width="600">
+          <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" min-width="300" sortable />
+          <el-table-column prop="product_name" :label="langStore.t('itemNameColumn')" min-width="600">
             <template #default="{ row: productGroup }">
               {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
             </template>
           </el-table-column>
-          <el-table-column prop="part_no" label="Số lượng" min-width="100" sortable>
+          <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
             <template #default="{ row: productGroup }">
               <el-tag size="small" type="info" style="margin-left: 10px;">
                 {{ productGroup.items.length }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="origin" label="Hãng" width="auto">
+          <el-table-column prop="origin" :label="langStore.t('brandColumn')" width="auto">
             <template #default="{ row: productGroup }">
               {{ productGroup.items.length > 0 ? productGroup.items[0].origin : 'N/A' }}
             </template>
           </el-table-column>
-          <el-table-column prop="unit" label="Đơn vị" min-width="150">
+          <el-table-column prop="unit" :label="langStore.t('unitColumn')" min-width="150">
             <template #default="{ row: productGroup }">
               {{ productGroup.items.length > 0 ? productGroup.items[0].unit : 'N/A' }}
             </template>
@@ -343,25 +351,25 @@
         </el-pagination>
       </el-tab-pane>
     </el-tabs>
-    <detail-popup v-model="isDetailVisible" title="Chi tiết hàng hóa">
+    <detail-popup v-model="isDetailVisible" :title="langStore.t('productGroupDetailTitle')">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item label="Tên hàng hóa">{{ selectedItem.product_name }}</el-descriptions-item>
-          <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
-          <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
-          <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng nhập kho">{{ selectedItem.quantity_import }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng xuất kho">{{ selectedItem.quantity_export }}</el-descriptions-item>
-          <el-descriptions-item label="Số lượng còn lại">{{ selectedItem.quantity_stock }}</el-descriptions-item>
-          <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
-          <el-descriptions-item label="Vị trí">{{ selectedItem.location }}</el-descriptions-item>
-          <el-descriptions-item label="Người nhập">{{ selectedItem.entered_by }}</el-descriptions-item>
-          <el-descriptions-item label="Ngày nhập">{{ formattedTime }}</el-descriptions-item>
-          <el-descriptions-item label="Đơn vị">{{ selectedItem.unit }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailIdLabel')">{{ selectedItem.id }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailProductNameLabel')">{{ selectedItem.product_name }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailPartNoLabel')">{{ selectedItem.part_no }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailOriginLabel')">{{ selectedItem.origin }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailImportQuantityLabel')">{{ selectedItem.quantity_import }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailExportQuantityLabel')">{{ selectedItem.quantity_export }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailStockQuantityLabel')">{{ selectedItem.quantity_stock }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailEnteredByLabel')">{{ selectedItem.entered_by }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailEnteredDateLabel')">{{ formattedTime }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailUnitLabel')">{{ selectedItem.unit }}</el-descriptions-item>
         </el-descriptions>
         <div class="barcode-area">
-          <h4 class="barcode-label">Mã Barcode:</h4>
+          <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
           <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
               <el-button 
                   type="primary" 
@@ -370,13 +378,13 @@
                   :disabled="generatedBarcode === 'N/A'"
                   @click="downloadBarcodeSvg"
               >
-                  Tải về SVG
+                  {{ langStore.t('downloadSvgButton') }}
               </el-button>
               <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
                   <svg ref="barcodeRef"></svg> 
               </div>
             </div>
-            <p v-else class="barcode-value-error">Không có thông tin Part No. hoặc Seri No. để tạo Barcode.</p>
+            <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
         </div>
       </div>
     </detail-popup>
@@ -523,11 +531,12 @@ export default {
         inventoryChart,
         piedChart,
         importVal,
-        exportVal,
+        installationVal,
         totalPO,
         totalProject,
         donutData,
         dualChartVal,
+        notInstallationVal,
     } = useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters);
 
     // Reactive variable to control display dialog upload
@@ -693,11 +702,12 @@ export default {
       filteredDataByDate,
       handleFilterByDate,
       importVal,
-      exportVal,
+      installationVal,
       totalPO,
       totalProject,
       donutData,
-      dualChartVal
+      dualChartVal,
+      notInstallationVal,
     };
   },
 };
@@ -877,8 +887,8 @@ export default {
   font-size: 14px;
   color: #909399;
   margin-top: 2px;
-  white-space: nowrap;
-
+  /* white-space: nowrap; */
+  word-wrap: break-word;
 }
 
 .charts-and-tables {
