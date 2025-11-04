@@ -67,16 +67,16 @@
           />
         </el-select>
         <el-select
-          v-model="selectedSeriNumber"
+          v-model="selectedStatus"
           placeholder="Lọc theo số trạng thái"
           clearable
           @change="applyFilters"
           class="barcode-select"
         >
           <el-option
-            v-for="barcode in uniqueSeriNumber"
+            v-for="barcode in uniqueStatus"
             :key="barcode.id"
-            :label="barcode.name"
+            :label="getInstallationStatusName(barcode.id)"
             :value="barcode.id"
           />
         </el-select>
@@ -169,7 +169,7 @@
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                                       <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
+                                      <!-- <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle /> -->
                                   </template>
                                 </el-table-column>
                             </el-table>
@@ -222,7 +222,7 @@
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                                       <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
+                                      <!-- <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle :disabled="true" /> -->
                                   </template>
                                 </el-table-column>
                             </el-table>
@@ -251,12 +251,12 @@
           <el-descriptions-item label="ID">{{ selectedItem.id }}</el-descriptions-item>
           <el-descriptions-item label="Mã dự án">{{ selectedItem.project_code }}</el-descriptions-item>
           <el-descriptions-item label="Mã hàng hóa">{{ selectedItem.part_no }}</el-descriptions-item>
-          <el-descriptions-item label="Hãng">{{ selectedItem.origin }}</el-descriptions-item>
+          <el-descriptions-item label="Hãng">{{ selectedItem.manufacturer }}</el-descriptions-item>
           <el-descriptions-item label="Mô tả">{{ selectedItem.description }}</el-descriptions-item>
           <el-descriptions-item label="Số lượng">{{ selectedItem.quantity }}</el-descriptions-item>
           <el-descriptions-item label="Số Seri">{{ selectedItem.seri_number }}</el-descriptions-item>
           <el-descriptions-item label="Mã tủ">{{ selectedItem.location }}</el-descriptions-item>
-          <el-descriptions-item label="Trạng thái">{{ statusFormatter(selectedItem.status) }}</el-descriptions-item>
+          <el-descriptions-item label="Trạng thái">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
         </el-descriptions>
         <div class="barcode-area">
             <h4 class="barcode-label">Mã Barcode:</h4>
@@ -377,7 +377,9 @@ export default {
       selectedLocationCode,
       selectedProductCode,
       selectedSeriNumber,
+      selectedStatus,
       uniqueSeriNumber,
+      uniqueStatus,
       pageSize, // Keep for filter, but do not use for UI pagination
       currentPage,
       applyFilters,
@@ -469,8 +471,6 @@ export default {
 
       return filteredItems.value.slice(start, end);
     });
-
-    console.log("paginatedItemsFlat:", paginatedItemsFlat);
     
     // Calculator Paginated Items for group tab
     const paginatedItemsGroup = computed(() => {
@@ -578,8 +578,9 @@ export default {
       selectedProductCode,
       selectedLocationCode,
       selectedSeriNumber,
+      selectedStatus,
       pageSize,
-      uniqueSeriNumber,
+      uniqueStatus,
       pageSize,
       currentPage,
       applyFilters,

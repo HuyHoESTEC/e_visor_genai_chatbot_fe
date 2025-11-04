@@ -7,26 +7,26 @@
   >
     <el-form :model="formData" :rules="rules" ref="taskForm" label-width="150px">
       <el-form-item label="Mã phiếu" prop="export_id">
-        <el-input v-model="formData.export_id"></el-input>
-      </el-form-item>
-      <el-form-item label="Ngày nhập phiếu" prop="ticket_time">
-        <el-date-picker
-          v-model="formData.export_time"
-          type="date"
-          placeholder="Chọn ngày nhập phiếu"
-        />
+        <el-input 
+          v-model="formData.id"
+          :disabled="true" 
+          :readonly="true"
+        ></el-input>
+        <span style="color: red; font-size: 12px; margin-top: 0.1px; display: block;">
+          Mã phiếu này không thể chỉnh sửa.
+        </span>
       </el-form-item>
       <el-form-item label="Mã dự án" prop="project_code">
         <el-input v-model="formData.project_code"></el-input>
       </el-form-item>
-      <el-form-item label="Tên hàng hóa" prop="product_name">
-        <el-input v-model="formData.product_name" type="textarea" :rows="3"></el-input>
-      </el-form-item>
       <el-form-item label="Mã hàng hóa" prop="part_no">
         <el-input v-model="formData.part_no"></el-input>
       </el-form-item>
-      <el-form-item label="Hãng" prop="origin">
-        <el-input v-model="formData.origin"></el-input>
+      <el-form-item label="Hãng" prop="manufacturer">
+        <el-input v-model="formData.manufacturer"></el-input>
+      </el-form-item>
+      <el-form-item label="Mô tả" prop="description">
+        <el-input v-model="formData.description" type="textarea" :rows="3"></el-input>
       </el-form-item>
       <el-form-item label="Số lượng" prop="quantity">
         <el-input v-model="formData.quantity" type="number" min="1"></el-input>
@@ -34,8 +34,35 @@
       <el-form-item label="Số Seri" prop="seri_number">
         <el-input v-model="formData.seri_number"></el-input>
       </el-form-item>
-      <el-form-item label="Ngày xuất hàng" prop="time">
-        <el-date-picker v-model="formData.time" type="date" placeholder="Chọn ngày xuất hàng" />
+      <el-form-item label="Mã tủ" prop="location">
+        <el-input v-model="formData.location"></el-input>
+      </el-form-item>
+      <el-form-item label="Trạng thái" prop="status">
+        <el-select v-model="formData.status" placeholder="Chọn trạng thái">
+            <el-option :value="0" label="Chưa lắp đặt"></el-option>
+            <el-option :value="1" label="Đã lắp đặt"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="cabinet_no" prop="cabinet_no">
+        <el-input 
+          v-model="formData.cabinet_no"
+          :disabled="true" 
+          :readonly="true"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="dt" prop="dt">
+        <el-input 
+          v-model="formData.dt"
+          :disabled="true" 
+          :readonly="true"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="higher_lever_function" prop="higher_lever_function">
+        <el-input 
+          v-model="formData.higher_lever_function"
+          :disabled="true" 
+          :readonly="true"
+        ></el-input>
       </el-form-item>
     </el-form>
 
@@ -93,12 +120,9 @@ export default {
           trigger: "blur", // Activate when users leave the input box
         },
       ],
-      export_id: [
+      id: [
         { required: true, message: "Mã phiếu không được để trống", trigger: "change" },
       ],
-      export_time: [
-        { required: true, message: "Ngày nhập phiếu không được để trống", trigger: "change" },
-      ]
     };
 
     // Theo dõi thay đổi của modelValue (v-model) từ component cha
@@ -128,14 +152,16 @@ export default {
     function initializeFormData(task) {
       return task ? { ...task } : {
         project_code: '',
-        product_name: '',
         part_no: '',
-        origin: '',
+        manufacturer: '',
+        description: '',
         quantity: '',
         seri_number: '',
-        export_id: '',
-        time: '',
-        ticket_time: '',
+        location: '',
+        status: 0,
+        higher_lever_function: '',
+        cabinet_no: '',
+        dt: '',
       };
     }
 
