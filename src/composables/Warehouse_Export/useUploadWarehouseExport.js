@@ -19,12 +19,11 @@ export function useUploadWarehouseExport() {
         const payload = {
             request_id: "evisor-" + Date.now(),
             owner: loggedInUserId,
-            option: "export",
             file: file
         };
 
         try {
-            const response = await uploadExportDataWarehouseApi(payload, new AbortController().signal);
+            const response = await uploadInstallationDataWarehouseApi(payload, new AbortController().signal);
             if (response.data.status === 'success') {
                 ElMessage.success('Tải file lên thành công!');
                 return true;

@@ -433,3 +433,18 @@ export const loadingWarehouseInstallationApi = async (payload, signal) => {
         throw new Error(`${errorMessage}`);
     }
 };
+
+export const uploadInstallationDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseIntallation_Upload`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response;
+    } catch (e) {
+        const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
