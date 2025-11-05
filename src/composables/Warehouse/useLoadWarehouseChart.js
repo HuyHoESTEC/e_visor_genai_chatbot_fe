@@ -12,9 +12,10 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
     const error = ref(null);
 
     const importVal = ref(null);
-    const exportVal = ref(null);
+    const installationVal = ref(null);
     const totalPO = ref(null);
     const totalProject = ref(null);
+    const notInstallationVal = ref(null);
 
 
     const inventoryChart = ref({
@@ -141,13 +142,12 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
                         export: projectListPoint.export || [],
                         installation: projectListPoint.installation || [],
                 }
-                console.log("dualChartVal.value:", dualChartVal.value);
 
                 importVal.value = cardPoint.total_import_product;
-                exportVal.value = cardPoint.total_export_product;
+                installationVal.value = cardPoint.installation_by_date;
+                notInstallationVal.value = cardPoint.not_installation_by_date;
                 totalPO.value = cardPoint.total_PO;
-                totalProject.value = cardPoint.total_project;
-               
+                totalProject.value = cardPoint.total_project;                              
             } else {
                 console.warn('API did not return an array for tableData:', response);
             }
@@ -195,9 +195,10 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         error,
         fetchDashboardData,
         filterByDateAction,
-        exportVal,
+        installationVal,
         importVal,
         totalPO,
         totalProject,
+        notInstallationVal,
     }
 }
