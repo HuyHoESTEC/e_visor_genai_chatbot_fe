@@ -27,6 +27,8 @@ export default defineComponent({
 
   setup(props) {
     const langStore = useLanguageStore();
+    const t = (key) => langStore.t(key);
+
     const chartContainer = ref(null);
     let myChart = null;
 
@@ -51,20 +53,20 @@ export default defineComponent({
       const importVal = Number(data?.import_quantity) || 0;
       const exportVal = Number(data?.export_quantity) || 0;
 
-      const subtextImport = `Nhập Kho: ${importVal.toLocaleString()}`;
-      const subtextExport = `Xuất Kho: ${exportVal.toLocaleString()}`;
+      const subtextImport = `${t('chartImportLabel')}: ${importVal.toLocaleString()}`;
+      const subtextExport = `${t('chartExportLabel')}: ${exportVal.toLocaleString()}`;
       const totalSubtext = `${subtextImport} | ${subtextExport}`;
 
       const rawChartData = [
         { 
           value: importVal, 
-          name: 'Nhập Kho', 
+          name: t('chartImportLabel'), 
           label: { align: 'left', position: 'outside' },
           itemStyle: { color: createGradient(COLORS.IMPORT), shadowBlur: 8, shadowColor: COLORS.SHADOW_COLOR, shadowOffsetX: 0, shadowOffsetY: 5 }
         },
         { 
           value: exportVal, 
-          name: 'Xuất Kho',
+          name: t('chartExportLabel'),
           label: { align: 'left', position: 'outside' },
           itemStyle: { color: createGradient(COLORS.EXPORT), shadowBlur: 8, shadowColor: COLORS.SHADOW_COLOR, shadowOffsetX: 0, shadowOffsetY: 5 }
         },
@@ -276,7 +278,7 @@ export default defineComponent({
 
     return {
       chartContainer,
-      langStore
+      langStore,
     };
   },
 });
