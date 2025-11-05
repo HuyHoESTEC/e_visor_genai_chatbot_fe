@@ -90,7 +90,7 @@ export default defineComponent({
       ];
       
       const legendDataNames = hasData 
-        ? ['Xuất Kho', 'Nhập Kho'] 
+        ? [t('chartExportLabel'), t('chartImportLabel')] 
         : [];
 
       return {
@@ -105,7 +105,7 @@ export default defineComponent({
                 subtextStyle: { fontSize: 16, top: '2%', left: 'center', fontWeight:'bold' }
               },
               legend: {
-                data: ['Xuất Kho', 'Nhập Kho'], 
+                data: [t('chartExportLabel'), t('chartImportLabel')], 
                 left: 'center', top: 'bottom', orient: 'horizontal', itemGap: 10, 
                 fontSize: 18,
               },

@@ -1,42 +1,47 @@
 export default {
-    // General & Authentication
+    // --- General/Common Terms ---
     hi: '你好',
     user: '用户',
+    login: '登录',
+    register: '注册',
     logout: '登出',
     dashboard: '仪表板',
     settings: '设置',
     profile: '个人资料',
-    Exit: "退出",
-    Continue: "继续",
-    NoData: "没有数据",
-    records: '记录',
+    SummaryDashboard: '摘要仪表板',
+    CancelDelete: '取消删除',
+    ConfirmDelete: '确认删除',
     DetailAct: '详情',
     CloseBtn: "关闭",
-    CancelDelete: '取消删除', // Key được thêm từ vn.js
-    ConfirmDelete: '确认删除', // Key được thêm từ vn.js
+    NoData: "没有数据",
+    records: '记录',
 
-    // Authentication & Session
-    login: '登录',
-    register: '注册',
-    loginAgain: '再次登录',
+    // --- Session & Error Messages ---
     sessionExpiredTitle: '会话已过期',
     sessionExpiredMessage: '您的会话已过期。请重新登录。',
+    loginAgain: '再次登录',
+    delete_success: '删除成功',
+    delete_failed: '删除失败',
+    server_error: '服务器错误',
+    UpdateInfoSuccess: '信息更新成功',
+    ErrorOccurredWhenUpdated: '更新时出错:',
+    ErrorOccurredWhenDeleted: "删除时发生错误：",
+    ErrorOccurredWhenInserted: '添加时出错:',
 
-    // Main Navigation
-    SummaryDashboard: '摘要仪表板',
+    // --- Core Navigation/Routes ---
     OrganizationalPlan: "组织计划",
     TimekeepingManagement: "考勤管理",
-    FileUpload: "文件上传",
-    PairingAndAnalysis: "配对与分析",
     KHTCWorkManagement: "工作管理（组织计划）",
     CreateProdutionOrdersProjects: "创建生产订单/项目",
-    workReport: "工作报告",
     ProductionStageManagement: "生产阶段管理",
+    workReport: "工作报告",
     WarehouseDashboardRoute: "仓库仪表板",
     ImportWarehouseRoute: "进货管理",
     ExportWarehouseRoute: "出货管理",
-    
-    // File Upload & Pairing
+
+    // --- File Upload & Merging ---
+    FileUpload: "文件上传",
+    PairingAndAnalysis: "配对与分析",
     StepSuccess: "成功",
     ChooseFileToUpload: "选择要上传的文件",
     UploadSummaryFile: "上传摘要文件",
@@ -45,38 +50,33 @@ export default {
     ClickToChoose: "点击选择",
     OnlyAcceptFile: "仅接受 .xls, .xlsx, .mpp 文件，且每个文件大小小于 500MB",
     UploadAllFiles: "上传所有文件",
-    BOMFileUpload: 'BOM 文件上传',
-
-    // File Upload Process Messages
+    Exit: "退出",
+    Continue: "继续",
     UploadFileToServer: "上传文件到服务器",
     FileUploading: "正在上传文件...",
     WorkUploading: "正在上传工作...",
     DataUploading: "正在上传数据...",
     Uploading: "上传中...",
-    FileUploadedSuccessfully: "文件上传成功",
-    ConfirmTheFileUpload: "您确定要取消文件上传吗？",
-    NotiLimitFileDisk: "文件大小不能超过5MB！",
-    PleaseSelectOneFileToUpload: "请选择一个文件进行上传。",
-    YouCanOnlySelectOnefileAtATime: "您一次只能选择一个文件。",
-    PleaseWaitUntilTheFileIsFinishedUploading: "请等待文件上传完成",
-
-    // Pairing Messages
+    BOMFileUpload: 'BOM 文件上传',
     TheNewFileIsTeadyToJoin: "新文件已准备好合并",
     PreparingManualTransplantation: "正在准备手动合并",
     StartManualConnection: "开始手动合并",
     PleaseSelectTheComponentFileToConnect: "请选择要合并的组件文件",
     ConnectTheCurrentSyntheticFileWithTheFile: "将当前综合文件与以下文件合并",
+    ConfirmTheFileUpload: "您确定要取消文件上传吗？",
+    NotiLimitFileDisk: "文件大小不能超过5MB！",
+    PleaseSelectOneFileToUpload: "请选择一个文件进行上传。",
+    YouCanOnlySelectOnefileAtATime: "您一次只能选择一个文件。",
+    PleaseWaitUntilTheFileIsFinishedUploading: "请等待文件上传完成",
+    FileUploadedSuccessfully: "文件上传成功",
 
-    // Work Management
+    // --- Work Management ---
     workManagementDashboard: '工作管理仪表板',
     workManagementTitle: '工作管理',
     searchPlaceholder: '按标题、描述、负责人搜索...',
     searchButton: '搜索',
-    addTaskButton: '添加新任务',
-    FileExport: "文件导出",
-    AddWork: "添加工作",
-
-    // Work Management Table Headers
+    filterByUserPlaceholder: '按负责人筛选',
+    filterByStatusPlaceholder: '按状态筛选',
     tableNo: '编号',
     tableTaskTitle: '任务标题',
     tableDescription: '描述',
@@ -84,30 +84,9 @@ export default {
     tableDueDate: '截止日期',
     tableStatus: '状态',
     tableActions: '操作',
-    JobCode: "工作代码",
-    JobDescription: "描述",
-    HandlePerson: "负责人",
-    ProjectCode: "项目代码",
-    StartDate: "开始日期",
-    EndDate: "结束日期",
-    JobHours: "工时",
-    JobStatus: "状态",
-    JobArea: "区域",
-    JobAction: "操作",
-
-    // Work Management Actions & Status
     editButton: '编辑',
     deleteButton: '删除',
-    EditAct: "编辑",
-    DeleteAct: "删除",
-    DestroyAct: "取消",
-    UploadAct: "上传",
-    statusPending: '待处理',
-    statusInProgress: '进行中',
-    statusCompleted: '已完成',
-    statusBlocked: '已阻止',
-
-    // Work Management Forms
+    addTaskButton: '添加新任务',
     editTaskTitle: '编辑任务',
     addTaskTitle: '添加新任务',
     formTaskTitle: '任务标题',
@@ -119,20 +98,10 @@ export default {
     cancelButton: '取消',
     saveButton: '保存',
     confirmButton: '确认',
-
-    // Work Management Filters
-    filterByUserPlaceholder: '按负责人筛选',
-    filterByStatusPlaceholder: '按状态筛选',
-    FilterBasedOnAssign: "按负责人筛选",
-    FilterBasedOnProjectCode: "按项目代码筛选",
-    FilterBasedOnStatus: "按状态筛选",
-    DeleteByAssignee: '按负责人删除',
-    DeleteByProjectCode: '按项目代码删除',
-    FilterApplied: '已应用筛选器',
-    DateFilterRemoved: '已移除日期筛选器',
-    PleaseSelectAValidDateRange: '请选择一个有效的日期范围',
-
-    // Work Management Validation & Messages
+    statusPending: '待处理',
+    statusInProgress: '进行中',
+    statusCompleted: '已完成',
+    statusBlocked: '已阻止',
     formValidationMessage: '请填写所有必填字段（任务标题、负责人、截止日期）。',
     taskUpdatedMessage: '任务更新成功！',
     taskAddedMessage: '任务添加成功！',
@@ -140,6 +109,27 @@ export default {
     deleteConfirmTitle: '确认删除',
     taskDeletedMessage: '任务删除成功！',
     deleteCanceledMessage: '删除已取消。',
+
+    // --- Workload Management ---
+    AddWork: "添加工作",
+    FileExport: "文件导出",
+    FilterBasedOnAssign: "按负责人筛选",
+    FilterBasedOnProjectCode: "按项目代码筛选",
+    FilterBasedOnStatus: "按状态筛选",
+    JobCode: "工作代码",
+    JobDescription: "描述",
+    HandlePerson: "负责人",
+    ProjectCode: "项目代码",
+    StartDate: "开始日期",
+    EndDate: "结束日期",
+    JobHours: "工时",
+    JobStatus: "状态",
+    JobArea: "区域",
+    JobAction: "操作",
+    EditAct: "编辑",
+    DeleteAct: "删除",
+    DestroyAct: "取消",
+    UploadAct: "上传",
     UpdateWorkloadSuccess: "工作量更新成功！",
     AddWorkloadSuccess: "工作量添加成功！",
     ConfirmDeleteWorkload: "您确定要删除工作量吗",
@@ -148,24 +138,31 @@ export default {
     ErrorOccurredWhenDeleted: "删除时发生错误：",
     ErrorOccurredWhenUpdated: '更新时出错:',
     ErrorOccurredWhenInserted: '添加时出错:',
-    CancelDelete: "取消删除",
     HourNumberShouldBeNumber: "小时数必须为数字",
     TheNumberOfHoursCannotBeNegative: "小时数不能为负数",
     TheEndDateMustBeAfterTheBeginningDate: "结束日期必须在开始日期之后",
     DeleteAllAct: '删除全部',
-    delete_success: '删除成功',
-    delete_failed: '删除失败',
-    server_error: '服务器错误',
+    DeleteByAssignee: '按负责人删除',
+    DeleteByProjectCode: '按项目代码删除',
     PleaseSelectAtLeastOneRecord: '请至少选择一条记录',
-    UpdateInfoSuccess: '信息更新成功',
-    ErrorOccurredWhenUpdated: '更新时出错',
+    FilterApplied: '已应用筛选器',
+    DateFilterRemoved: '已移除日期筛选器',
+    PleaseSelectAValidDateRange: '请选择一个有效的日期范围',
 
-    // Warehouse Management - Dashboard
+    // --- Warehouse Management - Filter Placeholders ---
     filterByProductCodePlaceholder: '按产品代码筛选',
     filterByBrandPlaceholder: '按品牌筛选',
+    filterByLocationCodePlaceholder: '按机柜代码筛选',
+    filterByProjectCodePlaceholder: '按项目代码筛选',
+    filterByStatusNumberPlaceholder: '按状态编号筛选',
+    FilterByImportId: '按入库单代码筛选',
+    FilterBySeriNumber: '按产品序列号筛选',
+    FilterByImportDate: '按入库日期筛选',
+
+    // --- Warehouse Management - Dashboard & Metrics ---
+    dashboardTabLabel: '统计',
     startDatePlaceholder: '开始日期',
     endDatePlaceholder: '结束日期',
-    dashboardTabLabel: '统计',
     importQuantityMetric: '入库数量',
     exportQuantityMetricInstall: '出库数量 | 安装',
     totalPOMetric: 'PO 总量',
@@ -179,12 +176,12 @@ export default {
     brandColumn: '品牌',
     unitColumn: '单位',
 
-    // Warehouse Details & Barcode
+    // --- Warehouse Management - Detail Labels ---
     detailPopupTitle: '货物详情',
     detailIdLabel: 'ID',
-    PO: '采购订单 (PO)', 
-    ImportNoteDate: '入库单日期', 
-    ImportItemDate: '货物入库日期', 
+    PO: '采购订单 (PO)',
+    ImportNoteDate: '入库单日期',
+    ImportItemDate: '货物入库日期',
     detailProductNameLabel: '货物名称',
     detailPartNoLabel: '货物代码',
     detailOriginLabel: '品牌',
@@ -200,41 +197,26 @@ export default {
     barcodeLabel: '条形码:',
     downloadSvgButton: '下载 SVG',
     barcodeError: '没有零件号或序列号信息来生成条形码。',
-    detailProjectCodeLabel: '项目代码', 
+    detailProjectCodeLabel: '项目代码',
+    detailHigherLeverFunction: '批次代码',
+    detailDT: 'DT',
+    detailCabinetNo: '机架代码', 
 
-    // Action buttons
+    // --- Warehouse Management - Action Buttons & Dialogs ---
     uploadTemplateButton: '上传模板',
     downloadButton: '下载',
+    downloadDialogTitle: '下载入库单',
+    downloadReadyMessage: '文件已准备好下载',
+    downloadPreparingMessage: '正在准备文件...',
+    downloadFileButton: '下载文件',
 
-    // Warehouse Management - Export/Import Specific
-
-    // Dialog/Form Keys 
-    dialogTitleEditExportedItem: '编辑出库货物', 
-    idCannotBeEditedMessage: 'ID 在创建后不可编辑。',
-    quantityRequiredMessage: '请输入数量。', 
-    quantityMustBeNumberMessage: '数量必须为数字。', 
-    quantityCannotBeNegativeMessage: '数量不能为负数。', 
-    idRequiredMessage: '请输入 ID。', 
-    selectStatusPlaceholder: '选择状态', 
-    statusNotInstalled: '未安装', 
-    statusInstalled: '已安装', 
-    statusUnknown: '未知',
-
-    // Filter Placeholders (UPDATED SECTION)
-    filterByLocationCodePlaceholder: '按机柜代码筛选',
-    filterByProjectCodePlaceholder: '按项目代码筛选',
-    filterByStatusNumberPlaceholder: '按状态编号筛选',
-    FilterByImportId: '按入库单代码筛选',
-    FilterBySeriNumber: '按产品序列号筛选',
-    FilterByImportDate: '按入库日期筛选',
-
-    // Tab Labels (UPDATED SECTION)
+    // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: '详细清单',
-    GroupedByProjectCode: '按项目代码分组清单', 
+    GroupedByProjectCode: '按项目代码分组清单',
     groupedByLocationTabLabel: '按机柜分组清单',
     groupedByStatusTabLabel: '设备状态清单',
 
-    // Table Headers
+    // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: '项目代码',
     tableHeaderPartNo: '货物代码',
     tableHeaderManufacturer: '制造商',
@@ -245,8 +227,10 @@ export default {
     tableHeaderStatus: '状态',
     tableHeaderAction: '操作',
     tableHeaderCabinetNo: '机架代码',
+    tableHigherLeverFunction: '批次代码', 
+    tableDT: 'DT', 
 
-    // Detail Popup Titles/Labels (UPDATED SECTION)
+    // --- Warehouse Management - Detail Popup Titles/Labels ---
     detailPopupTitle: '货物详情',
     DetailGroupTitleProject: '项目货物详情',
     detailGroupTitle: '机柜/项目货物详情:',
@@ -259,9 +243,21 @@ export default {
     detailLocationLabelFlat: '机柜代码',
     detailStatusLabel: '状态',
 
-    // Download Dialog
-    downloadDialogTitle: '下载入库单',
-    downloadReadyMessage: '文件已准备好下载',
-    downloadPreparingMessage: '正在准备文件...',
-    downloadFileButton: '下载文件',
+    // --- Export Dialog Specific ---
+    dialogTitleEditExportedItem: '编辑出库货物',
+    idCannotBeEditedMessage: 'ID 在创建后不可编辑。',
+    quantityRequiredMessage: '请输入数量。',
+    quantityMustBeNumberMessage: '数量必须为数字。',
+    quantityCannotBeNegativeMessage: '数量不能为负数。',
+    idRequiredMessage: '请输入 ID。',
+    selectStatusPlaceholder: '选择状态',
+    statusNotInstalled: '未安装',
+    statusInstalled: '已安装',
+    statusUnknown: '未知',
+
+    // --- Chart
+    chartImportLabel: '入库',
+    chartExportLabel: '出库',
+    chartTotalSeparator: ' | ',
+    chartQuantityName: '数量',
 };

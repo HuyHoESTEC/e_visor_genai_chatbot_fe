@@ -106,15 +106,14 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
-                <el-table-column fixed prop="id" :label="langStore.t('detailIdLabel')" width="auto" sortable />
-                <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
-                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
-                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                
-                <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
-                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
-                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                <el-table-column prop="higher_lever_function" :label="langStore.t('tableHigherLeverFunction')" width="auto" />
                 <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
-                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" width="auto" :formatter="statusFormatter" />
+                <el-table-column prop="dt" :label="langStore.t('tableDT')" width="auto" />
+                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
+                <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
+                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                                                      
                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                 <template #default="{ row }">
                     <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
@@ -248,14 +247,15 @@
       <detail-popup v-model="isDetailVisible" :title="langStore.t('detailPopupTitle')">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
-          <el-descriptions-item :label="langStore.t('detailIdLabel')">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
+\          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailDT')">{{ selectedItem.dt }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('detailHeaderCabinetNo')">{{ selectedItem.cabinet_no }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
         </el-descriptions>
         <div class="barcode-area">

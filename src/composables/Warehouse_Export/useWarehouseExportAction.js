@@ -17,7 +17,6 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
     };
 
     const saveItem = async (itemData) => {
-        console.log("itemData:", itemData);
         const payload = {
             "request_id": `evisor-${Date.now()}`,
             'owner': loggedInUserId,
@@ -37,7 +36,6 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
                 "higher_lever_function": itemData.higher_lever_function || '',
             },
         };  
-        console.log("payload:",payload );
 
         try {
             await updateExportDataWarehouseApi(payload);

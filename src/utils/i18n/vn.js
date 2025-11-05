@@ -185,7 +185,7 @@ export default {
     detailExportQuantityLabel: 'Xuất kho',
     detailStockQuantityLabel: 'Còn lại',
     detailSeriNumberLabel: 'Seri No.',
-    detailLocationLabel: 'Vị trí',
+    detailLocationLabel: 'Mã Tủ',
     detailEnteredByLabel: 'Người nhập',
     detailEnteredDateLabel: 'Ngày nhập',
     detailUnitLabel: 'Đơn vị',
@@ -193,6 +193,9 @@ export default {
     downloadSvgButton: 'Tải về SVG',
     barcodeError: 'Không có thông tin Part No. hoặc Seri No. để tạo Barcode.',
     detailProjectCodeLabel: 'Mã dự án',
+    detailHigherLeverFunction: 'Function',
+    detailDT: 'DT',
+    detailCabinetNo: 'Mã Dãy',
 
     // --- Warehouse Management - Action Buttons & Dialogs ---
     uploadTemplateButton: 'Tải lên mẫu phiếu',
@@ -218,7 +221,9 @@ export default {
     tableHeaderLocation: 'Mã tủ',
     tableHeaderStatus: 'Trạng thái',
     tableHeaderAction: 'Hành động',
-    tableHeaderCabinetNo: 'Mã Dãy',
+    tableHeaderCabinetNo: 'Panel',
+    tableHigherLeverFunction: 'Function',
+    tableDT: 'DT',
 
     // --- Warehouse Management - Detail Popup Titles/Labels (UPDATED) ---
     detailPopupTitle: 'Chi tiết hàng hóa',
@@ -231,6 +236,7 @@ export default {
     detailQuantityLabel: 'Số lượng',
     detailSeriNumberLabelFlat: 'Số Seri',
     detailLocationLabelFlat: 'Mã tủ',
+    detailHeaderCabinetNo: 'Panel',
     detailStatusLabel: 'Trạng thái',
 
     // --- Export Dialog Specific ---
@@ -244,4 +250,10 @@ export default {
     statusNotInstalled: 'Chưa lắp đặt', 
     statusInstalled: 'Đã lắp đặt', 
     statusUnknown: "Không xác định",
+
+    // --- Chart
+    chartImportLabel: 'Nhập Kho',
+    chartExportLabel: 'Xuất Kho',
+    chartTotalSeparator: ' | ',
+    chartQuantityName: 'Số Lượng',
 };

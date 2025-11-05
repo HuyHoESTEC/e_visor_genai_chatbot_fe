@@ -1,40 +1,47 @@
 export default {
-    // General & Authentication
+    // --- General/Common Terms ---
     hi: 'Hello',
     user: 'User',
+    login: 'Login',
+    register: 'Register',
     logout: 'Logout',
     dashboard: 'Dashboard',
     settings: 'Settings',
     profile: 'Profile',
-    Exit: "Exit",
-    Continue: "Continue",
-    NoData: "No Data",
-    records: 'Records',
+    SummaryDashboard: 'Summary Dashboard',
+    CancelDelete: "Cancel Deletion",
+    ConfirmDelete: "Confirm Deletion",
     DetailAct: 'Detail',
     CloseBtn: 'Close',
+    NoData: "No Data",
+    records: 'Records',
 
-    // Authentication & Session
-    login: 'Login',
-    register: 'Register',
-    loginAgain: 'Log In Again',
+    // --- Session & Error Messages ---
     sessionExpiredTitle: 'Session Expired',
     sessionExpiredMessage: 'Your session has expired. Please log in again.',
+    loginAgain: 'Log In Again',
+    delete_success: 'Delete successful',
+    delete_failed: 'Delete failed',
+    server_error: 'Server error',
+    UpdateInfoSuccess: 'Update information successful',
+    ErrorOccurredWhenUpdated: 'An error occurred while updating:',
+    ErrorOccurredWhenDeleted: "An error occurred while deleting:",
+    ErrorOccurredWhenInserted: 'An error occurred while inserting:',
 
-    // Main Navigation
-    SummaryDashboard: 'Summary Dashboard',
+    // --- Core Navigation/Routes ---
     OrganizationalPlan: "Organizational Plan",
     TimekeepingManagement: "Time Tracking",
-    FileUpload: "File Upload",
-    PairingAndAnalysis: "Pairing and Analysis",
     KHTCWorkManagement: 'Work Management (Organizational Plan)',
     CreateProdutionOrdersProjects: 'Create Production Orders/Projects',
-    workReport: 'Work Report',
     ProductionStageManagement: 'Production Stage Management',
+    workReport: 'Work Report',
     WarehouseDashboardRoute: 'Warehouse Dashboard',
     ImportWarehouseRoute: 'Import Goods Management',
     ExportWarehouseRoute: 'Export Goods Management',
-    
-    // File Upload & Pairing
+
+    // --- File Upload & Merging ---
+    FileUpload: "File Upload",
+    PairingAndAnalysis: "Pairing and Analysis",
     StepSuccess: "Success",
     ChooseFileToUpload: "Choose File To Upload",
     UploadSummaryFile: "Upload Summary File",
@@ -43,37 +50,33 @@ export default {
     ClickToChoose: "Click to choose",
     OnlyAcceptFile: "Only accept .xls, .xlsx, .mpp files and each file size smaller than 500MB",
     UploadAllFiles: "Upload All Files",
-    BOMFileUpload: 'BOM File Upload',
-
-    // File Upload Process Messages
+    Exit: "Exit",
+    Continue: "Continue",
     UploadFileToServer: "Upload File to Server",
     FileUploading: "File is uploading...",
     WorkUploading: "Work is uploading...",
     DataUploading: "Data is uploading...",
     Uploading: "Uploading...",
-    FileUploadedSuccessfully: 'File uploaded successfully',
-    ConfirmTheFileUpload: "Are you sure you want to cancel the file upload?",
-    NotiLimitFileDisk: "File size cannot exceed 5MB!",
-    PleaseSelectOneFileToUpload: "Please select one file to upload.",
-    YouCanOnlySelectOnefileAtATime: "You can only select one file at a time.",
-    PleaseWaitUntilTheFileIsFinishedUploading: 'Please wait until the file is finished uploading',
-
-    // Pairing Messages
+    BOMFileUpload: 'BOM File Upload',
     TheNewFileIsTeadyToJoin: 'The new file is ready for pairing',
     PreparingManualTransplantation: 'Preparing manual pairing',
     StartManualConnection: 'Start manual pairing',
     PleaseSelectTheComponentFileToConnect: 'Please select the component file to pair',
     ConnectTheCurrentSyntheticFileWithTheFile: 'Pair the current synthetic file with the file',
+    ConfirmTheFileUpload: "Are you sure you want to cancel the file upload?",
+    NotiLimitFileDisk: "File size cannot exceed 5MB!",
+    PleaseSelectOneFileToUpload: "Please select one file to upload.",
+    YouCanOnlySelectOnefileAtATime: "You can only select one file at a time.",
+    PleaseWaitUntilTheFileIsFinishedUploading: 'Please wait until the file is finished uploading',
+    FileUploadedSuccessfully: 'File uploaded successfully',
 
-    // Work Management
+    // --- Work Management ---
     workManagementDashboard: 'Work Management Dashboard',
     workManagementTitle: 'Work Management',
     searchPlaceholder: 'Search by title, description, assignee...',
     searchButton: 'Search',
-    FileExport: "Export File",
-    AddWork: "Add Work",
-
-    // Work Management Table Headers
+    filterByUserPlaceholder: 'Filter by Assignee',
+    filterByStatusPlaceholder: 'Filter by Status',
     tableNo: 'No.',
     tableTaskTitle: 'Task Title',
     tableDescription: 'Description',
@@ -81,30 +84,9 @@ export default {
     tableDueDate: 'Due Date',
     tableStatus: 'Status',
     tableActions: 'Actions',
-    JobCode: "Job Code",
-    JobDescription: "Description",
-    HandlePerson: "Assignee",
-    ProjectCode: "Project Code",
-    StartDate: "Start Date",
-    EndDate: "End Date",
-    JobHours: "Hours",
-    JobStatus: "Status",
-    JobArea: "Area",
-    JobAction: "Action",
-
-    // Work Management Actions & Status
     editButton: 'Edit',
     deleteButton: 'Delete',
-    EditAct: "Edit",
-    DeleteAct: "Delete",
-    DestroyAct: "Cancel",
-    UploadAct: "Upload",
-    statusPending: 'Pending',
-    statusInProgress: 'In Progress',
-    statusCompleted: 'Completed',
-    statusBlocked: 'Blocked',
-
-    // Work Management Forms
+    addTaskButton: 'Add New Task',
     editTaskTitle: 'Edit Task',
     addTaskTitle: 'Add New Task',
     formTaskTitle: 'Task Title',
@@ -116,23 +98,10 @@ export default {
     cancelButton: 'Cancel',
     saveButton: 'Save',
     confirmButton: 'Confirm',
-
-    // Work Management Filters
-    filterByUserPlaceholder: 'Filter by Assignee',
-    filterByStatusPlaceholder: 'Filter by Status',
-    FilterBasedOnAssign: "Filter by assignee",
-    FilterBasedOnProjectCode: "Filter by project code",
-    FilterBasedOnStatus: 'Filter by status',
-    FilterByImportId: 'Filter by note code',
-    FilterBySeriNumber: 'Filter by product serial number',
-    FilterByImportDate: 'Filter by date',
-    DeleteByAssignee: 'Delete by assignee',
-    DeleteByProjectCode: 'Delete by project code',
-    FilterApplied: 'Filter applied',
-    DateFilterRemoved: 'Date filter removed',
-    PleaseSelectAValidDateRange: 'Please select a valid date range',
-
-    // Work Management Validation & Messages
+    statusPending: 'Pending',
+    statusInProgress: 'In Progress',
+    statusCompleted: 'Completed',
+    statusBlocked: 'Blocked',
     formValidationMessage: 'Please fill in all required fields (Task Title, Assignee, Due Date).',
     taskUpdatedMessage: 'Task updated successfully!',
     taskAddedMessage: 'Task added successfully!',
@@ -140,32 +109,59 @@ export default {
     deleteConfirmTitle: 'Confirm Deletion',
     taskDeletedMessage: 'Task deleted successfully!',
     deleteCanceledMessage: 'Deletion canceled.',
+
+    // --- Workload Management ---
+    AddWork: "Add Work",
+    FileExport: "Export File",
+    FilterBasedOnAssign: "Filter by assignee",
+    FilterBasedOnProjectCode: "Filter by project code",
+    FilterBasedOnStatus: 'Filter by status',
+    JobCode: "Job Code",
+    JobDescription: "Description",
+    HandlePerson: "Assignee",
+    ProjectCode: "Project Code",
+    StartDate: "Start Date",
+    EndDate: "End Date",
+    JobHours: "Hours",
+    JobStatus: "Status",
+    JobArea: "Area",
+    JobAction: "Action",
+    EditAct: "Edit",
+    DeleteAct: "Delete",
+    DestroyAct: "Cancel",
+    UploadAct: "Upload",
     UpdateWorkloadSuccess: "Workload updated successfully!",
     AddWorkloadSuccess: "Workload added successfully!",
     ConfirmDeleteWorkload: "Are you sure you want to delete the workload",
-    ConfirmDelete: "Confirm Deletion",
     DeleteWorkloadSuccess: "Workload deleted successfully!",
     ErrorOccurredWhenDeleted: "An error occurred while deleting:",
     ErrorOccurredWhenUpdated: 'An error occurred while updating:',
     ErrorOccurredWhenInserted: 'An error occurred while inserting:',
-    CancelDelete: "Cancel Deletion",
     HourNumberShouldBeNumber: 'Hours must be a number',
     TheNumberOfHoursCannotBeNegative: 'Hours cannot be negative',
     TheEndDateMustBeAfterTheBeginningDate: 'The end date must be after the beginning date',
     DeleteAllAct: 'Delete All',
-    delete_success: 'Delete successful',
-    delete_failed: 'Delete failed',
-    server_error: 'Server error',
+    DeleteByAssignee: 'Delete by assignee',
+    DeleteByProjectCode: 'Delete by project code',
     PleaseSelectAtLeastOneRecord: 'Please select at least one record',
-    UpdateInfoSuccess: 'Update information successful',
-    ErrorOccurredWhenUpdated: 'An error occurred during information update',
+    FilterApplied: 'Filter applied',
+    DateFilterRemoved: 'Date filter removed',
+    PleaseSelectAValidDateRange: 'Please select a valid date range',
 
-    // Warehouse Management - Dashboard
+    // --- Warehouse Management - Filter Placeholders ---
     filterByProductCodePlaceholder: 'Filter by product code',
     filterByBrandPlaceholder: 'Filter by brand',
+    filterByLocationCodePlaceholder: 'Filter by cabinet code',
+    filterByProjectCodePlaceholder: 'Filter by project code',
+    filterByStatusNumberPlaceholder: 'Filter by status number',
+    FilterByImportId: 'Filter by note code',
+    FilterBySeriNumber: 'Filter by product serial number',
+    FilterByImportDate: 'Filter by date',
+
+    // --- Warehouse Management - Dashboard & Metrics ---
+    dashboardTabLabel: 'Statistics',
     startDatePlaceholder: 'Start Date',
     endDatePlaceholder: 'End Date',
-    dashboardTabLabel: 'Statistics',
     importQuantityMetric: 'Import Quantity',
     exportQuantityMetricInstall: 'Export Quantity | Installation',
     totalPOMetric: 'Total POs',
@@ -179,9 +175,12 @@ export default {
     brandColumn: 'Brand',
     unitColumn: 'Unit',
 
-    // Warehouse Details & Barcode
+    // --- Warehouse Management - Detail Labels ---
     detailPopupTitle: 'Item Details',
     detailIdLabel: 'ID',
+    PO: 'PO', // ĐÃ THÊM KEY CÒN THIẾU
+    ImportNoteDate: 'Date Import Note',
+    ImportItemDate: 'Date Import Item',
     detailProductNameLabel: 'Item Name',
     detailPartNoLabel: 'Item Part No.',
     detailOriginLabel: 'Brand',
@@ -197,39 +196,26 @@ export default {
     barcodeLabel: 'Barcode:',
     downloadSvgButton: 'Download SVG',
     barcodeError: 'No Part No. or Serial No. information to generate Barcode.',
-    ImportNoteDate: 'Date Import Note',
-    ImportItemDate: 'Date Import Item',
+    detailProjectCodeLabel: 'Project Code',
+    detailHigherLeverFunction: 'Batch Code', // ĐÃ THÊM KEY CÒN THIẾU
+    detailDT: 'DT', // ĐÃ THÊM KEY CÒN THIẾU
+    detailCabinetNo: 'Rack Code', // ĐÃ THÊM KEY CÒN THIẾU
 
-    // Action buttons
+    // --- Warehouse Management - Action Buttons & Dialogs ---
     uploadTemplateButton: 'Upload Template',
     downloadButton: 'Download',
+    downloadDialogTitle: 'Download Import Note',
+    downloadReadyMessage: 'File is ready for download',
+    downloadPreparingMessage: 'Preparing file...',
+    downloadFileButton: 'Download File',
 
-    // Warehouse Management - Export/Import Specific
-
-    // Dialog/Form Keys (Modification)
-    dialogTitleEditExportedItem: 'Edit Exported Item', 
-    idCannotBeEditedMessage: 'ID cannot be edited after creation.', 
-    quantityRequiredMessage: 'Please enter the quantity.',
-    quantityMustBeNumberMessage: 'Quantity must be a number.', 
-    quantityCannotBeNegativeMessage: 'Quantity cannot be negative.', 
-    idRequiredMessage: 'Please enter the ID.', 
-    selectStatusPlaceholder: 'Select status',
-    statusNotInstalled: 'Not Installed', 
-    statusInstalled: 'Installed',
-    statusUnknown: 'Unknown',
-
-    // Filter Placeholders
-    filterByLocationCodePlaceholder: 'Filter by cabinet code', 
-    filterByProjectCodePlaceholder: 'Filter by project code',
-    filterByStatusNumberPlaceholder: 'Filter by status number',
-
-    // Tab Labels
+    // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: 'Detailed List',
+    GroupedByProjectCode: 'Grouped by Project Code',
     groupedByLocationTabLabel: 'Grouped by Cabinet',
     groupedByStatusTabLabel: 'Device Status List',
-    GroupedByProjectCode: 'Grouped by Project Code',
 
-    // Table Headers
+    // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: 'Project Code',
     tableHeaderPartNo: 'Item Part No.',
     tableHeaderManufacturer: 'Manufacturer',
@@ -239,12 +225,15 @@ export default {
     tableHeaderLocation: 'Cabinet Code',
     tableHeaderStatus: 'Status',
     tableHeaderAction: 'Action',
-    tableHeaderCabinetNo: 'Rack Code',
+    tableHeaderCabinetNo: 'Panel',
+    tableHigherLeverFunction: 'Batch Code', 
+    tableDT: 'DT', 
 
-    // Detail Popup Titles/Labels
+    // --- Warehouse Management - Detail Popup Titles/Labels ---
+    detailPopupTitle: 'Item Details',
+    DetailGroupTitleProject: 'Item details for project',
     detailGroupTitle: 'Item details for cabinet / project:',
-    detailGroupStatusTitle: 'Item details for cabinet:', 
-    detailProjectCodeLabel: 'Project Code',
+    detailGroupStatusTitle: 'Item details for cabinet:',
     detailPartNoLabelFlat: 'Item Part No.',
     detailManufacturerLabel: 'Manufacturer',
     detailDescriptionLabelFlat: 'Description',
@@ -252,11 +241,22 @@ export default {
     detailSeriNumberLabelFlat: 'Serial No.',
     detailLocationLabelFlat: 'Cabinet Code',
     detailStatusLabel: 'Status',
-    DetailGroupTitleProject: 'Item details for project',
 
-    // Download Dialog
-    downloadDialogTitle: 'Download Import Note',
-    downloadReadyMessage: 'File is ready for download',
-    downloadPreparingMessage: 'Preparing file...',
-    downloadFileButton: 'Download File',
+    // --- Export Dialog Specific ---
+    dialogTitleEditExportedItem: 'Edit Exported Item',
+    idCannotBeEditedMessage: 'ID cannot be edited after creation.',
+    quantityRequiredMessage: 'Please enter the quantity.',
+    quantityMustBeNumberMessage: 'Quantity must be a number.',
+    quantityCannotBeNegativeMessage: 'Quantity cannot be negative.',
+    idRequiredMessage: 'Please enter the ID.',
+    selectStatusPlaceholder: 'Select status',
+    statusNotInstalled: 'Not Installed',
+    statusInstalled: 'Installed',
+    statusUnknown: 'Unknown',
+
+    // --- Chart Labels ---
+    chartImportLabel: 'Import',
+    chartExportLabel: 'Export',
+    chartTotalSeparator: ' | ',
+    chartQuantityName: 'Quantity',
 };
