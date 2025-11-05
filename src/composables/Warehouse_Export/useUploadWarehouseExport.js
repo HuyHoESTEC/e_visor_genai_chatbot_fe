@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage } from "element-plus";
-import { uploadExportDataWarehouseApi } from "../../services/auth.service";
+import { uploadInstallationApi } from "../../services/auth.service";
 
 export function useUploadWarehouseExport() {
     const authStore = useAuthStore();
@@ -23,7 +23,7 @@ export function useUploadWarehouseExport() {
         };
 
         try {
-            const response = await uploadInstallationDataWarehouseApi(payload, new AbortController().signal);
+            const response = await uploadInstallationApi(payload, new AbortController().signal);
             if (response.data.status === 'success') {
                 ElMessage.success('Tải file lên thành công!');
                 return true;

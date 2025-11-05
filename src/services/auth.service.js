@@ -434,9 +434,9 @@ export const loadingWarehouseInstallationApi = async (payload, signal) => {
     }
 };
 
-export const uploadInstallationDataWarehouseApi = async (payload, signal) => {
+export const uploadInstallationApi = async (payload, signal) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseIntallation_Upload`, payload, {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_Upload`, payload, {
             signal,
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -445,6 +445,22 @@ export const uploadInstallationDataWarehouseApi = async (payload, signal) => {
         return response;
     } catch (e) {
         const errorMessage = e.response?.data?.message || e.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
+export const filterInstallaitonDataApi = async (payload, signal) => {
+    try{
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_View`,
+        payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
         throw new Error(`${errorMessage}`);
     }
 }
