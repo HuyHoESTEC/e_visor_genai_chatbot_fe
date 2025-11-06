@@ -91,6 +91,19 @@
             style="width: 100%;"
         /> -->
       </div>
+      <div v-if="advanceDeleteVisible && selectedItems && selectedItems.length > 0" class="advance-option-delete">
+        <el-button 
+          type="danger"
+          class="add-task-button"
+          :icon="Delete"
+          v-on:click="handleDeleteAction"
+          :loading="isDeleting"
+          :disabled="isDeleting || selectedItems.length === 0"
+        >
+          {{ deleteButtonLabel }}
+        </el-button>
+      </div>
+      
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
             <el-table
@@ -106,6 +119,7 @@
                         <el-empty description="No Data" />
                     </div>
                 </template>
+                <el-table-column type="selection" width="55" />
                 <el-table-column prop="higher_lever_function" :label="langStore.t('tableHigherLeverFunction')" width="auto" />
                 <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
                 <el-table-column prop="dt" :label="langStore.t('tableDT')" width="auto" />
@@ -136,25 +150,44 @@
             </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane :label="langStore.t('groupedByLocationTabLabel')" name="grouped">
-            <el-table
-                :data="paginatedItemsGroup"
-                border
-                style="width: 100%;"
-                stripe
-                class="items-table"
-                height="calc(100vh - 297px)"
-            >
-                <template #empty>
-                    <div v-if="emptyData" class="empty-data-message">
-                        <el-empty :description="langStore.t('NoData')" />
-                    </div>
-                </template>
-                <el-table-column type="expand">
-                    <template #default="{ row: locationGroup }">
+        <el-tab-pane label="MD" name="expand">
+          <el-table
+            :data="paginatedMDGroup"
+            border
+            style="width: 100%;"
+            stripe
+            class="items-table"
+            height="calc(100vh - 297px)"
+            row-key="id"
+            :expand-row-keys="expandedMDKeys"
+            @expand-change="handleMDExpandChange"
+          >
+            <template #empty>
+                <div v-if="emptyData" class="empty-data-message">
+                    <el-empty :description="langStore.t('NoData')" />
+                </div>
+            </template>
+            <el-table-column type="expand">
+              <template #default="{ row: mdGroup }">
+                <div style="padding: 0 20px;">
+                  <el-table
+                    :data="paginatedItemsGroup"
+                    border
+                    style="width: 100%;"
+                    stripe
+                    class="items-table"
+                    height="calc(100vh - 297px)"
+                  >
+                    <template #empty>
+                        <div v-if="emptyData" class="empty-data-message">
+                            <el-empty :description="langStore.t('NoData')" />
+                        </div>
+                    </template>
+                    <el-table-column type="expand">
+                      <template #default="{ row: locationGroup }">
                         <div style="padding: 0 20px;">
-                            <h4>{{ langStore.t('detailGroupTitle') }} {{ locationGroup.location }}</h4>
-                            <el-table :data="locationGroup.items" border size="small">
+                          <h4>Chi tiết hàng hóa thuộc tủ: {{ locationGroup.location }}</h4>
+                          <el-table :data="getPaginatedChildItems(locationGroup)" border size="small">
                                 <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
@@ -172,24 +205,54 @@
                                   </template>
                                 </el-table-column>
                             </el-table>
+                            <el-pagination
+                                  background
+                                  layout="prev, pager, next, sizes, total"
+                                  :total="locationGroup.items.length" 
+                                  :page-sizes="[5, 10, 20, 50, 100]"
+                                  :page-size="itemPaginationState[locationGroup.location]?.pageSize || 10"
+                                  :current-page="itemPaginationState[locationGroup.location]?.currentPage ||1"
+                                  @size-change="val => handleItemSizeChangeGroup(val, locationGroup)"
+                                  @current-change="val => handleItemCurrentChangeGroup(val, locationGroup)"
+                                  class="pagination-controls"
+                              >
+                            </el-pagination>   
                         </div>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" min-width="600" sortable />
-            </el-table>
-            <el-pagination
-                background
-                layout="prev, pager, next, sizes, total"
-                :total="totalItemsForPagination" 
-                :page-sizes="[5, 10, 20, 50, 100]"
-                v-model:page-size="pageSizeGroup"
-                v-model:current-page="currentPageGroup"
-                @size-change="handleSizeChangeGroup"
-                @current-change="handleCurrentChangeGroup"
-                class="pagination-controls"
-            >
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />                   
+                  </el-table>
+                  <el-pagination
+                  background
+                  layout="prev, pager, next, sizes, total"
+                  :total="totalItemsForPagination" 
+                  :page-sizes="[5, 10, 20, 50, 100]"
+                  v-model:page-size="pageSizeGroup"
+                  v-model:current-page="currentPageGroup"
+                  @size-change="handleSizeChangeGroup"
+                  @current-change="handleCurrentChangeGroup"
+                  class="pagination-controls"
+                  >
+                  </el-pagination>
+                </div>
+              </template>
+            </el-table-column>
+            
+            <el-table-column prop="cabinet_no" label="MD" min-width="600" sortable />
+          </el-table>
+          <el-pagination
+              background
+              layout="prev, pager, next, sizes, total"
+              :total="totalMDForPagination" 
+              :page-sizes="[5, 10, 20, 50, 100]"
+              v-model:page-size="pageSizeMD"
+              v-model:current-page="currentPageMD"
+              @size-change="handleSizeChangeMD"
+              @current-change="handleCurrentChangeMD"
+              class="pagination-controls"
+          >
           </el-pagination>
-        </el-tab-pane>
+        </el-tab-pane> 
 
         <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="Status">
             <el-table
@@ -243,12 +306,14 @@
             >
           </el-pagination>
         </el-tab-pane>
+
       </el-tabs>
+
       <detail-popup v-model="isDetailVisible" :title="langStore.t('detailPopupTitle')">
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
           <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
-\          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+\         <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
@@ -335,7 +400,6 @@ import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useWarehouseExportDownload } from "../../../composables/Warehouse_Export/useWarehouseExportDownload";
 
-
 export default {
   name: "ExportedGoodsManagement",
   components: {
@@ -370,6 +434,12 @@ export default {
     const handleCurrentChangeStatus = (val) => { currentPageStatus.value = val; };
     const handleSizeChangeStatus = (val) => { pageSizeStatus.value = val; currentPageStatus.value = 1; };
 
+    // Khai báo ref và hàm phân trang riêng cho tab MD
+    const currentPageMD = ref(1);
+    const pageSizeMD = ref(10);
+    const handleCurrentChangeMD = (val) => { currentPageMD.value = val; };
+    const handleSizeChangeMD = (val) => { pageSizeMD.value = val; currentPageMD.value = 1; };
+
     const {
       filteredItems,
       fetchDataAndInitialize,
@@ -378,7 +448,6 @@ export default {
       selectedProductCode,
       selectedSeriNumber,
       selectedStatus,
-      uniqueSeriNumber,
       uniqueStatus,
       pageSize, // Keep for filter, but do not use for UI pagination
       currentPage,
@@ -393,7 +462,9 @@ export default {
       selectedProjectCode,
       totalItemsForPagination,
       totalStatusForPagination,
+      totalMDForPagination,
       groupedItems,
+      groupedMD,
       groupedStatus,
       projectCodeOptions,
       loadingProjectCode,
@@ -418,7 +489,12 @@ export default {
         editItem,
         saveItem,
         closeDialog,
-        deleteItemApi
+        deleteItemApi,
+        selectedItems,
+        isDeleting,
+        deleteButtonLabel,
+        handleDeleteAction,
+        advanceDeleteVisible,
     } = useWarehouseExportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -480,7 +556,15 @@ export default {
 
       return groupedItems.value.slice(start, end);
     });
+    
+    const paginatedMDGroup = computed(() => {
+      if (!Array.isArray(groupedMD.value)) return [];
+      const start = (currentPageMD.value - 1) * pageSizeMD.value;
+      const end = start + pageSizeMD.value;
 
+      return groupedMD.value.slice(start, end);
+    });
+    
     const paginatedStatusGroup = computed(() => {
       if (!Array.isArray(groupedStatus.value)) return [];
       const start = (currentPageStatus.value - 1) * pageSizeStatus.value;
@@ -544,6 +628,15 @@ export default {
       return getInstallationStatusName(cellValue);
     };
 
+    const handleSelectionChange = (selection) => {
+    selectedItems.value = selection;
+    };
+
+    const expandedMDKeys = ref([]); 
+
+    const handleMDExpandChange = (row, expandedRows) => {
+        expandedMDKeys.value = expandedRows.map(r => r.id);
+    };
     // let intervalId = null;
     // const POLLING_INTERVAL = 30000; // 30 seconds
     // onMounted(() => {
@@ -560,6 +653,41 @@ export default {
     //     clearInterval(intervalId);
     //   }
     // });
+
+    const itemPaginationState = ref({});
+
+    const getPaginatedChildItems = (locationGroup) => {
+      const locationVal = locationGroup.location;
+      if (!itemPaginationState.value[locationVal]) {
+        itemPaginationState.value[locationVal] = {
+          currentPage: 1,
+          pageSize: 10,
+        };
+      }
+
+      const state = itemPaginationState.value[locationVal];
+      const allItems = locationGroup.items;
+
+      const start = (state.currentPage - 1) * state.pageSize;
+      const end = start + state.pageSize;
+
+      return allItems.slice(start, end);
+    };
+    
+    const handleItemSizeChangeGroup = (val, locationGroup) => {
+      const locationVal = locationGroup.location;
+      if (itemPaginationState.value[locationVal]) {
+        itemPaginationState.value[locationVal].pageSize = val;
+        itemPaginationState.value[locationVal].currentPage = 1;
+      }
+    };
+
+    const handleItemCurrentChangeGroup = (val, locationGroup) => {
+      const locationVal = locationGroup.location;
+      if (itemPaginationState.value[locationVal]) {
+        itemPaginationState.value[locationVal].currentPage = val;
+      }
+    };
 
     return {
       Download,
@@ -613,11 +741,13 @@ export default {
       remoteSearchProjectCode,
       totalItemsForPagination,
       totalStatusForPagination,
+      totalMDForPagination,
       groupedItems,
       groupedStatus,
       paginatedItemsFlat,
       paginatedStatusGroup,
       paginatedItemsGroup,
+      paginatedMDGroup,
       currentPageFlat,
       pageSizeFlat,
       handleCurrentChangeFlat,
@@ -656,6 +786,23 @@ export default {
       remoteSearchLoaction,
       loadingLocaction,
       locationOptions,
+      selectedItems,
+      isDeleting,
+      deleteButtonLabel,
+      handleDeleteAction,
+      advanceDeleteVisible,
+      handleSelectionChange,
+      groupedMD,
+      currentPageMD,
+      pageSizeMD,
+      handleCurrentChangeMD,
+      handleSizeChangeMD,
+      expandedMDKeys,
+      handleMDExpandChange,
+      getPaginatedChildItems,
+      handleItemSizeChangeGroup,
+      handleItemCurrentChangeGroup,
+      itemPaginationState,
     };
   },
 };
