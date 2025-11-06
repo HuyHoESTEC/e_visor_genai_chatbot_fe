@@ -295,6 +295,56 @@ export function useWarehouseExportDatas() {
         return Array.from(groups.values());
     });
     
+    const groupItemsByLocation = (mdItems) => {
+        if (!Array.isArray(mdItems)) {
+            return [];
+        }
+        const groups = new Map();
+        mdItems.forEach(item => { 
+            const locationCode = item.location || 'Chưa phân loại';
+            if (!groups.has(locationCode)) {
+                groups.set(locationCode, {
+                    id: `${locationCode}_${Date.now()}`, 
+                    location: locationCode,
+                    items: [],
+                    total_quantity: 0
+                });
+            }
+
+            const group = groups.get(locationCode);
+            group.items.push(item);
+            group.total_quantity += item.quantity || 0;
+        });
+
+        return Array.from(groups.values());
+    };
+
+    const groupedMD = computed(() => {
+        if (!Array.isArray(filteredItems.value)) {
+            return [];
+        }        
+        const groups = new Map();
+        filteredItems.value.forEach(item => {
+            const mdCode = item.cabinet_no || 'Chưa phân loại';
+            if (!groups.has(mdCode)) {
+                groups.set(mdCode, {
+                    cabinet_no: mdCode,
+                    items: [],
+                });
+            }
+
+            const group = groups.get(mdCode);
+            group.items.push(item);
+            group.total_quantity += item.quantity || 0;
+        });
+        
+        return Array.from(groups.values());
+    });
+
+    const totalMDForPagination = computed(() => {
+        return groupedMD.value.length
+    })
+
     const totalItemsForPagination = computed(() => {
         return groupedItems.value.length
     })
@@ -400,5 +450,8 @@ export function useWarehouseExportDatas() {
         uniqueLocation,
         uniqueStatus,
         selectedLocationCode,
+        totalMDForPagination,
+        groupedMD,
+        groupItemsByLocation,
     }
 }

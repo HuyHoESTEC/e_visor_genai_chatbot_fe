@@ -490,8 +490,8 @@ export default {
 
     const rawApiData = ref(null);
 
-     const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
-     const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
+    const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
+    const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
 
      const handleFilterByDate = () => {
       filteredDataByDate();

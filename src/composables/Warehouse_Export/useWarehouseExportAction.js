@@ -1,4 +1,4 @@
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage } from 'element-plus';
 import { deleteExportDataWarehouseApi, updateExportDataWarehouseApi } from "../../services/auth.service";
@@ -81,6 +81,60 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
         await deleteExportDataWarehouseApi(deletePayload);
     };
 
+    const selectedItems = ref([]);
+    const isDeleting = ref(false);
+    const advanceDeleteVisible = ref(true);
+
+    const deleteButtonLabel = computed(() =>{
+        const count = selectedItems.value.length;
+        if (count === 0) {
+            return "Xóa dữ liệu";
+        }
+        return `Xóa dữ liệu (${count})`;
+    });
+
+    const handleDeleteAction = async () => {
+        if (selectedItems.value.length === 0) {
+            ElMessage.warning("Vui lòng chọn ít nhất một mục để xóa."); 
+            return;
+        }
+
+        const count = selectedItems.value.length;
+
+        try {
+            await ElMessageBox.confirm(
+                `Bạn có chắc chắn muốn xóa ${count} mục đã chọn? Hành động này không thể hoàn tác.`,
+                "Cảnh báo",
+                {
+                    confirmButtonText: "Đồng ý Xóa",
+                    cancelButtonText: "Hủy bỏ",
+                    type: 'warning',
+                }
+            );
+
+            isDeleting.value = true;
+            
+            // Xóa từng mục
+            const deletePromises = selectedItems.value.map(item => deleteItemApi(item));
+            await Promise.all(deletePromises); 
+            
+            ElMessage.success(`Đã xóa thành công ${count} mục.`);
+
+            // Xóa danh sách đã chọn và tải lại dữ liệu
+            selectedItems.value = [];
+            if (fetchDataAndInitialize) {
+                fetchDataAndInitialize();
+            }
+        } catch (error) {
+             // Bắt lỗi khi người dùng hủy hoặc lỗi API
+            if (error !== 'cancel') {
+                ElMessage.error(`Đã xảy ra lỗi trong quá trình xóa dữ liệu: ${error.message || 'Lỗi không xác định'}`);
+            }
+        } finally {
+            isDeleting.value = false;
+        }
+    };
+
     return {
         dialogVisible,
         currentItem,
@@ -89,6 +143,11 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
         closeDialog,
         loggedInUserId,
         originalItemData,
-        deleteItemApi
+        deleteItemApi,
+        selectedItems,
+        isDeleting,
+        deleteButtonLabel,
+        handleDeleteAction,
+        advanceDeleteVisible,
     }
 }

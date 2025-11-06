@@ -178,7 +178,7 @@ export default defineComponent({
 
         series: [
           {
-            name: 'Số Lượng',
+            name: t('chartQuantityName'),
             type: 'pie',
             radius: ['50%', '75%'], 
             center: ['50%', '45%'], 
