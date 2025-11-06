@@ -158,7 +158,7 @@
             stripe
             class="items-table"
             height="calc(100vh - 297px)"
-            row-key="id"
+            row-key="cabinet_no"
             :expand-row-keys="expandedMDKeys"
             @expand-change="handleMDExpandChange"
           >
@@ -169,7 +169,8 @@
             </template>
             <el-table-column type="expand">
               <template #default="{ row: mdGroup }">
-                <div style="padding: 0 20px;">
+                <div style="padding: 0 20px; background-color: #2C2C6A;">
+                  <h4>Danh sách tủ thuộc mã dãy: {{ mdGroup.cabinet_no }}</h4>
                   <el-table
                     :data="paginatedItemsGroup"
                     border
@@ -177,6 +178,9 @@
                     stripe
                     class="items-table"
                     height="calc(100vh - 297px)"
+                    row-key="location"
+                    :expand-row-keys="locationExpandedKeys"
+                    @expand-change="handleLocationExpandChange"
                   >
                     <template #empty>
                         <div v-if="emptyData" class="empty-data-message">
@@ -185,7 +189,7 @@
                     </template>
                     <el-table-column type="expand">
                       <template #default="{ row: locationGroup }">
-                        <div style="padding: 0 20px;">
+                        <div style="padding: 0 20px; background-color: #8383A3;">
                           <h4>Chi tiết hàng hóa thuộc tủ: {{ locationGroup.location }}</h4>
                           <el-table :data="getPaginatedChildItems(locationGroup)" border size="small">
                                 <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
@@ -194,7 +198,7 @@
                                 <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />
                                 <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
                                 <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
-                                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" width="auto" />
+                                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" width="auto" :formatter="statusFormatter" />
                                 <el-table-column prop="cabinet_no" :label="langStore.t('tableHeaderCabinetNo')" width="auto" />
                                 <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
                                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
@@ -206,7 +210,6 @@
                                 </el-table-column>
                             </el-table>
                             <el-pagination
-                                  background
                                   layout="prev, pager, next, sizes, total"
                                   :total="locationGroup.items.length" 
                                   :page-sizes="[5, 10, 20, 50, 100]"
@@ -223,14 +226,13 @@
                     <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />                   
                   </el-table>
                   <el-pagination
-                  background
                   layout="prev, pager, next, sizes, total"
                   :total="totalItemsForPagination" 
                   :page-sizes="[5, 10, 20, 50, 100]"
-                  v-model:page-size="pageSizeGroup"
-                  v-model:current-page="currentPageGroup"
-                  @size-change="handleSizeChangeGroup"
-                  @current-change="handleCurrentChangeGroup"
+                  v-model:page-size="mdGroup.pageSizeGroup"
+                  v-model:current-page="mdGroup.currentPageGroup"
+                  @size-change="val => handleSizeChangeGroup(val, mdGroup)"
+                  @current-change="val => handleCurrentChangeGroup(val, mdGroup)"
                   class="pagination-controls"
                   >
                   </el-pagination>
@@ -425,8 +427,8 @@ export default {
     // Khai báo ref và hàm phân trang riêng cho Tab Nhóm
     const currentPageGroup = ref(1);
     const pageSizeGroup = ref(10);
-    const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
-    const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
+    const handleCurrentChangeGroup = (val, mdGroup) => { mdGroup.currentPageGroup = val; };
+    const handleSizeChangeGroup = (val, mdGroup) => { mdGroup.pageSizeGroup = val; mdGroup.currentPageGroup.value = 1; };
 
     // Khai báo ref và hàm phân trang riêng cho Tab Status
     const currentPageStatus = ref(1);
@@ -635,7 +637,21 @@ export default {
     const expandedMDKeys = ref([]); 
 
     const handleMDExpandChange = (row, expandedRows) => {
-        expandedMDKeys.value = expandedRows.map(r => r.id);
+        if (expandedRows.length > 0) {
+          expandedMDKeys.value = [row.cabinet_no];
+        } else {
+          expandedMDKeys.value = [];
+        }
+    };
+
+    const locationExpandedKeys = ref([]);
+
+    const handleLocationExpandChange = (row, expandedRows) => {
+      if (expandedRows.length > 0) {
+          locationExpandedKeys.value = [row.location]; 
+      } else {
+          locationExpandedKeys.value = [];
+      }
     };
     // let intervalId = null;
     // const POLLING_INTERVAL = 30000; // 30 seconds
@@ -803,6 +819,8 @@ export default {
       handleItemSizeChangeGroup,
       handleItemCurrentChangeGroup,
       itemPaginationState,
+      locationExpandedKeys,
+      handleLocationExpandChange
     };
   },
 };
@@ -909,5 +927,10 @@ export default {
 
 .action-area {
   justify-content: start;
-} 
+}
+
+h4 {
+  padding-top: 5px;
+  color: white;
+}
 </style>
