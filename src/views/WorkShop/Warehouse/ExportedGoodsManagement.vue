@@ -150,7 +150,7 @@
             </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="MD" name="expand">
+        <el-tab-pane label="Danh sách tủ điện" name="expand">
           <el-table
             :data="paginatedMDGroup"
             border
@@ -899,7 +899,7 @@ export default {
     font-style: italic;
 }
 
-/* .action-filter {
+.action-filter {
   width: 100%;
   height: auto;
   display: flex;
@@ -909,5 +909,5 @@ export default {
 
 .action-area {
   justify-content: start;
-} */
+} 
 </style>
