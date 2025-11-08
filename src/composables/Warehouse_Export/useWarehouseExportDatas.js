@@ -16,6 +16,7 @@ export function useWarehouseExportDatas() {
     const selectedLocationCode = ref(null);
     const selectedExportId = ref(null);
     const selectedStatus = ref(null);
+    const selectedMD = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -38,6 +39,9 @@ export function useWarehouseExportDatas() {
 
     const brandOptions = ref([]);
     const loadingBrand = ref(false);
+
+    const mdOptions = ref([]);
+    const loadingMD = ref(false);
 
     const { extractDateOnly } = useDateFormat();
 
@@ -154,6 +158,22 @@ export function useWarehouseExportDatas() {
         }
     };
 
+    const uniqueLocation = computed(() => {
+        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+            return [];
+        }
+
+        const itemLocation = new Map();
+        allItemsExport.value.forEach((item) => {
+            const locationVal = item.location;
+            if (locationVal && !itemLocation.has(Location)) {
+                itemLocation.set(locationVal, { id: locationVal, name: locationVal })
+            }
+        });
+
+        return Array.from(itemLocation.values());
+    });
+
     const remoteSearchLocation = (query) => {
         if (query) {
             loadingLocation.value = true;
@@ -168,21 +188,35 @@ export function useWarehouseExportDatas() {
         }
     };
 
-    const uniqueLocation = computed(() => {
+    const uniqueMD = computed(() => {
         if (!allItemsExport.value || allItemsExport.value.length === 0) {
             return [];
         }
 
-        const itemLocation = new Map();
+        const itemMdVal = new Map();
         allItemsExport.value.forEach((item) => {
-            const Location = item.location;
-            if (Location && !itemLocation.has(Location)) {
-                itemLocation.set(Location, { id: Location, name: Location })
+            const mdVal = item.cabinet_no;
+            if (mdVal && !itemMdVal.has(mdVal)) {
+                itemMdVal.set(mdVal, { id: mdVal, name: mdVal })
             }
         });
 
-        return Array.from(itemLocation.values());
+        return Array.from(itemMdVal.values());
     });
+
+    const remoteSearchMD = (query) => {
+        if (query) {
+            loadingMD.value = true;
+            setTimeout(() => {
+                loadingMD.value = false;
+                mdOptions.value = uniqueMD.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                })
+            }, 200);
+        } else {
+            mdOptions.value = '';
+        }
+    };
 
     const uniqueExportId = computed(() => {
         if (!allItemsExport.value || allItemsExport.value.length === 0) {
@@ -245,13 +279,13 @@ export function useWarehouseExportDatas() {
             tempItems = tempItems.filter(item => item.status === selectedStatus.value);        
         }
 
-        if (selectedImportDate.value) {
-            const filterImportDate = selectedImportDate.value;
-            tempItems = tempItems.filter(item => {
-                    const itemDateOnly = extractDateOnly(item.export_time);
-                    return itemDateOnly === filterImportDate;
-            });
-        }
+        // if (selectedImportDate.value) {
+        //     const filterImportDate = selectedImportDate.value;
+        //     tempItems = tempItems.filter(item => {
+        //             const itemDateOnly = extractDateOnly(item.export_time);
+        //             return itemDateOnly === filterImportDate;
+        //     });
+        // }
 
         if (selectedProjectCode.value) {
             const filterProjectCode = selectedProjectCode.value;
@@ -259,13 +293,18 @@ export function useWarehouseExportDatas() {
         }
 
         if (selectedLocationCode.value) {
-            const filterLocationValue = selectedLocationCode.value;
-            tempItems = tempItems.filter(item => item.location === filterLocationValue);
+            const locationCodeVal = selectedLocationCode.value;
+            tempItems = tempItems.filter(item => item.location === locationCodeVal);
         }
 
         if (selectedExportId.value) {
             const exportIdVal = selectedExportId.value;
             tempItems = tempItems.filter(item => item.export_id === exportIdVal);
+        }
+
+        if (selectedMD.value) {
+            const mdVal = selectedMD.value;
+            tempItems = tempItems.filter(item => item.cabinet_no === mdVal);
         }
 
         filteredItems.value = tempItems;
@@ -453,5 +492,9 @@ export function useWarehouseExportDatas() {
         totalMDForPagination,
         groupedMD,
         groupItemsByLocation,
+        selectedMD,
+        remoteSearchMD,
+        loadingMD,
+        mdOptions,
     }
 }

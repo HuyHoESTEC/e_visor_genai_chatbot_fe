@@ -12,102 +12,104 @@
           <el-button type="danger" v-on:click="downloadFile" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
         </div>
-        <el-select
-          v-model="selectedProjectCode"
-          :placeholder="langStore.t('filterByProjectCodePlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchProjectCode"
-          :loading="loadingProjectCode"
-        >
-          <el-option
-            v-for="barcode in projectCodeOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedProductCode"
-          :placeholder="langStore.t('filterByProductCodePlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchProductCode"
-          :loading="loadingProductCode"
-        >
-          <el-option
-            v-for="barcode in productCodeOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedImportId"
-          :placeholder="langStore.t('FilterByImportId')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchImportId"
-          :loading="loadingImportId"
-        >
-          <el-option
-            v-for="barcode in importIdOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedBrand"
-          :placeholder="langStore.t('filterByBrandPlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchBrand"
-          :loading="loadingBrand"
-        >
-          <el-option
-            v-for="barcode in brandOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedSeriNumber"
-          :placeholder="langStore.t('FilterBySeriNumber')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-        >
-          <el-option
-            v-for="barcode in uniqueSeriNumber"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-date-picker 
-            v-model="selectedImportDate"
-            type="date"
-            :placeholder="langStore.t('FilterByImportDate')"
-            format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD"
+        <div class="action-filter">
+          <el-select
+            v-model="selectedProjectCode"
+            :placeholder="langStore.t('filterByProjectCodePlaceholder')"
             clearable
             @change="applyFilters"
-            style="width: 100%;"
-        />
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProjectCode"
+            :loading="loadingProjectCode"
+          >
+            <el-option
+              v-for="barcode in projectCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedProductCode"
+            :placeholder="langStore.t('filterByProductCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProductCode"
+            :loading="loadingProductCode"
+          >
+            <el-option
+              v-for="barcode in productCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedImportId"
+            :placeholder="langStore.t('FilterByImportId')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchImportId"
+            :loading="loadingImportId"
+          >
+            <el-option
+              v-for="barcode in importIdOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedBrand"
+            :placeholder="langStore.t('filterByBrandPlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchBrand"
+            :loading="loadingBrand"
+          >
+            <el-option
+              v-for="barcode in brandOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedSeriNumber"
+            :placeholder="langStore.t('FilterBySeriNumber')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+          >
+            <el-option
+              v-for="barcode in uniqueSeriNumber"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-date-picker 
+              v-model="selectedImportDate"
+              type="date"
+              :placeholder="langStore.t('FilterByImportDate')"
+              format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD"
+              clearable
+              @change="applyFilters"
+              style="width: 100%;"
+          />
+        </div>
       </div>
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
@@ -117,7 +119,7 @@
                 style="width: 100%;"
                 stripe
                 class="items-table"
-                height="calc(100vh - 297px)"
+                height="calc(100vh - 321px)"
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
@@ -160,7 +162,7 @@
                 style="width: 100%;"
                 stripe
                 class="items-table"
-                height="calc(100vh - 297px)"
+                height="calc(100vh - 321px)"
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
@@ -612,7 +614,10 @@ export default {
   margin-bottom: 20px;
 }
 .filter-section {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .filter-buttons {
   display: flex;
@@ -684,5 +689,13 @@ export default {
 .barcode-value-error {
     color: #f56c6c;
     font-style: italic;
+}
+
+.action-filter {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 </style>

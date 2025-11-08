@@ -9,87 +9,107 @@
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
             >{{ langStore.t("uploadTemplateButton") }}</el-button
           >
-          <el-button type="danger" v-on:click="downloadFile" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
-          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+          <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
+          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
         </div>
-        <el-select
-          v-model="selectedProductCode"
-          :placeholder="langStore.t('filterByProductCodePlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchProductCode"
-          :loading="loadingProductCode"
-        >
-          <el-option
-            v-for="barcode in productCodeOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedLocationCode"
-          :placeholder="langStore.t('filterByLocationCodePlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchLoaction"
-          :loading="loadingLocaction"
-        >
-          <el-option
-            v-for="barcode in locationOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedProjectCode"
-          :placeholder="langStore.t('filterByProjectCodePlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-          filterable
-          remote
-          :remote-method="remoteSearchProjectCode"
-          :loading="loadingProjectCode"
-        >
-          <el-option
-            v-for="barcode in projectCodeOptions"
-            :key="barcode.id"
-            :label="barcode.name"
-            :value="barcode.id"
-          />
-        </el-select>
-        <el-select
-          v-model="selectedStatus"
-          :placeholder="langStore.t('filterByStatusNumberPlaceholder')"
-          clearable
-          @change="applyFilters"
-          class="barcode-select"
-        >
-          <el-option
-            v-for="barcode in uniqueStatus"
-            :key="barcode.id"
-            :label="getInstallationStatusName(barcode.id)"
-            :value="barcode.id"
-          />
-        </el-select>
-        <!-- <el-date-picker 
-            v-model="selectedImportDate"
-            type="date"
-            placeholder="Lọc theo ngày nhập phiếu"
-            format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD"
+        <div class="action-filter">
+          <el-select
+            v-model="selectedProductCode"
+            :placeholder="langStore.t('filterByProductCodePlaceholder')"
             clearable
             @change="applyFilters"
-            style="width: 100%;"
-        /> -->
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProductCode"
+            :loading="loadingProductCode"
+          >
+            <el-option
+              v-for="barcode in productCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedLocationCode"
+            :placeholder="langStore.t('filterByLocationCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchLoaction"
+            :loading="loadingLocaction"
+          >
+            <el-option
+              v-for="barcode in locationOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedMD"
+            placeholder="Lọc theo mã MD"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchMD"
+            :loading="loadingMD"
+          >
+            <el-option
+              v-for="barcode in mdOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedProjectCode"
+            :placeholder="langStore.t('filterByProjectCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProjectCode"
+            :loading="loadingProjectCode"
+          >
+            <el-option
+              v-for="barcode in projectCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedStatus"
+            :placeholder="langStore.t('filterByStatusNumberPlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+          >
+            <el-option
+              v-for="barcode in uniqueStatus"
+              :key="barcode.id"
+              :label="getInstallationStatusName(barcode.id)"
+              :value="barcode.id"
+            />
+          </el-select>
+          <!-- <el-date-picker 
+              v-model="selectedImportDate"
+              type="date"
+              placeholder="Lọc theo ngày nhập phiếu"
+              format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD"
+              clearable
+              @change="applyFilters"
+              style="width: 100%;"
+          /> -->
+        </div>
       </div>
       <div v-if="advanceDeleteVisible && selectedItems && selectedItems.length > 0" class="advance-option-delete">
         <el-button 
@@ -112,7 +132,7 @@
                 style="width: 100%;"
                 stripe
                 class="items-table"
-                height="calc(100vh - 297px)"
+                height="calc(100vh - 321px)"
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
@@ -151,13 +171,14 @@
         </el-tab-pane>
 
         <el-tab-pane label="Danh sách tủ điện" name="expand">
+          <!-- Class 1 -->
           <el-table
             :data="paginatedMDGroup"
             border
             style="width: 100%;"
             stripe
             class="items-table"
-            height="calc(100vh - 297px)"
+            height="calc(100vh - 321px)"
             row-key="cabinet_no"
             :expand-row-keys="expandedMDKeys"
             @expand-change="handleMDExpandChange"
@@ -168,6 +189,7 @@
                 </div>
             </template>
             <el-table-column type="expand">
+              <!-- Class 2 -->
               <template #default="{ row: mdGroup }">
                 <div style="padding: 0 20px; background-color: #2C2C6A;">
                   <h4>Danh sách tủ thuộc mã dãy: {{ mdGroup.cabinet_no }}</h4>
@@ -188,19 +210,20 @@
                         </div>
                     </template>
                     <el-table-column type="expand">
+                      <!-- Class 3 -->
                       <template #default="{ row: locationGroup }">
                         <div style="padding: 0 20px; background-color: #8383A3;">
                           <h4>Chi tiết hàng hóa thuộc tủ: {{ locationGroup.location }}</h4>
                           <el-table :data="getPaginatedChildItems(locationGroup)" border size="small">
-                                <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
-                                <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
-                                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
-                                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />
-                                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
-                                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
-                                <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" width="auto" :formatter="statusFormatter" />
-                                <el-table-column prop="cabinet_no" :label="langStore.t('tableHeaderCabinetNo')" width="auto" />
-                                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                                <el-table-column prop="id" label="ID" width="auto" />
+                                <el-table-column prop="higher_lever_function" label="HIGHER_LEVEL_FUNCTION" width="auto" />
+                                <el-table-column prop="location" label="LOCATION" width="auto" />
+                                <el-table-column prop="dt" label="DT" width="auto" />
+                                <el-table-column prop="quantity" label="QUANTITY" width="120" />
+                                <el-table-column prop="description" label="DESCRIPTION" width="auto" />
+                                <el-table-column prop="part_no" label="ORDER NUMBER" width="auto" />
+                                <el-table-column prop="seri_number" label="SERIAL NUMBER" width="auto" />
+                                <el-table-column prop="manufacturer" label="MANUFACTURER" width="auto" />
                                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
@@ -226,14 +249,14 @@
                     <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />                   
                   </el-table>
                   <el-pagination
-                  layout="prev, pager, next, sizes, total"
-                  :total="totalItemsForPagination" 
-                  :page-sizes="[5, 10, 20, 50, 100]"
-                  v-model:page-size="mdGroup.pageSizeGroup"
-                  v-model:current-page="mdGroup.currentPageGroup"
-                  @size-change="val => handleSizeChangeGroup(val, mdGroup)"
-                  @current-change="val => handleCurrentChangeGroup(val, mdGroup)"
-                  class="pagination-controls"
+                    layout="prev, pager, next, sizes, total"
+                    :total="totalItemsForPagination" 
+                    :page-sizes="[5, 10, 20, 50, 100]"
+                    v-model:page-size="pageSizeGroup"
+                    v-model:current-page="currentPageGroup"
+                    @size-change="handleSizeChangeGroup"
+                    @current-change="handleCurrentChangeGroup"
+                    class="pagination-controls"
                   >
                   </el-pagination>
                 </div>
@@ -263,7 +286,7 @@
                 style="width: 100%;"
                 stripe
                 class="items-table"
-                height="calc(100vh - 297px)"
+                height="calc(100vh - 321px)"
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
@@ -356,25 +379,15 @@
         v-model="uploadDialogVisible"
         @uploadSuccess="handleUploadSuccess"
     />
+    <DownloadFilterDialog
+      v-model="downloadDialogVisible"
+      :download-url="downloadFileUrl"
+      :file-name="downloadFileName"
+      :is-preparing="isDownloadPreparing"
+      @create-download-link="handleCreateDownloadLink"
+      @confirm-download="confirmDownloadFile"
+    />
   </div>
-  <el-dialog
-    v-model="downloadDialogVisible"
-    :title="langStore.t('downloadDialogTitle')"
-    width="300px"
-    center
-    :close-on-click-modal="false"
-  >
-    <div v-if="downloadFileName" style="text-align: center;">
-      <p>{{ langStore.t('downloadReadyMessage') }}</p>
-      <p style="font-weight: bold; margin-bottom: 20px;">{{ downloadFileName }}</p>
-      <el-button type="primary" :icon="Download" v-on:click="confirmDownloadFile">
-        {{ langStore.t('downloadFileButton') }}
-      </el-button>
-    </div>
-    <div v-else style="text-align: center;">
-      <p>{{ langStore.t('downloadPreparingMessage') }}</p>
-    </div>
-  </el-dialog>
 </template>
 
 <script>
@@ -401,6 +414,7 @@ import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useWarehouseExportDownload } from "../../../composables/Warehouse_Export/useWarehouseExportDownload";
+import DownloadFilterDialog from "../../../components/dialog/DownloadFilterDialog.vue";
 
 export default {
   name: "ExportedGoodsManagement",
@@ -414,7 +428,8 @@ export default {
     Refresh,
     DetailPopup,
     WarehouseExportUpload,
-    WarehouseExportDataDialog
+    WarehouseExportDataDialog,
+    DownloadFilterDialog,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -427,8 +442,8 @@ export default {
     // Khai báo ref và hàm phân trang riêng cho Tab Nhóm
     const currentPageGroup = ref(1);
     const pageSizeGroup = ref(10);
-    const handleCurrentChangeGroup = (val, mdGroup) => { mdGroup.currentPageGroup = val; };
-    const handleSizeChangeGroup = (val, mdGroup) => { mdGroup.pageSizeGroup = val; mdGroup.currentPageGroup.value = 1; };
+    const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
+    const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
 
     // Khai báo ref và hàm phân trang riêng cho Tab Status
     const currentPageStatus = ref(1);
@@ -483,6 +498,10 @@ export default {
       remoteSearchLoaction,
       loadingLocaction,
       locationOptions,
+      selectedMD,
+      remoteSearchMD,
+      loadingMD,
+      mdOptions,
     } = useWarehouseExportDatas();
 
     const {
@@ -610,9 +629,20 @@ export default {
     const {
       downloadDialogVisible,
       downloadFileName,
-      downloadFile,
+      downloadFileUrl,
+      isDownloadPreparing,
+      openDownloadDialog,
+      downloadFile: createDownloadLinkApi,
       confirmDownloadFile,
-    } = useWarehouseExportDownload(selectedExportId, selectedProjectCode);
+    } = useWarehouseExportDownload();
+
+    const handleDownloadClick = () => {
+      openDownloadDialog();
+    };
+
+    const handleCreateDownloadLink = (filterPayload) => {
+      createDownloadLinkApi(filterPayload);
+    };
 
     const getInstallationStatusName = (statusValue) => {
       if (statusValue === 0) {
@@ -785,9 +815,6 @@ export default {
       ElMessage,
       ElMessageBox,
       selectedExportId,
-      downloadDialogVisible,
-      downloadFileName,
-      downloadFile,
       confirmDownloadFile,
       exportIdOptions,
       loadingExportId,
@@ -820,7 +847,18 @@ export default {
       handleItemCurrentChangeGroup,
       itemPaginationState,
       locationExpandedKeys,
-      handleLocationExpandChange
+      handleLocationExpandChange,
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFileUrl,
+      isDownloadPreparing,
+      handleDownloadClick,
+      handleCreateDownloadLink,
+      confirmDownloadFile,
+      selectedMD,
+      remoteSearchMD,
+      loadingMD,
+      mdOptions,
     };
   },
 };
@@ -843,7 +881,10 @@ export default {
   margin-bottom: 20px;
 }
 .filter-section {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .filter-buttons {
   display: flex;
@@ -927,10 +968,18 @@ export default {
 
 .action-area {
   justify-content: start;
+  display: flex;
+  flex-direction: row;
+  align-self: baseline;
 }
 
 h4 {
   padding-top: 5px;
   color: white;
+}
+
+.items-table {
+  display: flex;
+  gap: 2px;
 }
 </style>
