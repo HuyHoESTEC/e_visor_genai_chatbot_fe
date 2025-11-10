@@ -2,17 +2,17 @@
     <el-dialog
         :model-value="modelValue"
         @update:model-value="$emit('update:modelValue', $event)"
-        title="Tùy chọn tải file"
+        :title="langstore.t('DownloadOptionsTitle')"
         width="500px"
         center
         :close-on-click-model="false"
     >
         <el-form :model="filterData" label-width="120px">
-            <el-form-item label="Mã dự án">
-                <el-input v-model="filterData.project_code" placeholder="Nhập mã dự án..." clearable />
+            <el-form-item :label="langstore.t('tableHeaderProjectCode')">
+                <el-input v-model="filterData.project_code" :placeholder="langstore.t('InputProjectCodePlaceholder')" clearable />
             </el-form-item>
-            <el-form-item label="Mã tủ">
-                <el-input v-model="filterData.cabinet_no" placeholder="Nhập mã tủ..." clearable />
+            <el-form-item :label="langstore.t('detailLocationLabel')">
+                <el-input v-model="filterData.cabinet_no" :placeholder="langstore.t('InputCabinetNoPlaceholder')" clearable />
             </el-form-item>
         </el-form>
 
@@ -23,19 +23,19 @@
                 :loading="isPreparing"
                 v-on:click="handleDownload"
             >
-                {{ isPreparing ? 'Đang tạo đường dẫn...' : 'Lấy đường dẫn tài liệu' }}
+                {{ isPreparing ? langstore.t('PreparingDownloadLink') : langstore.t('GetDownloadLinkButton') }}
             </el-button>
         </div>
 
         <el-alert
             v-if="downloadUrl"
-            title="Link tải đã sẵn sàng!"
+            :title="langstore.t('DownloadLinkReadyTitle')"
             type="success"
             center
             show-icon
             style="margin-top: 20px;"
         >
-            <p>File: <span style="font-weight: bold;">{{ fileName }}</span></p>
+            <p>{{ langstore.t('FileLabel') }}<span style="font-weight: bold;">{{ fileName }}</span></p>
             <p>URL: <a :href="downloadUrl" target="_blank" style="word-break: break-all;">{{ downloadUrl }}</a></p>
             <el-button
                 type="success"
@@ -43,7 +43,7 @@
                 v-on:click="$emit('confirmDownload')"
                 style="margin-top: 10px;"
             >
-                Tải tài liệu
+                {{ langstore.t('DownloadDocumentButton') }}
             </el-button>
         </el-alert>
     </el-dialog>
@@ -52,6 +52,7 @@
 <script>
 import { Download } from '@element-plus/icons-vue';
 import { ref, watch } from 'vue';
+import { useLanguageStore } from '../../stores/language';
 
 export default {
     name: 'DownloadFilterDialog',
@@ -71,6 +72,7 @@ export default {
             cabinet_no: '',
         });
 
+        const langStore = useLanguageStore();
         // Reset form while dialog close/open
         watch(() => props.modelValue, (newVal) => {
             if (!newVal) {
@@ -91,6 +93,7 @@ export default {
             Download,
             filterData,
             handleDownload,
+            langstore: langStore
         }
     }
 }

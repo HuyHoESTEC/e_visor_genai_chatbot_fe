@@ -133,7 +133,6 @@ export default {
     UpdateWorkloadSuccess: "工作量更新成功！",
     AddWorkloadSuccess: "工作量添加成功！",
     ConfirmDeleteWorkload: "您确定要删除工作量吗",
-    ConfirmDelete: "确认删除",
     DeleteWorkloadSuccess: "工作量删除成功！",
     ErrorOccurredWhenDeleted: "删除时发生错误：",
     ErrorOccurredWhenUpdated: '更新时出错:',
@@ -209,6 +208,15 @@ export default {
     downloadReadyMessage: '文件已准备好下载',
     downloadPreparingMessage: '正在准备文件...',
     downloadFileButton: '下载文件',
+    DownloadOptionsTitle: '文件下载选项',
+    InputProjectCodePlaceholder: '输入项目代码...',
+    InputCabinetNoPlaceholder: '输入机柜代码...',
+    GetDownloadLinkButton: '获取文档链接',
+    PreparingDownloadLink: '正在创建链接...',
+    DownloadLinkReadyTitle: '下载链接准备就绪!',
+    FileLabel: '文件:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: '下载文档',
 
     // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: '详细清单',

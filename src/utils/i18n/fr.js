@@ -134,9 +134,6 @@ export default {
     AddWorkloadSuccess: "Charge de travail ajoutée avec succès !",
     ConfirmDeleteWorkload: "Êtes-vous sûr de vouloir supprimer la charge de travail",
     DeleteWorkloadSuccess: "Charge de travail supprimée avec succès !",
-    ErrorOccurredWhenDeleted: "Une erreur est survenue lors de la suppression:",
-    ErrorOccurredWhenUpdated: 'Une erreur est survenue lors de la mise à jour:',
-    ErrorOccurredWhenInserted: "Une erreur est survenue lors de l'ajout:",
     HourNumberShouldBeNumber: "Le nombre d'heures doit être un nombre",
     TheNumberOfHoursCannotBeNegative: "Le nombre d'heures ne peut pas être un nombre négatif",
     TheEndDateMustBeAfterTheBeginningDate: "La date de fin doit être postérieure à la date de début",
@@ -208,6 +205,18 @@ export default {
     downloadReadyMessage: 'Le fichier est prêt à être téléchargé',
     downloadPreparingMessage: 'Préparation du fichier...',
     downloadFileButton: 'Télécharger le fichier',
+    
+    // KEY MỚI
+    DownloadOptionsTitle: 'Options de téléchargement du fichier',
+    InputProjectCodePlaceholder: 'Entrez le code du projet...',
+    InputCabinetNoPlaceholder: 'Entrez le code de l\'armoire...',
+    GetDownloadLinkButton: 'Obtenir le lien du document',
+    PreparingDownloadLink: 'Création du lien...',
+    DownloadLinkReadyTitle: 'Lien de téléchargement prêt !',
+    FileLabel: 'Fichier:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: 'Télécharger le document',
+    // END KEY MỚI
 
     // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: 'Liste détaillée',
