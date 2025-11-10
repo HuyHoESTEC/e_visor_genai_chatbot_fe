@@ -208,6 +208,18 @@ export default {
     downloadReadyMessage: 'File is ready for download',
     downloadPreparingMessage: 'Preparing file...',
     downloadFileButton: 'Download File',
+    
+    // KEY MỚI
+    DownloadOptionsTitle: 'File Download Options',
+    InputProjectCodePlaceholder: 'Enter project code...',
+    InputCabinetNoPlaceholder: 'Enter cabinet code...',
+    GetDownloadLinkButton: 'Get Document Link',
+    PreparingDownloadLink: 'Creating link...',
+    DownloadLinkReadyTitle: 'Download Link Ready!',
+    FileLabel: 'File:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: 'Download Document',
+    // END KEY MỚI
 
     // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: 'Detailed List',

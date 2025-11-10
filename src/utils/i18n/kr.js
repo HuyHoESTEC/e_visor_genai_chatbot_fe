@@ -205,6 +205,15 @@ export default {
     downloadReadyMessage: '파일 다운로드 준비 완료',
     downloadPreparingMessage: '파일 준비 중...',
     downloadFileButton: '파일 다운로드',
+    DownloadOptionsTitle: '파일 다운로드 옵션',
+    InputProjectCodePlaceholder: '프로젝트 코드를 입력하세요...',
+    InputCabinetNoPlaceholder: '캐비닛 코드를 입력하세요...',
+    GetDownloadLinkButton: '문서 링크 가져오기',
+    PreparingDownloadLink: '링크 생성 중...',
+    DownloadLinkReadyTitle: '다운로드 링크 준비 완료!',
+    FileLabel: '파일:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: '문서 다운로드',
 
     // --- Warehouse Management - Tab Labels (UPDATED) ---
     flatListTabLabel: '상세 목록',
@@ -251,7 +260,7 @@ export default {
     statusInstalled: '설치됨',
     statusUnknown: '알 수 없음',
 
-    // Chart
+    // --- Chart Labels ---
     chartImportLabel: '입고',
     chartExportLabel: '출고',
     chartTotalSeparator: ' | ',

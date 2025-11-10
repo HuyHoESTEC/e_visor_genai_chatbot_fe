@@ -11,6 +11,7 @@
           >
           <el-button type="danger" v-on:click="downloadFile" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
+          <el-button type="danger" v-if="!selectionEmpty || isDeleting" v-on:click="deleteAllSelectedItems" :icon ="Delete" :loading="isDeleting">Xóa Đã Chọn ({{ selectedItems.length }})</el-button>       
         </div>
         <div class="action-filter">
           <el-select
@@ -120,12 +121,14 @@
                 stripe
                 class="items-table"
                 height="calc(100vh - 321px)"
+                @selection-change="itemSelectionChange"
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
                         <el-empty :description="langStore.t('NoData')" />
                     </div>
                 </template>
+                <el-table-column type="selection" width="55" />                
                 <el-table-column fixed prop="import_id" :label="langStore.t('PO')" width="auto" sortable />
                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                 <el-table-column prop="product_name" :label="langStore.t('detailProductNameLabel')" width="auto" />
@@ -394,6 +397,10 @@ export default {
         saveItem,
         closeDialog,
         deleteItemApi,
+        selectedItems,
+        itemSelectionChange,
+        selectionEmpty,
+        deleteAllSelectedItems,
     } = useWarehouseImportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -592,6 +599,10 @@ export default {
       brandOptions,
       loadingBrand,
       remoteSearchBrand,
+      selectedItems,
+      itemSelectionChange,
+      selectionEmpty,
+      deleteAllSelectedItems,
     };
   },
 };

@@ -11,6 +11,7 @@
           >
           <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
+          <el-button type="danger" v-if="!selectionEmpty || isDeleting" v-on:click="deleteAllSelectedItems" :icon ="Delete" :loading="isDeleting">Xóa Đã Chọn ({{ selectedItems.length }})</el-button>
         </div>
         <div class="action-filter">
           <el-select
@@ -111,19 +112,7 @@
           /> -->
         </div>
       </div>
-      <div v-if="advanceDeleteVisible && selectedItems && selectedItems.length > 0" class="advance-option-delete">
-        <el-button 
-          type="danger"
-          class="add-task-button"
-          :icon="Delete"
-          v-on:click="handleDeleteAction"
-          :loading="isDeleting"
-          :disabled="isDeleting || selectedItems.length === 0"
-        >
-          {{ deleteButtonLabel }}
-        </el-button>
-      </div>
-      
+    
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
             <el-table
@@ -133,6 +122,7 @@
                 stripe
                 class="items-table"
                 height="calc(100vh - 321px)"
+                @selection-change="itemSelectionChange"
             >
                 <template #empty>
                     <div v-if="emptyData" class="empty-data-message">
@@ -512,10 +502,10 @@ export default {
         closeDialog,
         deleteItemApi,
         selectedItems,
+        itemSelectionChange,
+        selectionEmpty,
+        deleteAllSelectedItems,
         isDeleting,
-        deleteButtonLabel,
-        handleDeleteAction,
-        advanceDeleteVisible,
     } = useWarehouseExportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -830,11 +820,6 @@ export default {
       loadingLocaction,
       locationOptions,
       selectedItems,
-      isDeleting,
-      deleteButtonLabel,
-      handleDeleteAction,
-      advanceDeleteVisible,
-      handleSelectionChange,
       groupedMD,
       currentPageMD,
       pageSizeMD,
@@ -859,6 +844,11 @@ export default {
       remoteSearchMD,
       loadingMD,
       mdOptions,
+      itemSelectionChange,
+      selectionEmpty,
+      deleteAllSelectedItems,
+      isDeleting,
+      
     };
   },
 };

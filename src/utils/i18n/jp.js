@@ -205,6 +205,15 @@ export default {
     downloadReadyMessage: 'ファイルはダウンロード準備完了です',
     downloadPreparingMessage: 'ファイルを準備中...',
     downloadFileButton: 'ファイルをダウンロード',
+    DownloadOptionsTitle: 'ファイルダウンロードオプション',
+    InputProjectCodePlaceholder: 'プロジェクトコードを入力...',
+    InputCabinetNoPlaceholder: 'キャビネットコードを入力...',
+    GetDownloadLinkButton: 'ドキュメントリンクを取得',
+    PreparingDownloadLink: 'リンクを作成中...',
+    DownloadLinkReadyTitle: 'ダウンロードリンク準備完了!',
+    FileLabel: 'ファイル:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: 'ドキュメントをダウンロード',
 
     // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: '詳細リスト',

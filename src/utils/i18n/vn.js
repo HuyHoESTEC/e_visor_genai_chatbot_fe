@@ -36,8 +36,8 @@ export default {
     ProductionStageManagement: 'Quản lý công đoạn sản xuất',
     workReport: 'Báo cáo công việc',
     WarehouseDashboardRoute: 'Thống kê vật tư trong kho',
-    ImportWarehouseRoute: 'Quản lý nhập kho',
-    ExportWarehouseRoute: 'Quản lý xuất kho',
+    ImportWarehouseRoute: 'Nhập kho',
+    ExportWarehouseRoute: 'Xuất kho | Lắp đặt',
 
     // --- File Upload & Merging ---
     FileUpload: "Tải lên File",
@@ -203,7 +203,16 @@ export default {
     downloadDialogTitle: 'Tải về phiếu nhập kho',
     downloadReadyMessage: 'File đã sẵn sàng để tải',
     downloadPreparingMessage: 'Đang chuẩn bị file...',
-    downloadFileButton: 'Tải File',
+    downloadFileButton: 'Tải File',  
+    DownloadOptionsTitle: 'Tùy chọn tải file',
+    InputProjectCodePlaceholder: 'Nhập mã dự án...',
+    InputCabinetNoPlaceholder: 'Nhập mã tủ...',
+    GetDownloadLinkButton: 'Lấy đường dẫn tài liệu',
+    PreparingDownloadLink: 'Đang tạo đường dẫn...',
+    DownloadLinkReadyTitle: 'Link tải đã sẵn sàng!',
+    FileLabel: 'File:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: 'Tải tài liệu',
 
     // --- Warehouse Management - Tab Labels (UPDATED) ---
     flatListTabLabel: 'Danh sách chi tiết',

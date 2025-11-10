@@ -1,6 +1,6 @@
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { deleteImportDataWarehouseApi, exportToFileForImportApi, updateImportDataWarehouseApi } from "../../services/auth.service";
 
 export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
@@ -10,6 +10,13 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
     const loggedInUserId = authStore.user?.id;
     const originalItemData = ref(null);
 
+    const isDeleting = ref(false);
+    const selectedItems = ref([]);
+    const itemSelectionChange = (selection) => {
+        selectedItems.value = selection;
+    }
+    const selectionEmpty = computed(() => selectedItems.value.length === 0);
+    
     const editItem = (item) => {
         currentItem.value = JSON.parse(JSON.stringify(item));
         originalItemData.value = JSON.parse(JSON.stringify(item));
@@ -78,6 +85,45 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
         await deleteImportDataWarehouseApi(deletePayload);
     };
 
+    const deleteAllSelectedItems = async () => {
+            if (selectedItems.value.length === 0) {
+                ElMessage.warning('Vui lòng chọn ít nhất một mục để xóa.'); 
+                return;
+            }
+    
+            try {
+                await ElMessageBox.confirm(
+                    `Bạn có chắc chắn muốn xóa ${selectedItems.value.length} mục đã chọn không? Hành động này không thể hoàn tác.`, 
+                    'Cảnh báo',
+                    {
+                        confirmButtonText: 'Xóa',
+                        cancelButtonText: 'Hủy',
+                        type: 'warning',
+                    }
+                );
+    
+                const deletePromises = selectedItems.value.map(item => deleteItemApi(item));
+                await Promise.all(deletePromises);
+    
+                ElMessage.success(`Đã xóa thành công ${selectedItems.value.length} mục.`); 
+    
+                selectedItems.value = []; 
+                if (fetchDataAndInitialize) {
+                    fetchDataAndInitialize(); 
+                }
+    
+            } catch (err) {
+                if (err === 'cancel') {
+                    ElMessage.info('Đã hủy thao tác xóa.');
+                } else {
+                    const errorMessage = 'Đã xảy ra lỗi trong quá trình xóa: ' + ` ${err.message}`; 
+                    ElMessage.error(errorMessage);
+                }
+            } finally {
+                isDeleting.value = false; 
+            }
+        };
+
     return {
         dialogVisible,
         currentItem,
@@ -87,5 +133,10 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
         loggedInUserId,
         originalItemData,
         deleteItemApi,
+        selectedItems,
+        itemSelectionChange,
+        selectionEmpty,
+        deleteAllSelectedItems,
+        isDeleting
     }
 }

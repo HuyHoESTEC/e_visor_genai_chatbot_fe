@@ -204,6 +204,15 @@ export default {
     downloadReadyMessage: 'Файл готов к загрузке',
     downloadPreparingMessage: 'Подготовка файла...',
     downloadFileButton: 'Скачать файл',
+    DownloadOptionsTitle: 'Параметры загрузки файла',
+    InputProjectCodePlaceholder: 'Введите код проекта...',
+    InputCabinetNoPlaceholder: 'Введите код шкафа...',
+    GetDownloadLinkButton: 'Получить ссылку на документ',
+    PreparingDownloadLink: 'Создание ссылки...',
+    DownloadLinkReadyTitle: 'Ссылка готова!',
+    FileLabel: 'Файл:',
+    URLLabel: 'URL:',
+    DownloadDocumentButton: 'Скачать документ',
 
     // --- Warehouse Management - Tab Labels (UPDATED) ---
     flatListTabLabel: 'Подробный список',
