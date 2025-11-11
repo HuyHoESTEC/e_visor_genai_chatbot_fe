@@ -370,6 +370,21 @@ export const updateExportDataWarehouseApi = async (payload, signal) => {
     }
 }
 
+export const createExportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+}
+
 export const deleteExportDataWarehouseApi = async (payload, signal) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`,

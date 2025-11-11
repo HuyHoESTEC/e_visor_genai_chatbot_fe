@@ -6,10 +6,9 @@
     <div v-else class="table-data">
       <div class="filter-section">
         <div class="action-area">
-          <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
-            >{{ langStore.t("uploadTemplateButton") }}</el-button
-          >
+          <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled">{{ langStore.t("uploadTemplateButton") }}</el-button>
           <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
+          <el-button type="primary" :icon="Plus" v-on:click="addNewItem">Thêm sản phẩm mới</el-button>          
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
           <el-button type="danger" v-if="!selectionEmpty || isDeleting" v-on:click="deleteAllSelectedItems" :icon ="Delete" :loading="isDeleting">Xóa Đã Chọn ({{ selectedItems.length }})</el-button>
         </div>
@@ -142,7 +141,7 @@
                 <template #default="{ row }">
                     <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
                     <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
+                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />               
                 </template>
                 </el-table-column>
             </el-table>
@@ -182,7 +181,7 @@
               <!-- Class 2 -->
               <template #default="{ row: mdGroup }">
                 <div style="padding: 0 20px; background-color: #2C2C6A;">
-                  <h4>Danh sách tủ thuộc mã dãy: {{ mdGroup.cabinet_no }}</h4>
+                  <h4 style="color: white !important;">Danh sách tủ thuộc mã dãy: {{ mdGroup.cabinet_no }}</h4>
                   <el-table
                     :data="paginatedItemsGroup"
                     border
@@ -203,21 +202,21 @@
                       <!-- Class 3 -->
                       <template #default="{ row: locationGroup }">
                         <div style="padding: 0 20px; background-color: #8383A3;">
-                          <h4>Chi tiết hàng hóa thuộc tủ: {{ locationGroup.location }}</h4>
+                          <h4 style="color: white !important;">Chi tiết hàng hóa thuộc tủ: {{ locationGroup.location }}</h4>
                           <el-table :data="getPaginatedChildItems(locationGroup)" border size="small">
                                 <el-table-column prop="id" label="ID" width="auto" />
-                                <el-table-column prop="higher_lever_function" label="HIGHER_LEVEL_FUNCTION" width="auto" />
-                                <el-table-column prop="location" label="LOCATION" width="auto" />
+                                <el-table-column prop="higher_lever_function" label="Higher Level Function" width="auto" />
+                                <el-table-column prop="location" label="Mã tủ" width="auto" />
                                 <el-table-column prop="dt" label="DT" width="auto" />
-                                <el-table-column prop="quantity" label="QUANTITY" width="120" />
-                                <el-table-column prop="description" label="DESCRIPTION" width="auto" />
-                                <el-table-column prop="part_no" label="ORDER NUMBER" width="auto" />
-                                <el-table-column prop="seri_number" label="SERIAL NUMBER" width="auto" />
-                                <el-table-column prop="manufacturer" label="MANUFACTURER" width="auto" />
+                                <el-table-column prop="quantity" label="Số lượng" width="120" />
+                                <el-table-column prop="description" label="Mô tả" width="auto" />
+                                <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
+                                <el-table-column prop="seri_number" label="Seri No." width="auto" />
+                                <el-table-column prop="manufacturer" label="Hãng" width="auto" />
                                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                                      <!-- <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle /> -->
                                       <!-- <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle /> -->
                                   </template>
                                 </el-table-column>
@@ -286,19 +285,19 @@
                 <el-table-column type="expand">
                     <template #default="{ row: statusGroup }">
                         <div style="padding: 0 20px;">
-                            <h4>{{ langStore.t('detailGroupStatusTitle') }} {{ getInstallationStatusName(statusGroup.status) }}</h4>
+                            <h4 style="color: black !important;">{{ langStore.t('detailGroupStatusTitle') }} {{ getInstallationStatusName(statusGroup.status) }}</h4>
                             <el-table :data="statusGroup.items" border size="small">
                                 <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
-                                <el-table-column prop="product_name" :label="langStore.t('detailProductNameLabel')" width="auto" />
                                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
-                                <el-table-column prop="origin" :label="langStore.t('detailOriginLabel')" width="auto" />
+                                <el-table-column prop="manufacturer" :label="langStore.t('detailOriginLabel')" width="auto" />
+                                <el-table-column prop="description" :label="langStore.t('detailDescriptionLabel')" width="auto" />
                                 <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
                                 <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
                                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                                      <!-- <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle /> -->
                                       <!-- <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle :disabled="true" /> -->
                                   </template>
                                 </el-table-column>
@@ -325,44 +324,51 @@
       </el-tabs>
 
       <detail-popup v-model="isDetailVisible" :title="langStore.t('detailPopupTitle')">
-      <div v-if="selectedItem">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
-\         <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailDT')">{{ selectedItem.dt }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailHeaderCabinetNo')">{{ selectedItem.cabinet_no }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
-        </el-descriptions>
-        <div class="barcode-area">
-            <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
-            <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                <el-button 
-                    type="primary" 
-                    size="small" 
-                    :icon="Download" 
-                    :disabled="generatedBarcode === 'N/A'"
-                    @click="downloadBarcodeSvg"
-                >
-                    {{ langStore.t('downloadSvgButton') }}
-                </el-button>
-                <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                    <svg ref="barcodeRef"></svg> 
-                </div>
-            </div>
-            <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
+        <div v-if="selectedItem">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
+  \         <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailDT')">{{ selectedItem.dt }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailHeaderCabinetNo')">{{ selectedItem.cabinet_no }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
+          </el-descriptions>
+          <div class="barcode-area">
+              <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
+              <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+                  <el-button 
+                      type="primary" 
+                      size="small" 
+                      :icon="Download" 
+                      :disabled="generatedBarcode === 'N/A'"
+                      @click="downloadBarcodeSvg"
+                  >
+                      {{ langStore.t('downloadSvgButton') }}
+                  </el-button>
+                  <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+                      <svg ref="barcodeRef"></svg> 
+                  </div>
+              </div>
+              <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
+          </div>
         </div>
-      </div>
     </detail-popup>
     <warehouse-export-data-dialog 
       v-model="dialogVisible"
       :item-to-edit="currentItem"
       @save="saveItem"
       @close="closeDialog"
+    />
+    <FormNewItemPopup
+      v-model="newItemDialogVisible"
+      :currentItem="currentItem"
+      :isEditing="isEditing"
+      @close="closeDialog"
+      @save="createItem"
     />
     </div>
     <WarehouseExportUpload 
@@ -392,6 +398,7 @@ import {
   EditPen,
   Refresh,
   Delete,
+  Plus,
 } from "@element-plus/icons-vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
@@ -405,6 +412,7 @@ import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useWarehouseExportDownload } from "../../../composables/Warehouse_Export/useWarehouseExportDownload";
 import DownloadFilterDialog from "../../../components/dialog/DownloadFilterDialog.vue";
+import FormNewItemPopup from "../../../components/popup/FormNewItemPopup.vue";
 
 export default {
   name: "ExportedGoodsManagement",
@@ -420,6 +428,7 @@ export default {
     WarehouseExportUpload,
     WarehouseExportDataDialog,
     DownloadFilterDialog,
+    FormNewItemPopup,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -506,6 +515,10 @@ export default {
         selectionEmpty,
         deleteAllSelectedItems,
         isDeleting,
+        isEditing,
+        addNewItem,
+        newItemDialogVisible,
+        createItem,
     } = useWarehouseExportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -848,7 +861,11 @@ export default {
       selectionEmpty,
       deleteAllSelectedItems,
       isDeleting,
-      
+      isEditing,
+      Plus,
+      addNewItem,
+      newItemDialogVisible,
+      createItem,
     };
   },
 };

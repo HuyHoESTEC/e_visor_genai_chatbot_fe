@@ -144,7 +144,7 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
                 }
 
                 importVal.value = cardPoint.total_import_product;
-                installationVal.value = cardPoint.installation_by_date;
+                installationVal.value = (cardPoint.not_installation_by_date || 0) + (cardPoint.installation_by_date || 0);
                 notInstallationVal.value = cardPoint.not_installation_by_date;
                 totalPO.value = cardPoint.total_PO;
                 totalProject.value = cardPoint.total_project;                              

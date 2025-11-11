@@ -144,6 +144,7 @@ export default {
     FilterApplied: 'Đã áp dụng bộ lọc',
     DateFilterRemoved: 'Đã loại bỏ bộ lọc theo ngày',
     PleaseSelectAValidDateRange: 'Vui lòng chọn phạm vi ngày',
+    InsertInfoSuccess: 'Thêm mới sản phẩm thành công',
 
     // --- Warehouse Management - Filter Placeholders (UPDATED) ---
     filterByProductCodePlaceholder: 'Lọc theo mã code sản phẩm',
@@ -193,7 +194,7 @@ export default {
     downloadSvgButton: 'Tải về SVG',
     barcodeError: 'Không có thông tin Part No. hoặc Seri No. để tạo Barcode.',
     detailProjectCodeLabel: 'Mã dự án',
-    detailHigherLeverFunction: 'Function',
+    detailHigherLeverFunction: 'Higher Level Function',
     detailDT: 'DT',
     detailCabinetNo: 'Mã Dãy',
 
@@ -231,7 +232,7 @@ export default {
     tableHeaderStatus: 'Trạng thái',
     tableHeaderAction: 'Hành động',
     tableHeaderCabinetNo: 'Panel',
-    tableHigherLeverFunction: 'Function',
+    tableHigherLeverFunction: 'Higher Level Function',
     tableDT: 'DT',
 
     // --- Warehouse Management - Detail Popup Titles/Labels (UPDATED) ---

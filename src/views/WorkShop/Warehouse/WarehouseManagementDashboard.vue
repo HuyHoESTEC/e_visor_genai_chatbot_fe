@@ -83,7 +83,7 @@
               <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
               <div class="metric-data">
                 <div class="metric-value">{{ installationVal }}</div>
-                <div class="metric-label">Lắp đặt</div>
+                <div class="metric-label">Số lượng xuất kho</div>
               </div>
             </div>
             <div class="metric-card">
