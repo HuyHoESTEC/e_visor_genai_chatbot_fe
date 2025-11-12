@@ -8,9 +8,16 @@
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled">{{ langStore.t("uploadTemplateButton") }}</el-button>
           <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
-          <el-button type="primary" :icon="Plus" v-on:click="addNewItem">Thêm sản phẩm mới</el-button>          
+          <el-button type="primary" :icon="Plus" v-on:click="addNewItem">{{ langStore.t("addNewProductButton") }}</el-button>          
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
-          <el-button type="danger" v-if="!selectionEmpty || isDeleting" v-on:click="deleteAllSelectedItems" :icon ="Delete" :loading="isDeleting">Xóa Đã Chọn ({{ selectedItems.length }})</el-button>
+          <el-button type="danger" 
+            v-if="!selectionEmpty || isDeleting" 
+            v-on:click="deleteAllSelectedItems" 
+            :icon ="Delete" 
+            :loading="isDeleting"
+          >
+            {{ langStore.t("deleteSelectedButton") }} ({{ selectedItems.length }})
+          </el-button>
         </div>
         <div class="action-filter">
           <el-select
@@ -51,7 +58,7 @@
           </el-select>
           <el-select
             v-model="selectedMD"
-            placeholder="Lọc theo mã MD"
+            :placeholder="langStore.t('filterByMDPlaceholder')"
             clearable
             @change="applyFilters"
             class="barcode-select"
@@ -159,7 +166,7 @@
             </el-pagination>
         </el-tab-pane>
 
-        <el-tab-pane label="Danh sách tủ điện" name="expand">
+        <el-tab-pane :label="langStore.t('groupedByMDTabLabel')" name="expand">
           <!-- Class 1 -->
           <el-table
             :data="paginatedMDGroup"
@@ -601,24 +608,24 @@ export default {
       try {
         await ElMessageBox.confirm(
           `Bạn có chắc chắn muốn xóa hàng hóa có mã hàng hóa: ${item.part_no} không ?`,
-          'Cảnh báo',
+          langStore.t('warning'),
           {
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
+            confirmButtonText: langStore.t('delete'),
+            cancelButtonText: langStore.t('cancel'),
             type: 'warning',
           }
         );
         await deleteItemApi(item);
         ElMessage({
           type: 'success',
-          message: 'Xóa hàng hóa thành công',
+          message: langStore.t('delete_success_message'),
         });
         fetchDataAndInitialize();
       } catch (e) {
         if (e === 'cancel') {
             ElMessage({
                 type: 'info',
-                message: 'Đã hủy thao tác xóa.',
+                message: langStore.t('delete_cancelled_message'),
             });
         } else if (e.message && e.message.startsWith('API Error')) {
              ElMessage({
@@ -852,7 +859,6 @@ export default {
       isDownloadPreparing,
       handleDownloadClick,
       handleCreateDownloadLink,
-      confirmDownloadFile,
       selectedMD,
       remoteSearchMD,
       loadingMD,

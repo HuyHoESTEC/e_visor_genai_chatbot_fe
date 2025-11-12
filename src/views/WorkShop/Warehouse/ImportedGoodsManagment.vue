@@ -9,9 +9,16 @@
           <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
             >{{ langStore.t("uploadTemplateButton") }}</el-button
           >
-          <el-button type="danger" v-on:click="downloadFile" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
+          <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
-          <el-button type="danger" v-if="!selectionEmpty || isDeleting" v-on:click="deleteAllSelectedItems" :icon ="Delete" :loading="isDeleting">Xóa Đã Chọn ({{ selectedItems.length }})</el-button>       
+          <el-button type="danger" 
+            v-if="!selectionEmpty || isDeleting" 
+            v-on:click="deleteAllSelectedItems" 
+            :icon ="Delete" 
+            :loading="isDeleting"
+          >
+            {{ langStore.t("deleteSelectedButton") }} ({{ selectedItems.length }})
+          </el-button>       
         </div>
         <div class="action-filter">
           <el-select
@@ -175,7 +182,7 @@
                 <el-table-column type="expand">
                     <template #default="{ row: projectGroup }">
                         <div style="padding: 0 20px;">
-                            <h4>{{ langStore.t('DetailGroupTitleProject') }}: {{ projectGroup.project_code }}</h4>
+                            <h4 style="color: black !important;">{{ langStore.t('DetailGroupTitleProject') }}: {{ projectGroup.project_code }}</h4>
                             <el-table :data="projectGroup.items" border size="small">
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                                 <el-table-column prop="product_name" :label="langStore.t('detailProductNameLabel')" width="auto" />
@@ -285,25 +292,15 @@
         v-model="uploadDialogVisible"
         @uploadSuccess="handleUploadSuccess"
     />
+    <DownloadFilterDiaglogImport
+      v-model="downloadDialogVisible"
+      :download-url="downloadFileUrl"
+      :file-name="downloadFileName"
+      :is-preparing="isDownloadPreparing"
+      @create-download-link="handleCreateDownloadLink"
+      @confirm-download="confirmDownloadFile"
+    />
   </div>
-  <el-dialog
-    v-model="downloadDialogVisible"
-    :title="langStore.t('downloadDialogTitle')"
-    width="300px"
-    center
-    :close-on-click-modal="false"
-  >
-    <div v-if="downloadFileName" style="text-align: center;">
-      <p>{{ langStore.t('downloadReadyMessage') }}</p>
-      <p style="font-weight: bold; margin-bottom: 20px;">{{ downloadFileName }}</p>
-      <el-button type="primary" :icon="Download" v-on:click="confirmDownloadFile">
-        {{ langStore.t('downloadFileButton') }}
-      </el-button>
-    </div>
-    <div v-else style="text-align: center;">
-      <p>{{ langStore.t('downloadPreparingMessage') }}</p>
-    </div>
-  </el-dialog>
 </template>
 
 <script>
@@ -330,6 +327,7 @@ import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useWarehouseImportDownload } from "../../../composables/Warehouse_Import/useWarehouseImportDownload";
+import DownloadFilterDiaglogImport from "../../../components/dialog/DownloadFilterDiaglogImport.vue";
 
 export default {
   name: "ImportedGoodsManagement",
@@ -343,7 +341,8 @@ export default {
     Refresh,
     DetailPopup,
     WarehouseImportUpload,
-    WarehouseImportDataDialog
+    WarehouseImportDataDialog,
+    DownloadFilterDiaglogImport,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -401,6 +400,7 @@ export default {
         itemSelectionChange,
         selectionEmpty,
         deleteAllSelectedItems,
+        isDeleting,
     } = useWarehouseImportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -467,24 +467,24 @@ export default {
       try {
         await ElMessageBox.confirm(
           `Bạn có chắc chắn muốn xóa hàng hóa có mã hàng hóa: ${item.part_no} không ?`,
-          'Cảnh báo',
+          langStore.t('warning'),
           {
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
+            confirmButtonText: langStore.t('delete'),
+            cancelButtonText: langStore.t('cancel'),
             type: 'warning',
           }
         );
         await deleteItemApi(item);
         ElMessage({
           type: 'success',
-          message: 'Xóa hàng hóa thành công',
+          message: langStore.t('delete_success_message'),
         });
         fetchDataAndInitialize();
       } catch (e) {
         if (e === 'cancel') {
             ElMessage({
                 type: 'info',
-                message: 'Đã hủy thao tác xóa.',
+                message: langStore.t('delete_cancelled_message'),
             });
         } else if (e.message && e.message.startsWith('API Error')) {
              ElMessage({
@@ -498,9 +498,20 @@ export default {
     const {
       downloadDialogVisible,
       downloadFileName,
-      downloadFile,
+      downloadFileUrl,
+      isDownloadPreparing,
+      openDownloadDialog,
+      downloadFile: createDownloadLinkApi,
       confirmDownloadFile,
-    } = useWarehouseImportDownload(selectedImportId, selectedProjectCode);
+    } = useWarehouseImportDownload();
+
+    const handleDownloadClick = () => {
+      openDownloadDialog();
+    };
+
+    const handleCreateDownloadLink = (filterPayload) => {
+      createDownloadLinkApi(filterPayload);
+    };
 
     // Auto reload data
     let intervalId = null;
@@ -587,12 +598,9 @@ export default {
       handleDelete,
       ElMessage,
       ElMessageBox,
-      downloadFile,
       selectedImportId,
       downloadDialogVisible,
       downloadFileName,
-      downloadFile,
-      confirmDownloadFile,
       importIdOptions,
       loadingImportId,
       remoteSearchImportId,
@@ -603,6 +611,12 @@ export default {
       itemSelectionChange,
       selectionEmpty,
       deleteAllSelectedItems,
+      isDownloadPreparing,
+      downloadFileUrl,
+      handleDownloadClick,
+      handleCreateDownloadLink,
+      confirmDownloadFile,
+      isDeleting,
     };
   },
 };

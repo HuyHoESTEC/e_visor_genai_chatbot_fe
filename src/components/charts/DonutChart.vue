@@ -1,20 +1,20 @@
 <template>
   <div class="donut-chart-container">
     <div class="chart-header">
-      <h3 class="chart-title">Thống kê Lắp đặt</h3>
+      <h3 class="chart-title">{{ langStore.t('chartTitleInstallationStats') }}</h3>
     </div>
     <div v-if="!hasData" class="no-data-message">
-      <p>Không có dữ liệu biểu đồ để hiển thị.</p>
+      <p>{{ langStore.t('noDataMessageChart') }}</p>
     </div>
     <div v-else class="chart-body">
       <div class="chart-item">
         <v-chart class="echart" :option="installationChartOption" autoresize />
-        <p class="chart-label">Đã Lắp Đặt</p>
+        <p class="chart-label">{{ langStore.t('installedLabel') }}</p>
       </div>
 
       <div class="chart-item">
         <v-chart class="echart" :option="notinstallationChartOption" autoresize />
-        <p class="chart-label">Chưa Lắp Đặt</p>
+        <p class="chart-label">{{ langStore.t('notInstalledLabel') }}</p>
       </div>
     </div>
   </div>
@@ -32,6 +32,8 @@ import {
 } from 'echarts/components';
 import VChart from 'vue-echarts';
 import { computed } from 'vue';
+import { useLanguageStore } from '../../stores/language';
+
 
 use([
   CanvasRenderer,
@@ -56,16 +58,21 @@ export default {
     },
   },
   setup(props){
+    const langStore = useLanguageStore();
     const createDonutOption = (data, title, colors) => {
-      
+    
+    const noDataLabel = langStore.t('noDataLabel'); 
+    const tooltipFormat = langStore.t('tooltipFormat');
+     
     const chartData = Array.isArray(data) && data.length > 0 ? data : [];
     const finalData = chartData.length > 0 ? chartData : [
-      { value: 1, name: 'Không có dữ liệu', itemStyle: { color: '#ccc' }, tooltip: { show: false } }
+      { value: 1, name: noDataLabel, itemStyle: { color: '#ccc' }, tooltip: { show: false } }
     ];
 
     const totalValue = chartData.reduce((sum, item) => sum + (item.value || 0), 0);
     const hasRealData = chartData.length > 0;
-      
+    
+    
     
     return { 
         color: colors,    
@@ -90,7 +97,7 @@ export default {
           textStyle:{
             fontSize: 14
           },
-          formatter: hasRealData ? '{a} <br/>{b}: {c} ({d}%)' : 'Không có dữ liệu',
+          formatter: hasRealData ? '{a} <br/>{b}: {c} ({d}%)' : noDataLabel,
         },
       
         legend: {
@@ -128,8 +135,8 @@ export default {
               show: hasRealData,
               length: 10,
               lineStyle: {
-                  color: '#999'
-              }
+              color: '#999'
+              }
             },
             emphasis: {
                 itemStyle: {
@@ -154,21 +161,25 @@ export default {
     });
     
     const installationChartOption = computed(() => {
+
+      const languageTrigger = langStore.t('installedLabel');
       const installedData = props.installationDataFromInventory.installation_by_date;
       
       return createDonutOption(
           installedData, 
-          'Đã Lắp Đặt',
+          languageTrigger,
           ['#67C23A', '#909399'] 
       );
     });
     
     const notinstallationChartOption = computed(() => {
+
+      const languageTrigger = langStore.t('notInstalledLabel');
       const notInstalledData = props.installationDataFromInventory.not_installation_by_date;
 
       return createDonutOption(
           notInstalledData, 
-          'Chưa Lắp Đặt',
+          languageTrigger,
           ['#F56C6C', '#909399'] 
       );
     });
@@ -177,6 +188,7 @@ export default {
       hasData,
       installationChartOption,
       notinstallationChartOption,
+      langStore,
     };
   }
 };

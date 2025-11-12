@@ -15,6 +15,10 @@ export default {
     CloseBtn: 'Закрыть',
     NoData: 'Нет данных',
     records: 'записи',
+    warning: 'Предупреждение',
+    delete: 'Удалить',
+    cancel: 'Отмена',
+    idCannotBeEditedMessage: 'Идентификатор (ID) не может быть изменен после создания.',
 
     // --- Session & Error Messages ---
     sessionExpiredTitle: 'Сеанс истек',
@@ -24,9 +28,14 @@ export default {
     delete_failed: 'Сбой удаления',
     server_error: 'Ошибка сервера',
     UpdateInfoSuccess: 'Информация успешно обновлена',
-    ErrorOccurredWhenUpdated: 'Произошла ошибка при обновлении:',
+    ErrorOccurredWhenUpdated: 'Произошла ошибка при обновлении информации',
     ErrorOccurredWhenDeleted: 'Произошла ошибка при удалении:',
     ErrorOccurredWhenInserted: 'Произошла ошибка при добавлении:',
+    confirm_delete_part_no: 'Вы уверены, что хотите удалить товар с кодом: {part_no}?',
+    delete_success_message: 'Товар успешно удален',
+    delete_cancelled_message: 'Операция удаления отменена.',
+    delete_unknown_error: 'Произошла неизвестная ошибка при удалении.',
+    formCheckErrorMessage: 'Пожалуйста, проверьте поля с ошибками.',
 
     // --- Core Navigation/Routes ---
     OrganizationalPlan: 'Организационный план',
@@ -144,6 +153,8 @@ export default {
     FilterApplied: 'Фильтр применен',
     DateFilterRemoved: 'Фильтр по дате удален',
     PleaseSelectAValidDateRange: 'Пожалуйста, выберите допустимый диапазон дат',
+    // BỔ SUNG
+    InsertInfoSuccess: 'Продукт успешно добавлен',
 
     // --- Warehouse Management - Filter Placeholders (UPDATED) ---
     filterByProductCodePlaceholder: 'Фильтр по коду продукта',
@@ -154,6 +165,8 @@ export default {
     FilterByImportId: 'Фильтр по коду накладной',
     FilterBySeriNumber: 'Фильтр по серийному номеру продукта',
     FilterByImportDate: 'Фильтр по дате накладной',
+    // BỔ SUNG
+    filterByMDPlaceholder: 'Фильтр по коду MD',
 
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: 'Статистика',
@@ -219,6 +232,7 @@ export default {
     GroupedByProjectCode: 'Список, сгруппированный по коду проекта',
     groupedByLocationTabLabel: 'Список, сгруппированный по шкафам',
     groupedByStatusTabLabel: 'Список статусов оборудования',
+    groupedByMDTabLabel: 'Список электрошкафов',
 
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: 'Код проекта',
@@ -245,11 +259,12 @@ export default {
     detailQuantityLabel: 'Количество',
     detailSeriNumberLabelFlat: 'Серийный номер',
     detailLocationLabelFlat: 'Код шкафа',
+    detailHeaderCabinetNo: 'Панель',
     detailStatusLabel: 'Статус',
+    editImportItemTitle: 'Редактировать информацию о поступившем товаре',
 
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: 'Редактировать информацию об экспортированном товаре',
-    idCannotBeEditedMessage: 'Этот код квитанции нельзя редактировать.',
     quantityRequiredMessage: 'Количество не может быть пустым',
     quantityMustBeNumberMessage: 'Количество должно быть числом',
     quantityCannotBeNegativeMessage: 'Количество не может быть отрицательным числом!',
@@ -258,10 +273,75 @@ export default {
     statusNotInstalled: 'Не установлен',
     statusInstalled: 'Установлен',
     statusUnknown: 'неопределённый',
-    
+    importIdRequiredMessage: 'Код накладной не может быть пустым',
+    importTimeRequiredMessage: 'Дата накладной не может быть пустой',
+    partNoRequiredForSeriMessage: 'Пожалуйста, введите Код товара перед автоматическим созданием серийного номера.',
+
     // --- Chart Labels ---
     chartImportLabel: 'Поступление',
     chartExportLabel: 'Отгрузка',
     chartTotalSeparator: ' | ',
     chartQuantityName: 'Количество',
+
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: 'Добавить новый продукт',
+    editItemTitle: 'Редактировать продукт',
+    idLabel: 'ID',
+    locationCodeLabel: 'Код шкафа',
+    locationCodePlaceholder: 'Введите код шкафа',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: 'Введите код DT',
+    partNoCodeLabel: 'Код продукта',
+    partNoCodePlaceholder: 'Введите код продукта',
+    seriNumberLabel: 'Серийный номер',
+    seriNumberPlaceholder: 'Введите серийный номер',
+    manufacturerLabel: 'Бренд',
+    manufacturerPlaceholder: 'Введите бренд продукта',
+    projectCodeLabel: 'Код проекта',
+    projectCodePlaceholder: 'Введите код проекта',
+    cabinetNoLabel: 'Код стойки',
+    cabinetNoPlaceholder: 'Введите код стойки',
+    descriptionLabel: 'Описание',
+    descriptionPlaceholder: 'Введите описание продукта',
+    functionLabel: 'Higher_Lv_Function',
+    functionPlaceholder: 'Введите код Higher_Lever_Function',
+    statusLabel: 'Статус',
+    statusPlaceholder: 'Выберите статус',
+    updateButton: 'Обновить',
+    addNewButton: 'Добавить',
+    saveErrorMessage: 'Произошла ошибка при сохранении.',
+    validationErrorMessage: 'Пожалуйста, заполните все необходимые поля правильно.',
+    partNoRequiredMessage: 'Код товара не может быть пустым',
+    manufacturerRequiredMessage: 'Бренд не может быть пустым',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: 'Добавить новый продукт',
+    deleteSelectedButton: 'Удалить выбранное',
+    higher_lever_functionRequiredMessage: 'Не может быть пустым',
+    locationRequiredMessage: 'Код шкафа не может быть пустым',
+    dtRequiredMessage: 'DT не может быть пустым',
+    descriptionRequiredMessage: 'Описание не может быть пустым',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: 'Объем операций с товарами',
+    viewChartButton: 'Посмотреть график',
+    viewTableButton: 'Посмотреть таблицу',
+    dayFilterLabel: 'День',
+    weekFilterLabel: 'Неделя',
+    monthFilterLabel: 'Месяц',
+    quarterFilterLabel: 'Квартал',
+    yearFilterLabel: 'Год',
+    timeColumnHeader: 'Время',
+    importQuantityColumnHeader: 'Количество поступления (ед.)',
+    exportQuantityColumnHeader: 'Количество отгрузки (ед.)',
+    noDataMessageTable: 'Нет подробных данных для этого просмотра.',
+    importQuantityLegend: 'Количество поступления',
+    exportQuantityLegend: 'Количество отгрузки',
+    quantityYAxisName: 'Количество',
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: 'Статистика установки',
+    installedLabel: 'Установлено',
+    notInstalledLabel: 'Не установлено',
+    noDataMessageChart: 'Нет данных для отображения графика.',
+    noDataLabel: 'Нет данных',
 };

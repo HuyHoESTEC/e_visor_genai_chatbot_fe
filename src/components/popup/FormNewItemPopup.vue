@@ -10,28 +10,28 @@
       ref="formRef" 
       label-width="150px"
       v-loading="loading"
-       :rules = rules
+      :rules = "rules"
     >
-      <el-form-item label="ID" v-if="formData.id">
+      <el-form-item :label="langStore.t('idLabel')" v-if="formData.id">
         <el-input :model-value="formData.id" disabled />
       </el-form-item>
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="Mã tủ" prop="location">
-            <el-input v-model="formData.location" placeholder="Nhập mã tủ" />
+          <el-form-item :label="langStore.t('locationCodeLabel')" prop="location">
+            <el-input v-model="formData.location" :placeholder="langStore.t('locationCodePlaceholder')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="DT" prop="dt">
-            <el-input v-model="formData.dt" placeholder="Nhập mã DT" />
+          <el-form-item :label="langStore.t('dtCodeLabel')" prop="dt">
+            <el-input v-model="formData.dt" :placeholder="langStore.t('dtCodePlaceholder')" />
           </el-form-item>
         </el-col>
       </el-row>
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="Số lượng" prop="quantity">
+          <el-form-item :label="langStore.t('detailQuantityLabel')" prop="quantity">
             <el-input-number 
               v-model="formData.quantity" 
               :min="1" 
@@ -41,64 +41,64 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Mã sản phẩm" prop="part_no">
-            <el-input v-model="formData.part_no" placeholder="Nhập mã sản phẩm" />
+          <el-form-item :label="langStore.t('partNoCodeLabel')" prop="part_no">
+            <el-input v-model="formData.part_no" :placeholder="langStore.t('partNoCodePlaceholder')" />
           </el-form-item>
         </el-col>
       </el-row>
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="Số seri" prop="seri_number">
-            <el-input v-model="formData.seri_number" placeholder="Nhập số seri" disabled />
+          <el-form-item :label="langStore.t('seriNumberLabel')" prop="seri_number">
+            <el-input v-model="formData.seri_number" :placeholder="langStore.t('seriNumberPlaceholder')" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Hãng" prop="manufacturer">
-            <el-input v-model="formData.manufacturer" placeholder="Nhập hãng sản phẩm" />
+          <el-form-item :label="langStore.t('manufacturerLabel')" prop="manufacturer">
+            <el-input v-model="formData.manufacturer" :placeholder="langStore.t('manufacturerPlaceholder')" />
           </el-form-item>
         </el-col>
       </el-row>
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="Mã dự án" prop="project_code">
-            <el-input v-model="formData.project_code" placeholder="Nhập mã dự án" />
+          <el-form-item :label="langStore.t('projectCodeLabel')" prop="project_code">
+            <el-input v-model="formData.project_code" :placeholder="langStore.t('projectCodePlaceholder')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="Mã dãy" prop="cabinet_no">
-            <el-input v-model="formData.cabinet_no" placeholder="Nhập mã dãy" />
+          <el-form-item :label="langStore.t('cabinetNoLabel')" prop="cabinet_no">
+            <el-input v-model="formData.cabinet_no" :placeholder="langStore.t('cabinetNoPlaceholder')" />
           </el-form-item>
         </el-col>
       </el-row>
       
-      <el-form-item label="Mô tả" prop="description">
+      <el-form-item :label="langStore.t('descriptionLabel')" prop="description">
         <el-input 
           v-model="formData.description" 
           type="textarea" 
           :rows="2" 
-          placeholder="Nhập mô tả sản phẩm" 
+          :placeholder="langStore.t('descriptionPlaceholder')" 
         />
       </el-form-item>
 
-      <el-form-item label="Function" prop="higher_lever_function">
-        <el-input v-model="formData.higher_lever_function" placeholder="Nhập mã Function" />
+      <el-form-item :label="langStore.t('functionLabel')" prop="higher_lever_function">
+        <el-input v-model="formData.higher_lever_function" :placeholder="langStore.t('functionPlaceholder')" />
       </el-form-item>
 
-      <el-form-item label="Trạng thái" prop="status" >
-        <el-select v-model="formData.status" placeholder="Chọn trạng thái" style="width: 100%;" disabled>
-          <el-option label="Đã lắp đặt" :value="1"></el-option>
-          <el-option label="Chưa lắp đặt" :value="0"></el-option>
+      <el-form-item :label="langStore.t('statusLabel')" prop="status" >
+        <el-select v-model="formData.status" :placeholder="langStore.t('statusPlaceholder')" style="width: 100%;" disabled>
+          <el-option :label="langStore.t('statusInstalled')" :value="1"></el-option>
+          <el-option :label="langStore.t('statusNotInstalled')" :value="0"></el-option>
         </el-select>
       </el-form-item>
     </el-form>
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="handleClose">Hủy</el-button>
+        <el-button @click="handleClose">{{ langStore.t('cancelButton') }}</el-button>
         <el-button type="primary" @click="submitForm">
-          {{ isEditing ? 'Cập nhật' : 'Thêm mới' }}
+          {{ isEditing ? langStore.t('updateButton') : langStore.t('addNewButton') }}
         </el-button>
       </span>
     </template>
@@ -108,6 +108,7 @@
 <script>
 import { ElMessage } from 'element-plus';
 import { computed, ref, watch } from 'vue';
+import { useLanguageStore } from "../../stores/language";
 
 export default {
     name: "FormNewItemPopup",
@@ -127,8 +128,11 @@ export default {
     },
     emits: ['update:modelValue', 'save', 'close'],
     setup(props, { emit }) {
+        // Khởi tạo Language Store
+        const langStore = useLanguageStore(); 
+        
         const formRef = ref(null);
-        const loading = ref(null);
+        const loading = ref(false); // Đổi giá trị mặc định thành false
         const newItemDialogVisible = ref(props.modelValue);
         const formData = ref({});
 
@@ -147,28 +151,31 @@ export default {
             }
         }, { immediate: true });
 
+        // Sử dụng key localization cho tiêu đề pop-up
         const popupTitle = computed(() =>
-            props.isEditing ? 'Chỉnh sửa Sản Phẩm' : 'Thêm Sản Phẩm mới'
+            props.isEditing ? langStore.t('editItemTitle') : langStore.t('addItemTitle')
         );
         
         const submitForm = () => {
-    if (!formRef.value) return;
-    formRef.value.validate((valid) => {
-        if (valid) {
-            loading.value = true;
-            try {
-                emit('save', formData.value); 
-            } catch (e){
-                ElMessage.error("Đã xảy ra lỗi khi lưu.");
-            } finally {
-                loading.value = false;
-            }
-        } else {
-            ElMessage.warning("Vui lòng điền đầy đủ và đúng thông tin yêu cầu.");
-            return false;
-        }
-    });
-};
+          if (!formRef.value) return;
+          formRef.value.validate((valid) => {
+              if (valid) {
+                  loading.value = true;
+                  try {
+                      emit('save', formData.value); 
+                  } catch (e){
+                      // Sử dụng key localization cho ElMessage.error
+                      ElMessage.error(langStore.t('saveErrorMessage'));
+                  } finally {
+                      loading.value = false;
+                  }
+              } else {
+                  // Sử dụng key localization cho ElMessage.warning
+                  ElMessage.warning(langStore.t('validationErrorMessage'));
+                  return false;
+              }
+          });
+        };
         
         const handleClose = () => {
             newItemDialogVisible.value = false;
@@ -179,31 +186,43 @@ export default {
             }
         };
 
+        // Quy tắc kiểm tra hợp lệ sử dụng key localization
         const rules = {
-      quantity: [
-          { required: true, message: "Số lượng không được để trống", trigger: "change" },
-          {
-            validator: (rule, value, callback) => {
-              // Convert value to number, check
-              const numericValue = Number(value);
-              if (isNaN(numericValue)) {
-                callback(new Error("Số lượng phải là số"));
-              } else if (numericValue < 0) {
-                callback(new Error("Số lượng không thể là số âm!"));
-              } else {
-                callback(); // Valid
-              }
-            },
-            trigger: "blur", // Activate when users leave the input box
-          },
-        ],
-        part_no: [
-          { required: true, message: "Mã hàng hóa không được để trống", trigger: "change" },
-        ],
-        manufacturer: [
-          { required: true, message: "Hãng không được để trống", trigger: "change" },
-        ]
-      };
+          quantity: [
+              { required: true, message: langStore.t('quantityRequiredMessage'), trigger: "change" },
+              {
+                validator: (rule, value, callback) => {
+                  const numericValue = Number(value);
+                  if (isNaN(numericValue)) {
+                    callback(new Error(langStore.t('quantityMustBeNumberMessage')));
+                  } else if (numericValue < 0) {
+                    callback(new Error(langStore.t('quantityCannotBeNegativeMessage')));
+                  } else {
+                    callback();
+                  }
+                },
+                trigger: "blur", 
+              },
+            ],
+            part_no: [
+              { required: true, message: langStore.t('partNoRequiredMessage'), trigger: "change" },
+            ],
+            manufacturer: [
+              { required: true, message: langStore.t('manufacturerRequiredMessage'), trigger: "change" },
+            ],
+            higher_lever_function: [
+              { required: true, message: langStore.t('higher_lever_functionRequiredMessage'), trigger: "change"},
+            ],
+            location: [
+              { required: true, message: langStore.t('locationRequiredMessage'), trigger: "change"},
+            ],
+            dt: [
+              { required: true, message: langStore.t('dtRequiredMessage'), trigger: "change"},
+            ],
+            description: [
+              { required: true, message: langStore.t('descriptionRequiredMessage'), trigger: "change"},
+            ],
+        };
 
         return {
             popupTitle,
@@ -214,6 +233,7 @@ export default {
             loading,
             formRef,
             rules,
+            langStore, // Đảm bảo langStore được trả về để template sử dụng
         }
     }
 

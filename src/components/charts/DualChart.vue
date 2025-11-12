@@ -1,7 +1,7 @@
 <template>
   <div class="dual-chart-container">
     <div class="chart-header">
-      <h3 class="chart-title">Lượng Hàng Giao Dịch</h3>
+      <h3 class="chart-title">{{ langStore.t('dualChartTitle') }}</h3>
       <div class="header-controls">
         <el-button
           :class="{ 'is-active-btn': viewMode === 'table' }"
@@ -9,7 +9,7 @@
           @click="viewMode = viewMode === 'table' ? 'chart' : 'table'"
         >
           <i :class="viewMode === 'table' ? 'el-icon-data-board' : 'el-icon-list'"></i> 
-          {{ viewMode === 'table' ? 'Xem Biểu Đồ' : 'Xem Bảng' }}
+          {{ viewMode === 'table' ? langStore.t('viewChartButton') : langStore.t('viewTableButton') }}
         </el-button>
 
         <div class="time-filter-group">
@@ -30,14 +30,14 @@
 
     <div v-if="viewMode === 'table'" class="dual-chart-body table-view">
         <div v-if="currentChartData.dates.length === 0" class="no-data-message">
-            Không có dữ liệu chi tiết cho chế độ xem này.
+            {{ langStore.t('noDataMessageTable') }}
         </div>
         <table v-else class="data-table">
             <thead>
                 <tr>
-                    <th>Thời Gian ({{ timeOptions.find(t => t.key === timeFilter).label }})</th>
-                    <th>Số Lượng Nhập (sp)</th>
-                    <th>Số Lượng Xuất (sp)</th>
+                  <th>{{ langStore.t('timeColumnHeader') }} ({{ timeOptions.find(t => t.key === timeFilter).label }})</th>
+                  <th>{{ langStore.t('importQuantityColumnHeader') }}</th>
+                  <th>{{ langStore.t('exportQuantityColumnHeader') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +56,7 @@
 <script>
 import { ref, onMounted, watch, onBeforeUnmount, nextTick, computed } from 'vue';
 import * as echarts from 'echarts';
+import { useLanguageStore } from '../../stores/language';
 
 const BASE_COLORS = {
   importQty: '#007AFF', 
@@ -157,13 +158,15 @@ export default {
     const timeFilter = ref('day');
     const viewMode = ref('chart'); 
 
-    const timeOptions = [
-      { key: 'day', label: 'Ngày' },
-      { key: 'week', label: 'Tuần' },
-      { key: 'month', label: 'Tháng' },
-      { key: 'quarter', label: 'Quý' },
-      { key: 'year', label: 'Năm' },
-    ];
+    const langStore = useLanguageStore();
+
+    const timeOptions = computed(() => [
+      { key: 'day', label: langStore.t('dayFilterLabel') },
+      { key: 'week', label: langStore.t('weekFilterLabel') },
+      { key: 'month', label: langStore.t('monthFilterLabel') },
+      { key: 'quarter', label: langStore.t('quarterFilterLabel') },
+      { key: 'year', label: langStore.t('yearFilterLabel') },
+    ]);
 
     const resizeChart = () => {
       if (myChart) {
@@ -183,6 +186,7 @@ export default {
     };
 
     const currentChartData = computed(() => {
+      const languageTrigger = langStore.t('dualChartTitle');
       return getChartDataByFilter(timeFilter.value);
     });
 
@@ -232,7 +236,7 @@ export default {
           }
         },
         legend: {
-          data: ['Số lượng nhập', 'Số lượng xuất'],
+          data: [langStore.t('importQuantityLegend'), langStore.t('exportQuantityLegend')],
           top: 10,
           right: '5%',
           itemGap: 25,
@@ -264,7 +268,7 @@ export default {
         yAxis: [
           {
             type: 'value',
-            name: 'Số lượng',
+            name: langStore.t('quantityYAxisName'),
             min: 0,
             max: niceMax,
             interval: qtyInterval, 
@@ -280,7 +284,7 @@ export default {
         ],
         series: [
           {
-            name: 'Số lượng nhập',
+            name: langStore.t('importQuantityLegend'),
             type: 'bar',
             barGap: '0%',
             barCategoryGap: '25%',
@@ -303,7 +307,7 @@ export default {
             yAxisIndex: 0,
           },
           {
-            name: 'Số lượng xuất',
+            name: langStore.t('exportQuantityLegend'),
             type: 'bar',
             data: data.exportQuantity,
             itemStyle: {
@@ -372,6 +376,8 @@ export default {
       setTimeFilter,
       formatDate, // Export formatDate để dùng trong bảng
       formatNumberWithComma, // Export formatNumberWithComma để dùng trong bảng
+      langStore,
+      currentChartData,
     };
   }
 };

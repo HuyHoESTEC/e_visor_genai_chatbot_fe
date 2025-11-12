@@ -15,7 +15,11 @@ export default {
     CloseBtn: 'Đóng',
     NoData: 'Không có dữ liệu',
     records: 'bảng ghi',
-
+    warning: 'Cảnh báo',
+    delete: 'Xóa',
+    cancel: 'Hủy',
+    idCannotBeEditedMessage: 'ID không thể chỉnh sửa sau khi tạo.',
+    
     // --- Session & Error Messages ---
     sessionExpiredTitle: 'Phiên làm việc hết hạn',
     sessionExpiredMessage: 'Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.',
@@ -27,7 +31,12 @@ export default {
     ErrorOccurredWhenUpdated: 'Có lỗi trong quá trình cập nhật thông tin',
     ErrorOccurredWhenDeleted: 'Đã xảy ra lỗi khi xóa:',
     ErrorOccurredWhenInserted: 'Đã xảy ra lỗi khi thêm mới:',
-
+    confirm_delete_part_no: 'Bạn có chắc chắn muốn xóa hàng hóa có mã hàng hóa: {part_no} không ?',
+    delete_success_message: 'Xóa hàng hóa thành công',
+    delete_cancelled_message: 'Đã hủy thao tác xóa.',
+    delete_unknown_error: 'Có lỗi không xác định xảy ra khi xóa.',
+    formCheckErrorMessage: 'Vui lòng kiểm tra lại các trường bị lỗi.',
+    
     // --- Core Navigation/Routes ---
     OrganizationalPlan: "Kế hoạch tổ chức",
     TimekeepingManagement: "Quản lý chấm công",
@@ -38,7 +47,7 @@ export default {
     WarehouseDashboardRoute: 'Thống kê vật tư trong kho',
     ImportWarehouseRoute: 'Nhập kho',
     ExportWarehouseRoute: 'Xuất kho | Lắp đặt',
-
+    
     // --- File Upload & Merging ---
     FileUpload: "Tải lên File",
     PairingAndAnalysis: "Ghép nối & Phân tích",
@@ -69,6 +78,7 @@ export default {
     YouCanOnlySelectOnefileAtATime: 'Bạn chỉ có thể chọn 1 file tại 1 thời điểm.',
     PleaseWaitUntilTheFileIsFinishedUploading: 'Vui lòng đợi cho đến khi tải lên tài liệu hoàn thành',
     FileUploadedSuccessfully: 'Tải lên tệp thành công',
+    InputPOPlaceholder: 'Nhập mã PO',
 
     // --- Work Management ---
     workManagementDashboard: 'Thống kê công việc',
@@ -109,7 +119,7 @@ export default {
     deleteConfirmTitle: 'Xác nhận xóa',
     taskDeletedMessage: 'Đã xóa công việc thành công!',
     deleteCanceledMessage: 'Đã hủy thao tác xóa.',
-
+    
     // --- Workload Management ---
     AddWork: 'Thêm công việc',
     FileExport: 'Xuất File',
@@ -145,7 +155,7 @@ export default {
     DateFilterRemoved: 'Đã loại bỏ bộ lọc theo ngày',
     PleaseSelectAValidDateRange: 'Vui lòng chọn phạm vi ngày',
     InsertInfoSuccess: 'Thêm mới sản phẩm thành công',
-
+    
     // --- Warehouse Management - Filter Placeholders (UPDATED) ---
     filterByProductCodePlaceholder: 'Lọc theo mã code sản phẩm',
     filterByBrandPlaceholder: 'Lọc theo hãng',
@@ -155,7 +165,8 @@ export default {
     FilterByImportId: 'Lọc mã phiếu',
     FilterBySeriNumber: 'Lọc theo số seri sản phẩm',
     FilterByImportDate: 'Lọc theo ngày nhập phiếu',
-
+    filterByMDPlaceholder: 'Lọc theo mã MD',
+    
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: 'Thống kê',
     startDatePlaceholder: 'Ngày bắt đầu',
@@ -172,7 +183,7 @@ export default {
     quantityColumn: 'Số lượng',
     brandColumn: 'Hãng',
     unitColumn: 'Đơn vị',
-
+    
     // --- Warehouse Management - Detail Labels (UPDATED) ---
     detailIdLabel: 'ID',
     PO: 'PO',
@@ -197,14 +208,14 @@ export default {
     detailHigherLeverFunction: 'Higher Level Function',
     detailDT: 'DT',
     detailCabinetNo: 'Mã Dãy',
-
+    
     // --- Warehouse Management - Action Buttons & Dialogs ---
     uploadTemplateButton: 'Tải lên mẫu phiếu',
     downloadButton: 'Tải xuống',
     downloadDialogTitle: 'Tải về phiếu nhập kho',
     downloadReadyMessage: 'File đã sẵn sàng để tải',
     downloadPreparingMessage: 'Đang chuẩn bị file...',
-    downloadFileButton: 'Tải File',  
+    downloadFileButton: 'Tải File',
     DownloadOptionsTitle: 'Tùy chọn tải file',
     InputProjectCodePlaceholder: 'Nhập mã dự án...',
     InputCabinetNoPlaceholder: 'Nhập mã tủ...',
@@ -214,13 +225,14 @@ export default {
     FileLabel: 'File:',
     URLLabel: 'URL:',
     DownloadDocumentButton: 'Tải tài liệu',
-
+    
     // --- Warehouse Management - Tab Labels (UPDATED) ---
     flatListTabLabel: 'Danh sách chi tiết',
     GroupedByProjectCode: 'Danh sách nhóm theo mã dự án',
     groupedByLocationTabLabel: 'Danh sách nhóm theo tủ',
     groupedByStatusTabLabel: 'Danh sách trạng thái thiết bị',
-
+    groupedByMDTabLabel: 'Danh sách tủ điện',
+    
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: 'Mã dự án',
     tableHeaderPartNo: 'Mã hàng hóa',
@@ -234,7 +246,7 @@ export default {
     tableHeaderCabinetNo: 'Panel',
     tableHigherLeverFunction: 'Higher Level Function',
     tableDT: 'DT',
-
+    
     // --- Warehouse Management - Detail Popup Titles/Labels (UPDATED) ---
     detailPopupTitle: 'Chi tiết hàng hóa',
     DetailGroupTitleProject: 'Chi tiết hàng hóa thuộc dự án',
@@ -248,10 +260,9 @@ export default {
     detailLocationLabelFlat: 'Mã tủ',
     detailHeaderCabinetNo: 'Panel',
     detailStatusLabel: 'Trạng thái',
-
+    editImportItemTitle: 'Chỉnh sửa thông tin hàng hóa đã nhập',
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: 'Chỉnh sửa vật tư xuất kho', 
-    idCannotBeEditedMessage: 'Không thể chỉnh sửa ID sau khi tạo.', 
     quantityRequiredMessage: 'Vui lòng nhập số lượng.', 
     quantityMustBeNumberMessage: 'Số lượng phải là số.', 
     quantityCannotBeNegativeMessage: 'Số lượng không được là số âm.', 
@@ -260,10 +271,77 @@ export default {
     statusNotInstalled: 'Chưa lắp đặt', 
     statusInstalled: 'Đã lắp đặt', 
     statusUnknown: "Không xác định",
-
+    importIdRequiredMessage: 'Mã phiếu không được để trống',
+    importTimeRequiredMessage: 'Ngày nhập phiếu không được để trống',
+    partNoRequiredForSeriMessage: 'Vui lòng nhập Mã hàng hóa trước khi tạo Số Seri tự động.',
+    
     // --- Chart
     chartImportLabel: 'Nhập Kho',
     chartExportLabel: 'Xuất Kho',
     chartTotalSeparator: ' | ',
     chartQuantityName: 'Số Lượng',
+
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: 'Thêm Sản Phẩm mới',
+    editItemTitle: 'Chỉnh sửa Sản Phẩm',
+    idLabel: 'ID',
+    locationCodeLabel: 'Mã tủ',
+    locationCodePlaceholder: 'Nhập mã tủ',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: 'Nhập mã DT',
+    partNoCodeLabel: 'Mã sản phẩm',
+    partNoCodePlaceholder: 'Nhập mã sản phẩm',
+    seriNumberLabel: 'Số seri',
+    seriNumberPlaceholder: 'Nhập số seri',
+    manufacturerLabel: 'Hãng',
+    manufacturerPlaceholder: 'Nhập hãng sản phẩm',
+    projectCodeLabel: 'Mã dự án',
+    projectCodePlaceholder: 'Nhập mã dự án',
+    cabinetNoLabel: 'Mã dãy',
+    cabinetNoPlaceholder: 'Nhập mã dãy',
+    descriptionLabel: 'Mô tả',
+    descriptionPlaceholder: 'Nhập mô tả sản phẩm',
+    functionLabel: 'Higher_Lv_Function',
+    functionPlaceholder: 'Nhập mã Higher_Lever_Function',
+    statusLabel: 'Trạng thái',
+    statusPlaceholder: 'Chọn trạng thái',
+    statusInstalled: 'Đã lắp đặt',
+    statusNotInstalled: 'Chưa lắp đặt', 
+    updateButton: 'Cập nhật',
+    addNewButton: 'Thêm mới',
+    saveErrorMessage: 'Đã xảy ra lỗi khi lưu.',
+    validationErrorMessage: 'Vui lòng điền đầy đủ và đúng thông tin yêu cầu.',
+    partNoRequiredMessage: 'Mã hàng hóa không được để trống', 
+    manufacturerRequiredMessage: 'Hãng không được để trống',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: 'Thêm sản phẩm mới',
+    deleteSelectedButton: 'Xóa Đã Chọn',
+    higher_lever_functionRequiredMessage: 'Không được để trống',
+    locationRequiredMessage: 'Mã tủ không được để trống',
+    dtRequiredMessage: 'DT không được để trống',
+    descriptionRequiredMessage: 'Mô tả không được để trống',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: 'Lượng Hàng Giao Dịch',
+    viewChartButton: 'Xem Biểu Đồ',
+    viewTableButton: 'Xem Bảng',
+    dayFilterLabel: 'Ngày',
+    weekFilterLabel: 'Tuần',
+    monthFilterLabel: 'Tháng',
+    quarterFilterLabel: 'Quý',
+    yearFilterLabel: 'Năm',
+    timeColumnHeader: 'Thời Gian',
+    importQuantityColumnHeader: 'Số Lượng Nhập (sp)',
+    exportQuantityColumnHeader: 'Số Lượng Xuất (sp)',
+    noDataMessageTable: 'Không có dữ liệu chi tiết cho chế độ xem này.',
+    importQuantityLegend: 'Số lượng nhập',
+    exportQuantityLegend: 'Số lượng xuất',
+    quantityYAxisName: 'Số lượng',
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: 'Thống kê Lắp đặt',
+    installedLabel: 'Đã Lắp Đặt',
+    notInstalledLabel: 'Chưa Lắp Đặt',
+    noDataMessageChart: 'Không có dữ liệu biểu đồ để hiển thị.',
+    noDataLabel: 'Không có dữ liệu',
 };

@@ -15,6 +15,10 @@ export default {
     CloseBtn: "关闭",
     NoData: "没有数据",
     records: '记录',
+    warning: '警告',
+    delete: '删除',
+    cancel: '取消',
+    idCannotBeEditedMessage: 'ID 在创建后不可编辑。',
 
     // --- Session & Error Messages ---
     sessionExpiredTitle: '会话已过期',
@@ -27,6 +31,12 @@ export default {
     ErrorOccurredWhenUpdated: '更新时出错:',
     ErrorOccurredWhenDeleted: "删除时发生错误：",
     ErrorOccurredWhenInserted: '添加时出错:',
+    confirm_delete_part_no: '您确定要删除货物代码为: {part_no} 的货物吗？',
+    delete_success_message: '删除货物成功',
+    delete_cancelled_message: '删除操作已取消。',
+    delete_unknown_error: '删除时发生未知错误。',
+    formCheckErrorMessage: '请重新检查有错误的字段。',
+    InsertInfoSuccess: '添加新产品成功',
 
     // --- Core Navigation/Routes ---
     OrganizationalPlan: "组织计划",
@@ -134,9 +144,6 @@ export default {
     AddWorkloadSuccess: "工作量添加成功！",
     ConfirmDeleteWorkload: "您确定要删除工作量吗",
     DeleteWorkloadSuccess: "工作量删除成功！",
-    ErrorOccurredWhenDeleted: "删除时发生错误：",
-    ErrorOccurredWhenUpdated: '更新时出错:',
-    ErrorOccurredWhenInserted: '添加时出错:',
     HourNumberShouldBeNumber: "小时数必须为数字",
     TheNumberOfHoursCannotBeNegative: "小时数不能为负数",
     TheEndDateMustBeAfterTheBeginningDate: "结束日期必须在开始日期之后",
@@ -157,6 +164,7 @@ export default {
     FilterByImportId: '按入库单代码筛选',
     FilterBySeriNumber: '按产品序列号筛选',
     FilterByImportDate: '按入库日期筛选',
+    filterByMDPlaceholder: '按 MD 代码筛选',
 
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: '统计',
@@ -199,7 +207,7 @@ export default {
     detailProjectCodeLabel: '项目代码',
     detailHigherLeverFunction: '批次代码',
     detailDT: 'DT',
-    detailCabinetNo: '机架代码', 
+    detailCabinetNo: '机架代码',
 
     // --- Warehouse Management - Action Buttons & Dialogs ---
     uploadTemplateButton: '上传模板',
@@ -223,6 +231,7 @@ export default {
     GroupedByProjectCode: '按项目代码分组清单',
     groupedByLocationTabLabel: '按机柜分组清单',
     groupedByStatusTabLabel: '设备状态清单',
+    groupedByMDTabLabel: '电气柜清单',
 
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: '项目代码',
@@ -235,8 +244,8 @@ export default {
     tableHeaderStatus: '状态',
     tableHeaderAction: '操作',
     tableHeaderCabinetNo: '机架代码',
-    tableHigherLeverFunction: '批次代码', 
-    tableDT: 'DT', 
+    tableHigherLeverFunction: '批次代码',
+    tableDT: 'DT',
 
     // --- Warehouse Management - Detail Popup Titles/Labels ---
     detailPopupTitle: '货物详情',
@@ -250,6 +259,8 @@ export default {
     detailSeriNumberLabelFlat: '序列号',
     detailLocationLabelFlat: '机柜代码',
     detailStatusLabel: '状态',
+    detailHeaderCabinetNo: '面板',
+    editImportItemTitle: '编辑已入库货物信息',
 
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: '编辑出库货物',
@@ -262,8 +273,71 @@ export default {
     statusNotInstalled: '未安装',
     statusInstalled: '已安装',
     statusUnknown: '未知',
+    importIdRequiredMessage: '入库单代码不能为空',
+    importTimeRequiredMessage: '入库单日期不能为空',
+    partNoRequiredForSeriMessage: '请在生成自动序列号前输入货物代码。',
 
-    // --- Chart
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: '添加新产品',
+    editItemTitle: '编辑产品',
+    idLabel: 'ID',
+    locationCodeLabel: '机柜代码',
+    locationCodePlaceholder: '输入机柜代码',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: '输入 DT 代码',
+    partNoCodeLabel: '产品代码',
+    partNoCodePlaceholder: '输入产品代码',
+    seriNumberLabel: '序列号',
+    seriNumberPlaceholder: '输入序列号',
+    manufacturerLabel: '品牌',
+    manufacturerPlaceholder: '输入产品品牌',
+    projectCodeLabel: '项目代码',
+    projectCodePlaceholder: '输入项目代码',
+    cabinetNoLabel: '机架代码',
+    cabinetNoPlaceholder: '输入机架代码',
+    descriptionLabel: '描述',
+    descriptionPlaceholder: '输入产品描述',
+    functionLabel: '高级功能',
+    functionPlaceholder: '输入高级功能代码',
+    statusLabel: '状态',
+    statusPlaceholder: '选择状态',
+    updateButton: '更新',
+    addNewButton: '新增',
+    saveErrorMessage: '保存时发生错误。',
+    validationErrorMessage: '请正确填写所有必填信息。',
+    partNoRequiredMessage: '货物代码不能为空',
+    manufacturerRequiredMessage: '品牌不能为空',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: '新增产品',
+    deleteSelectedButton: '删除选中项',
+    higher_lever_functionRequiredMessage: '不能为空',
+    locationRequiredMessage: '机柜代码不能为空',
+    dtRequiredMessage: 'DT 不能为空',
+    descriptionRequiredMessage: '描述不能为空',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: '货物交易量',
+    viewChartButton: '查看图表',
+    viewTableButton: '查看表格',
+    dayFilterLabel: '日',
+    weekFilterLabel: '周',
+    monthFilterLabel: '月',
+    quarterFilterLabel: '季',
+    yearFilterLabel: '年',
+    timeColumnHeader: '时间',
+    importQuantityColumnHeader: '入库数量 (件)',
+    exportQuantityColumnHeader: '出库数量 (件)',
+    noDataMessageTable: '此视图无详细数据。',
+    importQuantityLegend: '入库数量',
+    exportQuantityLegend: '出库数量',
+    quantityYAxisName: '数量',
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: '安装统计',
+    installedLabel: '已安装',
+    notInstalledLabel: '未安装',
+    noDataMessageChart: '无图表数据可显示。',
+    noDataLabel: '无数据',
     chartImportLabel: '入库',
     chartExportLabel: '出库',
     chartTotalSeparator: ' | ',
