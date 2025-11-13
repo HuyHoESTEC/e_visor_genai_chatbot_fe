@@ -10,6 +10,7 @@
             >{{ langStore.t("uploadTemplateButton") }}</el-button
           >
           <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
+          <!-- <el-button type="primary" :icon="Plus" v-on:click="addNewItem">{{ langStore.t("addNewProductButton") }}</el-button> -->
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
           <el-button type="danger" 
             v-if="!selectionEmpty || isDeleting" 
@@ -287,10 +288,17 @@
       @save="saveItem"
       @close="closeDialog"
     />
+    <FormNewitemPopupImport
+      v-model="newItemDialogVisible"
+      :currentItem="currentItem"
+      :isEditing="isEditing"
+      @close="closeDialog"
+      @save="createItem"
+    />
     </div>
     <WarehouseImportUpload 
-        v-model="uploadDialogVisible"
-        @uploadSuccess="handleUploadSuccess"
+      v-model="uploadDialogVisible"
+      @uploadSuccess="handleUploadSuccess"
     />
     <DownloadFilterDiaglogImport
       v-model="downloadDialogVisible"
@@ -315,6 +323,7 @@ import {
   EditPen,
   Refresh,
   Delete,
+  Plus,
 } from "@element-plus/icons-vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
@@ -328,6 +337,7 @@ import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useWarehouseImportDownload } from "../../../composables/Warehouse_Import/useWarehouseImportDownload";
 import DownloadFilterDiaglogImport from "../../../components/dialog/DownloadFilterDiaglogImport.vue";
+import FormNewitemPopupImport from "../../../components/popup/FormNewitemPopupImport.vue";
 
 export default {
   name: "ImportedGoodsManagement",
@@ -343,6 +353,7 @@ export default {
     WarehouseImportUpload,
     WarehouseImportDataDialog,
     DownloadFilterDiaglogImport,
+    FormNewitemPopupImport,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -401,6 +412,10 @@ export default {
         selectionEmpty,
         deleteAllSelectedItems,
         isDeleting,
+        addNewItem,
+        createItem,
+        newItemDialogVisible,
+        isEditing,
     } = useWarehouseImportAction(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
@@ -617,6 +632,12 @@ export default {
       handleCreateDownloadLink,
       confirmDownloadFile,
       isDeleting,
+      addNewItem,
+      createItem,
+      newItemDialogVisible,
+      isEditing,
+      Plus,
+      FormNewitemPopupImport,
     };
   },
 };
