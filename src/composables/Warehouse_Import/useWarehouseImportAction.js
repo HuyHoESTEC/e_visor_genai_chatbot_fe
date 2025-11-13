@@ -82,7 +82,6 @@ export function useWarehouseImportAction(langStore, fetchDataAndInitialize) {
                 "seri_number": itemData.seri_number || ''
             }
         };
-        console.log("Payload gửi đi để xóa:", deletePayload);
         await deleteImportDataWarehouseApi(deletePayload);
     };
 

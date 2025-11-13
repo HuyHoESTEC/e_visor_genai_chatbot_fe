@@ -15,6 +15,10 @@ export default {
     CloseBtn: '닫기',
     NoData: '데이터 없음',
     records: '레코드',
+    warning: '경고',
+    delete: '삭제',
+    cancel: '취소',
+    idCannotBeEditedMessage: 'ID는 생성 후에 수정할 수 없습니다.',
 
     // --- Session & Error Messages ---
     sessionExpiredTitle: '세션 만료',
@@ -24,9 +28,14 @@ export default {
     delete_failed: '삭제 실패',
     server_error: '서버 오류',
     UpdateInfoSuccess: '정보 업데이트 성공',
-    ErrorOccurredWhenUpdated: '업데이트 중 오류가 발생했습니다:',
+    ErrorOccurredWhenUpdated: '정보 업데이트 중 오류가 발생했습니다', 
     ErrorOccurredWhenDeleted: '삭제 중 오류가 발생했습니다:',
     ErrorOccurredWhenInserted: '새로 추가하는 중 오류가 발생했습니다:',
+    confirm_delete_part_no: '품목 코드: {part_no}를 삭제하시겠습니까?',
+    delete_success_message: '품목 삭제 성공',
+    delete_cancelled_message: '삭제 작업이 취소되었습니다.',
+    delete_unknown_error: '삭제 중 알 수 없는 오류가 발생했습니다.',
+    formCheckErrorMessage: '오류 필드를 다시 확인하십시오.',
 
     // --- Core Navigation/Routes ---
     OrganizationalPlan: '조직 계획',
@@ -144,6 +153,7 @@ export default {
     FilterApplied: '필터 적용됨',
     DateFilterRemoved: '날짜 필터 제거됨',
     PleaseSelectAValidDateRange: '유효한 날짜 범위를 선택해 주세요',
+    InsertInfoSuccess: '새 제품 추가 성공',
 
     // --- Warehouse Management - Filter Placeholders (UPDATED) ---
     filterByProductCodePlaceholder: '제품 코드로 필터링',
@@ -154,6 +164,7 @@ export default {
     FilterByImportId: '전표 코드로 필터링',
     FilterBySeriNumber: '제품 일련 번호로 필터링',
     FilterByImportDate: '입고 날짜로 필터링',
+    filterByMDPlaceholder: 'MD 코드로 필터링',
 
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: '통계',
@@ -220,6 +231,7 @@ export default {
     GroupedByProjectCode: '프로젝트 코드별 그룹화 목록',
     groupedByLocationTabLabel: '캐비닛별 그룹화 목록',
     groupedByStatusTabLabel: '장비 상태 목록',
+    groupedByMDTabLabel: '전기 캐비닛 목록',
 
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: '프로젝트 코드',
@@ -247,6 +259,8 @@ export default {
     detailSeriNumberLabelFlat: '일련 번호',
     detailLocationLabelFlat: '캐비닛 코드',
     detailStatusLabel: '상태',
+    detailHeaderCabinetNo: '패널',
+    editImportItemTitle: '입고된 품목 정보 수정',
 
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: '출고 품목 편집',
@@ -259,10 +273,76 @@ export default {
     statusNotInstalled: '미설치',
     statusInstalled: '설치됨',
     statusUnknown: '알 수 없음',
+    importIdRequiredMessage: '전표 코드는 비워둘 수 없습니다',
+    importTimeRequiredMessage: '전표 날짜는 비워둘 수 없습니다',
+    partNoRequiredForSeriMessage: '자동 일련 번호 생성 전에 품목 코드를 입력하십시오.',
 
     // --- Chart Labels ---
     chartImportLabel: '입고',
     chartExportLabel: '출고',
     chartTotalSeparator: ' | ',
     chartQuantityName: '수량',
+
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: '새 제품 추가',
+    editItemTitle: '제품 수정',
+    idLabel: 'ID',
+    locationCodeLabel: '캐비닛 코드',
+    locationCodePlaceholder: '캐비닛 코드를 입력하십시오',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: 'DT 코드를 입력하십시오',
+    partNoCodeLabel: '제품 코드',
+    partNoCodePlaceholder: '제품 코드를 입력하십시오',
+    seriNumberLabel: '일련 번호',
+    seriNumberPlaceholder: '일련 번호를 입력하십시오',
+    manufacturerLabel: '브랜드',
+    manufacturerPlaceholder: '제품 브랜드를 입력하십시오',
+    projectCodeLabel: '프로젝트 코드',
+    projectCodePlaceholder: '프로젝트 코드를 입력하십시오',
+    cabinetNoLabel: '랙 코드',
+    cabinetNoPlaceholder: '랙 코드를 입력하십시오',
+    descriptionLabel: '설명',
+    descriptionPlaceholder: '제품 설명을 입력하십시오',
+    functionLabel: 'Higher_Lv_Function',
+    functionPlaceholder: 'Higher_Lever_Function 코드를 입력하십시오',
+    statusLabel: '상태',
+    statusPlaceholder: '상태를 선택하십시오',
+    updateButton: '업데이트',
+    addNewButton: '새로 추가',
+    saveErrorMessage: '저장 중 오류가 발생했습니다.',
+    validationErrorMessage: '요구되는 정보를 모두 정확하게 입력하십시오.',
+    partNoRequiredMessage: '품목 코드는 비워둘 수 없습니다',
+    manufacturerRequiredMessage: '브랜드는 비워둘 수 없습니다',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: '새 제품 추가',
+    deleteSelectedButton: '선택 삭제',
+    higher_lever_functionRequiredMessage: '비워둘 수 없습니다',
+    locationRequiredMessage: '캐비닛 코드는 비워둘 수 없습니다',
+    dtRequiredMessage: 'DT는 비워둘 수 없습니다',
+    descriptionRequiredMessage: '설명은 비워둘 수 없습니다',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: '품목 거래량',
+    viewChartButton: '차트 보기',
+    viewTableButton: '테이블 보기',
+    dayFilterLabel: '일',
+    weekFilterLabel: '주',
+    monthFilterLabel: '월',
+    quarterFilterLabel: '분기',
+    yearFilterLabel: '년',
+    timeColumnHeader: '시간',
+    importQuantityColumnHeader: '입고 수량 (개)',
+    exportQuantityColumnHeader: '출고 수량 (개)',
+    noDataMessageTable: '이 보기의 상세 데이터가 없습니다.',
+    importQuantityLegend: '입고 수량',
+    exportQuantityLegend: '출고 수량',
+    quantityYAxisName: '수량',
+
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: '설치 통계',
+    installedLabel: '설치됨',
+    notInstalledLabel: '미설치',
+    noDataMessageChart: '표시할 차트 데이터가 없습니다.',
+    noDataLabel: '데이터 없음',
 };

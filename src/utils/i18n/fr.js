@@ -15,7 +15,11 @@ export default {
     CloseBtn: 'Fermer',
     NoData: "Aucune donnée",
     records: 'enregistrements',
-
+    warning: 'Avertissement',
+    delete: 'Supprimer',
+    cancel: 'Annuler',
+    idCannotBeEditedMessage: 'L\'ID ne peut pas être modifié après la création.',
+    
     // --- Session & Error Messages ---
     sessionExpiredTitle: 'Session expirée',
     sessionExpiredMessage: 'Votre session a expiré. Veuillez vous reconnecter.',
@@ -27,6 +31,12 @@ export default {
     ErrorOccurredWhenUpdated: 'Une erreur est survenue lors de la mise à jour:',
     ErrorOccurredWhenDeleted: "Une erreur est survenue lors de la suppression:",
     ErrorOccurredWhenInserted: "Une erreur est survenue lors de l'ajout:",
+    confirm_delete_part_no: 'Êtes-vous sûr de vouloir supprimer l\'article avec la Réf. Article : {part_no} ?',
+    delete_success_message: 'Suppression de l\'article réussie',
+    delete_cancelled_message: 'Opération de suppression annulée.',
+    delete_unknown_error: 'Une erreur inconnue est survenue lors de la suppression.',
+    formCheckErrorMessage: 'Veuillez vérifier les champs contenant des erreurs.',
+    InsertInfoSuccess: 'Ajout du nouveau produit réussi',
 
     // --- Core Navigation/Routes ---
     OrganizationalPlan: "Plan d'organisation",
@@ -154,6 +164,7 @@ export default {
     FilterByImportId: 'Filtrer par code de bordereau',
     FilterBySeriNumber: 'Filtrer par N° de série produit',
     FilterByImportDate: "Filtrer par date d'entrée",
+    filterByMDPlaceholder: 'Filtrer par code MD',
 
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: 'Statistiques',
@@ -205,8 +216,6 @@ export default {
     downloadReadyMessage: 'Le fichier est prêt à être téléchargé',
     downloadPreparingMessage: 'Préparation du fichier...',
     downloadFileButton: 'Télécharger le fichier',
-    
-    // KEY MỚI
     DownloadOptionsTitle: 'Options de téléchargement du fichier',
     InputProjectCodePlaceholder: 'Entrez le code du projet...',
     InputCabinetNoPlaceholder: 'Entrez le code de l\'armoire...',
@@ -216,13 +225,13 @@ export default {
     FileLabel: 'Fichier:',
     URLLabel: 'URL:',
     DownloadDocumentButton: 'Télécharger le document',
-    // END KEY MỚI
 
     // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: 'Liste détaillée',
     GroupedByProjectCode: 'Groupé par code de projet',
     groupedByLocationTabLabel: 'Groupé par armoire',
     groupedByStatusTabLabel: 'Liste des statuts d\'équipement',
+    groupedByMDTabLabel: 'Liste des armoires électriques',
 
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: 'Code de projet',
@@ -250,6 +259,8 @@ export default {
     detailSeriNumberLabelFlat: 'N° de série',
     detailLocationLabelFlat: 'Code armoire',
     detailStatusLabel: 'Statut',
+    detailHeaderCabinetNo: 'Panneau',
+    editImportItemTitle: 'Modifier les informations de l\'article importé',
 
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: 'Modifier l\'article exporté',
@@ -262,8 +273,72 @@ export default {
     statusNotInstalled: 'Non installé',
     statusInstalled: 'Installé',
     statusUnknown: 'Inconnu',
+    importIdRequiredMessage: 'Le code du bordereau ne peut pas être vide',
+    importTimeRequiredMessage: 'La date du bordereau ne peut pas être vide',
+    partNoRequiredForSeriMessage: 'Veuillez entrer la Réf. Article avant de générer le N° de série automatique.',
 
-    // --- Chart Labels ---
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: 'Ajouter un nouveau produit',
+    editItemTitle: 'Modifier le produit',
+    idLabel: 'ID',
+    locationCodeLabel: 'Code armoire',
+    locationCodePlaceholder: 'Entrer le code armoire',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: 'Entrer le code DT',
+    partNoCodeLabel: 'Code produit',
+    partNoCodePlaceholder: 'Entrer le code produit',
+    seriNumberLabel: 'N° de série',
+    seriNumberPlaceholder: 'Entrer le N° de série',
+    manufacturerLabel: 'Marque',
+    manufacturerPlaceholder: 'Entrer la marque du produit',
+    projectCodeLabel: 'Code de projet',
+    projectCodePlaceholder: 'Entrer le code de projet',
+    cabinetNoLabel: 'Code de baie',
+    cabinetNoPlaceholder: 'Entrer le code de baie',
+    descriptionLabel: 'Description',
+    descriptionPlaceholder: 'Entrer la description du produit',
+    functionLabel: 'Fonction de niveau supérieur',
+    functionPlaceholder: 'Entrer le code de fonction de niveau supérieur',
+    statusLabel: 'Statut',
+    statusPlaceholder: 'Sélectionner le statut',
+    updateButton: 'Mettre à jour',
+    addNewButton: 'Ajouter nouveau',
+    saveErrorMessage: 'Une erreur est survenue lors de l\'enregistrement.',
+    validationErrorMessage: 'Veuillez remplir correctement toutes les informations requises.',
+    partNoRequiredMessage: 'La Réf. Article ne peut pas être vide',
+    manufacturerRequiredMessage: 'La marque ne peut pas être vide',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: 'Ajouter un nouveau produit',
+    deleteSelectedButton: 'Supprimer la sélection',
+    higher_lever_functionRequiredMessage: 'Ne peut pas être vide',
+    locationRequiredMessage: 'Le code armoire ne peut pas être vide',
+    dtRequiredMessage: 'DT ne peut pas être vide',
+    descriptionRequiredMessage: 'La description ne peut pas être vide',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: 'Volume de transactions d\'articles',
+    viewChartButton: 'Voir le graphique',
+    viewTableButton: 'Voir le tableau',
+    dayFilterLabel: 'Jour',
+    weekFilterLabel: 'Semaine',
+    monthFilterLabel: 'Mois',
+    quarterFilterLabel: 'Trimestre',
+    yearFilterLabel: 'Année',
+    timeColumnHeader: 'Temps',
+    importQuantityColumnHeader: 'Quantité importée (pcs)',
+    exportQuantityColumnHeader: 'Quantité exportée (pcs)',
+    noDataMessageTable: 'Aucune donnée détaillée pour cette vue.',
+    importQuantityLegend: 'Quantité importée',
+    exportQuantityLegend: 'Quantité exportée',
+    quantityYAxisName: 'Quantité',
+
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: 'Statistiques d\'installation',
+    installedLabel: 'Installé',
+    notInstalledLabel: 'Non installé',
+    noDataMessageChart: 'Aucune donnée de graphique à afficher.',
+    noDataLabel: 'Aucune donnée',
     chartImportLabel: 'Entrée en Stock',
     chartExportLabel: 'Sortie de Stock',
     chartTotalSeparator: ' | ',

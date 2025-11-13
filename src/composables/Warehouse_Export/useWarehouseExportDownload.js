@@ -14,7 +14,6 @@ export function useWarehouseExportDownload() {
 
     const openDownloadDialog = () => {
         downloadDialogVisible.value = true;
-        // Reset state before open dialog
         downloadFileName.value = '';
         downloadFileUrl.value = '';
     };
@@ -39,9 +38,9 @@ export function useWarehouseExportDownload() {
                 const cabinetNo = filterPayload.cabinet_no;
 
                 if (projectCode) {
-                    downloadFileName.value = `Export_${projectCode}`;
+                    downloadFileName.value = `PhieuLapDat_${projectCode}`;
                 } else if (cabinetNo) {
-                    downloadFileName.value = `Export_${cabinetNo}`;
+                    downloadFileName.value = `PhieuLapDat_${cabinetNo}`;
                 } else {
                     downloadFileName.value = `PhieuLapDat_${new Date().toISOString().slice(0,10)}`;
                 }

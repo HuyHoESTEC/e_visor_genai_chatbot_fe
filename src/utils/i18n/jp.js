@@ -15,6 +15,10 @@ export default {
     CloseBtn: '閉じる',
     NoData: "データがありません",
     records: 'レコード',
+    warning: '警告',
+    delete: '削除',
+    cancel: 'キャンセル',
+    idCannotBeEditedMessage: 'ID は作成後に編集できません。',
 
     // --- Session & Error Messages ---
     sessionExpiredTitle: 'セッションの有効期限が切れました',
@@ -24,9 +28,15 @@ export default {
     delete_failed: '削除失敗',
     server_error: 'サーバーエラー',
     UpdateInfoSuccess: '情報の更新に成功しました',
-    ErrorOccurredWhenUpdated: '更新中にエラーが発生しました:',
+    ErrorOccurredWhenUpdated: '情報更新中にエラーが発生しました',
     ErrorOccurredWhenDeleted: '削除中にエラーが発生しました：',
     ErrorOccurredWhenInserted: '新規追加中にエラーが発生しました:',
+    confirm_delete_part_no: '品目コード: {part_no}のアイテムを削除してもよろしいですか？',
+    delete_success_message: 'アイテムの削除に成功しました',
+    delete_cancelled_message: '削除操作はキャンセルされました。',
+    delete_unknown_error: '削除中に不明なエラーが発生しました。',
+    formCheckErrorMessage: 'エラーのあるフィールドを再確認してください。',
+    InsertInfoSuccess: '新規製品の追加に成功しました',
 
     // --- Core Navigation/Routes ---
     OrganizationalPlan: "組織計画",
@@ -154,6 +164,7 @@ export default {
     FilterByImportId: '伝票コードで絞り込み',
     FilterBySeriNumber: '製品シリアル番号で絞り込み',
     FilterByImportDate: '入荷日で絞り込み',
+    filterByMDPlaceholder: 'MDコードで絞り込み',
 
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: '統計',
@@ -220,6 +231,7 @@ export default {
     GroupedByProjectCode: 'プロジェクトコード別グループ化リスト',
     groupedByLocationTabLabel: 'キャビネット別グループ化リスト',
     groupedByStatusTabLabel: '機器ステータスリスト',
+    groupedByMDTabLabel: '電気キャビネットリスト',
 
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: 'プロジェクトコード',
@@ -247,6 +259,8 @@ export default {
     detailSeriNumberLabelFlat: 'シリアル番号',
     detailLocationLabelFlat: 'キャビネットコード',
     detailStatusLabel: 'ステータス',
+    detailHeaderCabinetNo: 'パネル',
+    editImportItemTitle: '入荷済みアイテム情報の編集',
 
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: '出荷品目の編集',
@@ -259,10 +273,70 @@ export default {
     statusNotInstalled: '未設置',
     statusInstalled: '設置済み',
     statusUnknown: '不明',
+    importIdRequiredMessage: '伝票コードは空欄にできません',
+    importTimeRequiredMessage: '伝票の日付は空欄にできません',
+    partNoRequiredForSeriMessage: '自動シリアル番号を作成する前に品目コードを入力してください。',
 
-    // --- Chart
-    chartImportLabel: '入荷',
-    chartExportLabel: '出荷',
-    chartTotalSeparator: ' | ',
-    chartQuantityName: '数量',
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: '新規製品を追加',
+    editItemTitle: '製品を編集',
+    idLabel: 'ID',
+    locationCodeLabel: 'キャビネットコード',
+    locationCodePlaceholder: 'キャビネットコードを入力',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: 'DTコードを入力',
+    partNoCodeLabel: '製品コード',
+    partNoCodePlaceholder: '製品コードを入力',
+    seriNumberLabel: 'シリアル番号',
+    seriNumberPlaceholder: 'シリアル番号を入力',
+    manufacturerLabel: 'ブランド',
+    manufacturerPlaceholder: '製品ブランドを入力',
+    projectCodeLabel: 'プロジェクトコード',
+    projectCodePlaceholder: 'プロジェクトコードを入力',
+    cabinetNoLabel: 'ラックコード',
+    cabinetNoPlaceholder: 'ラックコードを入力',
+    descriptionLabel: '説明',
+    descriptionPlaceholder: '製品の説明を入力',
+    functionLabel: '上位機能',
+    functionPlaceholder: '上位機能コードを入力',
+    statusLabel: 'ステータス',
+    statusPlaceholder: 'ステータスを選択',
+    updateButton: '更新',
+    addNewButton: '新規追加',
+    saveErrorMessage: '保存中にエラーが発生しました。',
+    validationErrorMessage: '必要な情報をすべて正しく入力してください。',
+    partNoRequiredMessage: '品目コードは空欄にできません',
+    manufacturerRequiredMessage: 'ブランドは空欄にできません',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: '新規製品を追加',
+    deleteSelectedButton: '選択したものを削除',
+    higher_lever_functionRequiredMessage: '空欄にできません',
+    locationRequiredMessage: 'キャビネットコードは空欄にできません',
+    dtRequiredMessage: 'DTは空欄にできません',
+    descriptionRequiredMessage: '説明は空欄にできません',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: 'アイテム取引量',
+    viewChartButton: 'チャートを表示',
+    viewTableButton: 'テーブルを表示',
+    dayFilterLabel: '日',
+    weekFilterLabel: '週',
+    monthFilterLabel: '月',
+    quarterFilterLabel: '四半期',
+    yearFilterLabel: '年',
+    timeColumnHeader: '時間',
+    importQuantityColumnHeader: '入荷数量（個）',
+    exportQuantityColumnHeader: '出荷数量（個）',
+    noDataMessageTable: 'このビューには詳細データがありません。',
+    importQuantityLegend: '入荷数',
+    exportQuantityLegend: '出荷数',
+    quantityYAxisName: '数量',
+
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: '設置統計',
+    installedLabel: '設置済み',
+    notInstalledLabel: '未設置',
+    noDataMessageChart: '表示するチャートデータがありません。',
+    noDataLabel: 'データなし',
 };

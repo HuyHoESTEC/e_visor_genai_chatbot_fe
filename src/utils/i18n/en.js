@@ -15,6 +15,10 @@ export default {
     CloseBtn: 'Close',
     NoData: "No Data",
     records: 'Records',
+    warning: 'Warning',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    idCannotBeEditedMessage: 'ID cannot be edited after creation.',
 
     // --- Session & Error Messages ---
     sessionExpiredTitle: 'Session Expired',
@@ -27,6 +31,12 @@ export default {
     ErrorOccurredWhenUpdated: 'An error occurred while updating:',
     ErrorOccurredWhenDeleted: "An error occurred while deleting:",
     ErrorOccurredWhenInserted: 'An error occurred while inserting:',
+    confirm_delete_part_no: 'Are you sure you want to delete the item with Item Part No.: {part_no} ?',
+    delete_success_message: 'Item deleted successfully',
+    delete_cancelled_message: 'Deletion operation cancelled.',
+    delete_unknown_error: 'An unknown error occurred during deletion.',
+    formCheckErrorMessage: 'Please recheck the fields with errors.',
+    InsertInfoSuccess: 'New product added successfully',
 
     // --- Core Navigation/Routes ---
     OrganizationalPlan: "Organizational Plan",
@@ -134,9 +144,6 @@ export default {
     AddWorkloadSuccess: "Workload added successfully!",
     ConfirmDeleteWorkload: "Are you sure you want to delete the workload",
     DeleteWorkloadSuccess: "Workload deleted successfully!",
-    ErrorOccurredWhenDeleted: "An error occurred while deleting:",
-    ErrorOccurredWhenUpdated: 'An error occurred while updating:',
-    ErrorOccurredWhenInserted: 'An error occurred while inserting:',
     HourNumberShouldBeNumber: 'Hours must be a number',
     TheNumberOfHoursCannotBeNegative: 'Hours cannot be negative',
     TheEndDateMustBeAfterTheBeginningDate: 'The end date must be after the beginning date',
@@ -157,6 +164,7 @@ export default {
     FilterByImportId: 'Filter by note code',
     FilterBySeriNumber: 'Filter by product serial number',
     FilterByImportDate: 'Filter by date',
+    filterByMDPlaceholder: 'Filter by MD code',
 
     // --- Warehouse Management - Dashboard & Metrics ---
     dashboardTabLabel: 'Statistics',
@@ -178,7 +186,7 @@ export default {
     // --- Warehouse Management - Detail Labels ---
     detailPopupTitle: 'Item Details',
     detailIdLabel: 'ID',
-    PO: 'PO', // ĐÃ THÊM KEY CÒN THIẾU
+    PO: 'PO',
     ImportNoteDate: 'Date Import Note',
     ImportItemDate: 'Date Import Item',
     detailProductNameLabel: 'Item Name',
@@ -197,9 +205,9 @@ export default {
     downloadSvgButton: 'Download SVG',
     barcodeError: 'No Part No. or Serial No. information to generate Barcode.',
     detailProjectCodeLabel: 'Project Code',
-    detailHigherLeverFunction: 'Batch Code', // ĐÃ THÊM KEY CÒN THIẾU
-    detailDT: 'DT', // ĐÃ THÊM KEY CÒN THIẾU
-    detailCabinetNo: 'Rack Code', // ĐÃ THÊM KEY CÒN THIẾU
+    detailHigherLeverFunction: 'Batch Code',
+    detailDT: 'DT',
+    detailCabinetNo: 'Rack Code',
 
     // --- Warehouse Management - Action Buttons & Dialogs ---
     uploadTemplateButton: 'Upload Template',
@@ -208,8 +216,6 @@ export default {
     downloadReadyMessage: 'File is ready for download',
     downloadPreparingMessage: 'Preparing file...',
     downloadFileButton: 'Download File',
-    
-    // KEY MỚI
     DownloadOptionsTitle: 'File Download Options',
     InputProjectCodePlaceholder: 'Enter project code...',
     InputCabinetNoPlaceholder: 'Enter cabinet code...',
@@ -219,13 +225,13 @@ export default {
     FileLabel: 'File:',
     URLLabel: 'URL:',
     DownloadDocumentButton: 'Download Document',
-    // END KEY MỚI
 
     // --- Warehouse Management - Tab Labels ---
     flatListTabLabel: 'Detailed List',
     GroupedByProjectCode: 'Grouped by Project Code',
     groupedByLocationTabLabel: 'Grouped by Cabinet',
     groupedByStatusTabLabel: 'Device Status List',
+    groupedByMDTabLabel: 'Electric Cabinet List',
 
     // --- Warehouse Management - Table Headers ---
     tableHeaderProjectCode: 'Project Code',
@@ -238,8 +244,8 @@ export default {
     tableHeaderStatus: 'Status',
     tableHeaderAction: 'Action',
     tableHeaderCabinetNo: 'Panel',
-    tableHigherLeverFunction: 'Batch Code', 
-    tableDT: 'DT', 
+    tableHigherLeverFunction: 'Batch Code',
+    tableDT: 'DT',
 
     // --- Warehouse Management - Detail Popup Titles/Labels ---
     detailPopupTitle: 'Item Details',
@@ -253,6 +259,8 @@ export default {
     detailSeriNumberLabelFlat: 'Serial No.',
     detailLocationLabelFlat: 'Cabinet Code',
     detailStatusLabel: 'Status',
+    detailHeaderCabinetNo: 'Panel',
+    editImportItemTitle: 'Edit Imported Item Information',
 
     // --- Export Dialog Specific ---
     dialogTitleEditExportedItem: 'Edit Exported Item',
@@ -265,6 +273,72 @@ export default {
     statusNotInstalled: 'Not Installed',
     statusInstalled: 'Installed',
     statusUnknown: 'Unknown',
+    importIdRequiredMessage: 'Note code cannot be empty',
+    importTimeRequiredMessage: 'Note date cannot be empty',
+    partNoRequiredForSeriMessage: 'Please enter Item Part No. before generating automatic Serial No.',
+
+    // ---ADDED FROM FORMNEWITEMPOPUP ---
+    addItemTitle: 'Add New Product',
+    editItemTitle: 'Edit Product',
+    idLabel: 'ID',
+    locationCodeLabel: 'Cabinet Code',
+    locationCodePlaceholder: 'Enter cabinet code',
+    dtCodeLabel: 'DT',
+    dtCodePlaceholder: 'Enter DT code',
+    partNoCodeLabel: 'Product Code',
+    partNoCodePlaceholder: 'Enter product code',
+    seriNumberLabel: 'Serial No.',
+    seriNumberPlaceholder: 'Enter serial number',
+    manufacturerLabel: 'Brand',
+    manufacturerPlaceholder: 'Enter product brand',
+    projectCodeLabel: 'Project Code',
+    projectCodePlaceholder: 'Enter project code',
+    cabinetNoLabel: 'Rack Code',
+    cabinetNoPlaceholder: 'Enter rack code',
+    descriptionLabel: 'Description',
+    descriptionPlaceholder: 'Enter product description',
+    functionLabel: 'Higher-Level Function',
+    functionPlaceholder: 'Enter Higher-Level Function code',
+    statusLabel: 'Status',
+    statusPlaceholder: 'Select status',
+    updateButton: 'Update',
+    addNewButton: 'Add New',
+    saveErrorMessage: 'An error occurred while saving.',
+    validationErrorMessage: 'Please fill in all required information correctly.',
+    partNoRequiredMessage: 'Item Part No. cannot be empty',
+    manufacturerRequiredMessage: 'Brand cannot be empty',
+
+    // --- FORM NEW ITEM POPUP ---
+    addNewProductButton: 'Add New Product',
+    deleteSelectedButton: 'Delete Selected',
+    higher_lever_functionRequiredMessage: 'Cannot be empty',
+    locationRequiredMessage: 'Cabinet Code cannot be empty',
+    dtRequiredMessage: 'DT cannot be empty',
+    descriptionRequiredMessage: 'Description cannot be empty',
+
+    // --- DUAL CHART KEYS ---
+    dualChartTitle: 'Item Transaction Volume',
+    viewChartButton: 'View Chart',
+    viewTableButton: 'View Table',
+    dayFilterLabel: 'Day',
+    weekFilterLabel: 'Week',
+    monthFilterLabel: 'Month',
+    quarterFilterLabel: 'Quarter',
+    yearFilterLabel: 'Year',
+    timeColumnHeader: 'Time',
+    importQuantityColumnHeader: 'Import Quantity (pcs)',
+    exportQuantityColumnHeader: 'Export Quantity (pcs)',
+    noDataMessageTable: 'No detailed data for this view.',
+    importQuantityLegend: 'Import Quantity',
+    exportQuantityLegend: 'Export Quantity',
+    quantityYAxisName: 'Quantity',
+
+    //--- DONUT CHART KEYS ---
+    chartTitleInstallationStats: 'Installation Statistics',
+    installedLabel: 'Installed',
+    notInstalledLabel: 'Not Installed',
+    noDataMessageChart: 'No chart data to display.',
+    noDataLabel: 'No data',
 
     // --- Chart Labels ---
     chartImportLabel: 'Import',

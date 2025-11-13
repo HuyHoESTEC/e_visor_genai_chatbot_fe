@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="internalDialogVisible"
-    title="Chỉnh sửa thông tin hàng hóa đã nhập"
+    :title="langStore.t('editImportItemTitle')"
     width="50%"
     :before-close="handleClose"
   >
@@ -9,39 +9,39 @@
       <el-form-item label="PO" prop="ticket_id">
         <el-input v-model="formData.import_id"></el-input>
       </el-form-item>
-      <el-form-item label="Ngày nhập phiếu" prop="import_time">
+      <el-form-item :label="langStore.t('ImportNoteDate')" prop="import_time">
         <el-date-picker
           v-model="formData.import_time"
           type="date"
-          placeholder="Chọn ngày nhập phiếu"
+          :placeholder="langStore.t('selectDatePlaceholder')"
         />
       </el-form-item>
-      <el-form-item label="Mã dự án" prop="project_code">
+      <el-form-item :label="langStore.t('detailProjectCodeLabel')" prop="project_code">
         <el-input v-model="formData.project_code"></el-input>
       </el-form-item>
-      <el-form-item label="Tên hàng hóa" prop="product_name">
+      <el-form-item :label="langStore.t('detailProductNameLabel')" prop="product_name">
         <el-input v-model="formData.product_name" type="textarea" :rows="3"></el-input>
       </el-form-item>
-      <el-form-item label="Mã hàng hóa" prop="part_no">
+      <el-form-item :label="langStore.t('detailPartNoLabel')" prop="part_no">
         <el-input v-model="formData.part_no"></el-input>
       </el-form-item>
-      <el-form-item label="Hãng" prop="origin">
+      <el-form-item :label="langStore.t('detailOriginLabel')" prop="origin">
         <el-input v-model="formData.origin"></el-input>
       </el-form-item>
-      <el-form-item label="Số lượng" prop="quantity">
+      <el-form-item :label="langStore.t('detailQuantityLabel')" prop="quantity">
         <el-input v-model="formData.quantity" type="number" min="1"></el-input>
       </el-form-item>
-      <el-form-item label="Số Seri" prop="seri_number">
+      <el-form-item :label="langStore.t('detailSeriNumberLabel')" prop="seri_number">
         <div style="display: flex; gap: 10px; width: 100%;">
           <el-input v-model="formData.seri_number"></el-input>
           <el-button type="primary" @click="handleGenerateSeri" style="flex-shrink: 0;" :icon="MagicStick" plain />
         </div>
       </el-form-item>
-      <el-form-item label="Ngày nhập hàng" prop="time">
+      <el-form-item :label="langStore.t('ImportItemDate')" prop="time">
         <el-date-picker
           v-model="formData.time"
           type="date"
-          placeholder="Chọn ngày nhập hàng"
+          :placeholder="langStore.t('selectDatePlaceholder')"
           @change="handleDateChange('time')"
         />
       </el-form-item>
@@ -49,8 +49,8 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="handleClose">Hủy</el-button>
-        <el-button type="primary" @click="handleSubmit">Lưu</el-button>
+        <el-button @click="handleClose">{{ langStore.t('cancelButton') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ langStore.t('saveButton') }}</el-button>
       </span>
     </template>
   </el-dialog>
@@ -60,6 +60,7 @@
 import { ref, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import { MagicStick } from "@element-plus/icons-vue";
+import { useLanguageStore } from "../../stores/language";
 
 export default {
   name: "WarehouseImportDataDialog",
@@ -77,6 +78,7 @@ export default {
   emits: ["update:modelValue", "save", "close"], // Khai báo các sự kiện emit
 
   setup(props, { emit }) {
+    const langStore = useLanguageStore();
     const internalDialogVisible = ref(props.modelValue);
     const formData = ref(initializeFormData(props.itemToEdit));
     const taskForm = ref(null); // Ref để truy cập form component
@@ -87,15 +89,15 @@ export default {
     // Quy tắc kiểm tra hợp lệ cho form
     const rules = {
       quantity: [
-        { required: true, message: "Số lượng không được để trống", trigger: "change" },
+        { required: true, message: langStore.t('quantityRequiredMessage'), trigger: "change" },
         {
           validator: (rule, value, callback) => {
             // Convert value to number, check
             const numericValue = Number(value);
             if (isNaN(numericValue)) {
-              callback(new Error("Số lượng phải là số"));
+              callback(new Error(langStore.t('quantityMustBeNumberMessage')));
             } else if (numericValue < 0) {
-              callback(new Error("Số lượng không thể là số âm!"));
+              callback(new Error(langStore.t('quantityCannotBeNegativeMessage')));
             } else {
               callback(); // Valid
             }
@@ -104,10 +106,10 @@ export default {
         },
       ],
       import_id: [
-        { required: true, message: "Mã phiếu không được để trống", trigger: "change" },
+        { required: true, message: langStore.t('importIdRequiredMessage'), trigger: "change" },
       ],
       import_time: [
-        { required: true, message: "Ngày nhập phiếu không được để trống", trigger: "change" },
+        { required: true, message: langStore.t('importTimeRequiredMessage'), trigger: "change" },
       ]
     };
 
@@ -164,7 +166,7 @@ export default {
           // Không đóng dialog ở đây, để component cha quyết định
           // internalDialogVisible.value = false;
         } else {
-          ElMessage.error("Vui lòng kiểm tra lại các trường bị lỗi.");
+          ElMessage.error(langStore.t('formCheckErrorMessage'));
           return false;
         }
       });
@@ -193,7 +195,7 @@ export default {
     const handleGenerateSeri = () => {
       const partNo = formData.value.part_no;
       if (!partNo) {
-        ElMessage.warning('Vui lòng nhập Mã hàng hóa trước khi tạo Số Seri tự động.');
+        ElMessage.warning(langStore.t('partNoRequiredForSeriMessage'));
         return;
       }
       const randomString = generateRandomString(5);
@@ -233,6 +235,8 @@ export default {
       handleGenerateSeri,
       MagicStick,
       handleDateChange,
+      useLanguageStore,
+      langStore
     };
   },
 };
