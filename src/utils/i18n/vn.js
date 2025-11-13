@@ -282,7 +282,7 @@ export default {
     chartQuantityName: 'Số Lượng',
 
     // ---ADDED FROM FORMNEWITEMPOPUP ---
-    addItemTitle: 'Thêm Sản Phẩm mới',
+    addItemTitle: 'Thêm Sản Phẩm Mới',
     editItemTitle: 'Chỉnh sửa Sản Phẩm',
     idLabel: 'ID',
     locationCodeLabel: 'Mã tủ',
@@ -320,7 +320,12 @@ export default {
     higher_lever_functionRequiredMessage: 'Không được để trống',
     locationRequiredMessage: 'Mã tủ không được để trống',
     dtRequiredMessage: 'DT không được để trống',
-    descriptionRequiredMessage: 'Mô tả không được để trống',
+    ticketIDRequiredMessage: 'Mã PO không được để trống',
+    importTimeRequiredMessage: 'Ngày nhập phiếu không được để trống',
+    originRequiredMessage: 'Hãng không được để trống',
+    projectCodeRequiredMessage: 'Mã dự án không được để trống',
+    prodcutNameRequiredMessage: 'Tên hàng hóa không được để trống',
+    seriNumberRequiredMessage: 'Số Seri. không được để trống',
 
     // --- DUAL CHART KEYS ---
     dualChartTitle: 'Lượng Hàng Giao Dịch',
