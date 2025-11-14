@@ -184,7 +184,7 @@
                     <template #default="{ row: projectGroup }">
                         <div style="padding: 0 20px;">
                             <h4 style="color: black !important;">{{ langStore.t('DetailGroupTitleProject') }}: {{ projectGroup.project_code }}</h4>
-                            <el-table :data="projectGroup.items" border size="small">
+                            <el-table :data="getPaginatedChildItems(projectGroup)" border size="small">
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                                 <el-table-column prop="product_name" :label="langStore.t('detailProductNameLabel')" width="auto" />
                                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
@@ -199,6 +199,17 @@
                                   </template>
                                 </el-table-column>
                             </el-table>
+                            <el-pagination
+                              layout="prev, pager, next, sizes, total"
+                              :total="projectGroup.items.length" 
+                              :page-sizes="[5, 10, 20, 50, 100]"
+                              :v-model:page-size="itemPaginationState[projectGroup.project_code]?.pageSize || 10"
+                              :v-model:current-page="itemPaginationState[projectGroup.project_code]?.currentPage || 1"
+                              @size-change="val => handleItemSizeChangeGroup(val, projectGroup)"
+                              @current-change="val => handleItemCurrentChangeGroup(val, projectGroup)"
+                              class="pagination-controls"
+                            >
+                        </el-pagination>
                         </div>
                     </template>
                 </el-table-column>
@@ -368,6 +379,7 @@ export default {
     const pageSizeGroup = ref(10);
     const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
     const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
+    
     const {
       filteredItems,
       fetchDataAndInitialize,
@@ -528,23 +540,57 @@ export default {
       createDownloadLinkApi(filterPayload);
     };
 
-    // Auto reload data
-    let intervalId = null;
-    const POLLING_INTERVAL = 30000; // 10 seconds
-    onMounted(() => {
-      // Thiết lập interval để gọi refreshData sau mỗi POLLING_INTERVAL
-      intervalId = setInterval(() => {
-        console.log(`Polling: làm mới dữ liệu sau mỗi ${POLLING_INTERVAL / 1000} giây...`);
-        refreshData();
-      }, POLLING_INTERVAL);
-    });
-
-    onUnmounted(() => {
-      // Rất quan trọng: Xóa interval khi component bị hủy để tránh rò rỉ bộ nhớ
-      if (intervalId) {
-        clearInterval(intervalId);
+    const itemPaginationState = ref({});
+    const getPaginatedChildItems = (projectGroup) => {
+      const projectCode = projectGroup.project_code;
+      if (!itemPaginationState.value[projectCode]) {
+        itemPaginationState.value[projectCode] = {
+          currentPage: 1,
+          pageSize: 10,
+        };
       }
-    });
+
+      const state = itemPaginationState.value[projectCode];
+      const allItems = projectGroup.items;
+
+      const start = (state.currentPage - 1) * state.pageSize;
+      const end = start + state.pageSize;
+
+      return allItems.slice(start, end);
+    };
+
+     const handleItemSizeChangeGroup = (val, projectGroup) => {
+      const projectCode = projectGroup.project_code;
+      if (itemPaginationState.value[projectCode]) {
+        itemPaginationState.value[projectCode].pageSize = val;
+        itemPaginationState.value[projectCode].currentPage = 1;
+      }
+    };
+
+    const handleItemCurrentChangeGroup = (val, projectGroup) => {
+      const projectCode = projectGroup.project_code;
+      if (itemPaginationState.value[projectCode]) {
+        itemPaginationState.value[projectCode].currentPage = val;
+      }
+    };
+
+    // // Auto reload data
+    // let intervalId = null;
+    // const POLLING_INTERVAL = 30000; // 10 seconds
+    // onMounted(() => {
+    //   // Thiết lập interval để gọi refreshData sau mỗi POLLING_INTERVAL
+    //   intervalId = setInterval(() => {
+    //     console.log(`Polling: làm mới dữ liệu sau mỗi ${POLLING_INTERVAL / 1000} giây...`);
+    //     refreshData();
+    //   }, POLLING_INTERVAL);
+    // });
+
+    // onUnmounted(() => {
+    //   // Rất quan trọng: Xóa interval khi component bị hủy để tránh rò rỉ bộ nhớ
+    //   if (intervalId) {
+    //     clearInterval(intervalId);
+    //   }
+    // });
 
     return {
       Download,
@@ -638,6 +684,10 @@ export default {
       isEditing,
       Plus,
       FormNewitemPopupImport,
+      getPaginatedChildItems,
+      itemPaginationState,
+      handleItemSizeChangeGroup,
+      handleItemCurrentChangeGroup,
     };
   },
 };
