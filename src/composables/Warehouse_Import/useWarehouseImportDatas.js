@@ -18,7 +18,7 @@ export function useWarehouseImportDatas() {
 
     // State for pagination
     const currentPage = ref(1);
-    const pageSize = ref(10);
+    const pageSize = ref(10);    
 
     // Dummy item for dialog
     const dummyItems = ref([]);

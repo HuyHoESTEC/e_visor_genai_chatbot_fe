@@ -293,7 +293,7 @@
                     <template #default="{ row: statusGroup }">
                         <div style="padding: 0 20px;">
                             <h4 style="color: black !important;">{{ langStore.t('detailGroupStatusTitle') }} {{ getInstallationStatusName(statusGroup.status) }}</h4>
-                            <el-table :data="statusGroup.items" border size="small">
+                            <el-table :data="getPaginatedChildStatus(statusGroup)" border size="small">
                                 <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
@@ -309,6 +309,17 @@
                                   </template>
                                 </el-table-column>
                             </el-table>
+                            <el-pagination
+                              layout="prev, pager, next, sizes, total"
+                              :total="statusGroup.items.length" 
+                              :page-sizes="[5, 10, 20, 50, 100]"
+                              :v-model:page-size="statusPaginationState[statusGroup.status]?.pageSize || 10"
+                              :v-model:current-page="statusPaginationState[statusGroup.status]?.currentPage || 1"
+                              @size-change="val => handleStatusSizeChangeGroup(val, statusGroup)"
+                              @current-change="val => handleStatusCurrentChangeGroup(val, statusGroup)"
+                              class="pagination-controls"
+                            >
+                            </el-pagination>
                         </div>
                     </template>
                 </el-table-column>
@@ -745,6 +756,40 @@ export default {
       }
     };
 
+    const statusPaginationState = ref({});
+    const getPaginatedChildStatus = (statusGroup) => {
+      const statusVal = statusGroup.status;
+      if (!statusPaginationState.value[statusVal]) {
+        statusPaginationState.value[statusVal] = {
+          currentPage: 1,
+          pageSize: 10,
+        };
+      }
+
+      const state = statusPaginationState.value[statusVal];
+      const allItems = statusGroup.items;
+
+      const start = (state.currentPage - 1) * state.pageSize;
+      const end = start + state.pageSize;
+
+      return allItems.slice(start, end);
+    };
+
+     const handleStatusSizeChangeGroup = (val, statusGroup) => {
+      const statusVal = statusGroup.status;
+      if (statusPaginationState.value[projectCode]) {
+        statusPaginationState.value[statusVal].pageSize = val;
+        statusPaginationState.value[statusVal].currentPage = 1;
+      }
+    };
+
+    const handleStatusCurrentChangeGroup = (val, statusGroup) => {
+      const statusVal = statusGroup.status;
+      if (statusPaginationState.value[statusVal]) {
+        statusPaginationState.value[statusVal].currentPage = val;
+      }
+    };
+
     return {
       Download,
       View,
@@ -872,6 +917,10 @@ export default {
       addNewItem,
       newItemDialogVisible,
       createItem,
+      statusPaginationState,
+      handleStatusSizeChangeGroup,
+      handleStatusCurrentChangeGroup,
+      getPaginatedChildStatus,
     };
   },
 };
