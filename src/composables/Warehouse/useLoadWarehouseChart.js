@@ -159,15 +159,27 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         }
     }
 
+    const formatDateToLocalString = (dateObj) => {
+    // Lấy các thành phần ngày tháng theo giờ địa phương
+        const year = dateObj.getFullYear();
+        // Tháng được đánh số từ 0, nên cần + 1
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0'); 
+        const day = String(dateObj.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+    };
+
     const filterByDateAction = async () => {
         if (startAndEndDateVal.value && startAndEndDateVal.value.length === 2) {
             const [startDate, endDate] = startAndEndDateVal.value;
+            const startDateString = formatDateToLocalString(startDate);
+            const endDateString = formatDateToLocalString(endDate);
             const filterPayload = {
                 'request_id': `evisor-1234567890${Date.now()}`,
                 'owner': loggedInUserId,
                 filter: {
-                    'datetime_start': startDate,
-                    'datetime_end': endDate,
+                    'datetime_start': `${startDateString} 00:00:00`,
+                    'datetime_end': `${endDateString} 23:59:59`,
                 },
                 pagination: 1,
                 page_size: 999 
@@ -200,5 +212,6 @@ export function useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboa
         totalPO,
         totalProject,
         notInstallationVal,
+        formatDateToLocalString,
     }
 }

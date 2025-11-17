@@ -1,14 +1,15 @@
 import { ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage } from 'element-plus';
-import { getWarehouseManagementApi, updateDataWarehouseApi } from "../../services/auth.service";
+import { getWarehouseManagementApi, loadingWarehouseInstallationApi, updateDataWarehouseApi } from "../../services/auth.service";
 
-export function useWarehouseManagementActions(langStore, fetchDataAndInitialize, selectedEnteredDate) {
+export function useWarehouseManagementActions(langStore, fetchDataAndInitialize, selectedFilterDate) {
     const dialogVisible = ref(false);
     const currentItem = ref(null);
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
     const originalItemData = ref(null);
+    const itemDataByDate = ref([]);
 
     const editItem = (item) => {
         currentItem.value = JSON.parse(JSON.stringify(item));
@@ -58,9 +59,11 @@ export function useWarehouseManagementActions(langStore, fetchDataAndInitialize,
     };
 
     const filteredDataByDate = async () => {
-        console.log("selectedEnteredDate:", selectedEnteredDate.value);
-        const dateValue = selectedEnteredDate.value;
-        
+        const dateValue = selectedFilterDate.value;
+        if (!dateValue) {
+            ElMessage.warning("Vui lòng chọn ngày!");
+            return;
+        }
         const payload = {
             "request_id": `evisor-${Date.now()}`,
             "owner": loggedInUserId,
@@ -76,9 +79,12 @@ export function useWarehouseManagementActions(langStore, fetchDataAndInitialize,
         };
 
         try {
-            await getWarehouseManagementApi(payload);
-            const successMessage = "Đã áp dụng bộ lọc theo ngày";
-            ElMessage.success(successMessage);
+            const response = await getWarehouseManagementApi(payload);
+            if (response && response.data && Array.isArray(response.data)) {
+                itemDataByDate.value = response.data;
+            } else {
+                itemDataByDate.value = [];
+            }
         } catch (err) {
             const errorMessage = `Đã có lỗi trong quá trình tìm kiếm dữ liệu: ${err.message}`;
             ElMessage.error(errorMessage)
@@ -94,5 +100,7 @@ export function useWarehouseManagementActions(langStore, fetchDataAndInitialize,
         loggedInUserId,
         originalItemData,
         filteredDataByDate,
+        filteredDataByDate,
+        itemDataByDate,
     }
 }
