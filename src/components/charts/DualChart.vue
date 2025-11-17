@@ -334,14 +334,20 @@ export default {
       myChart.resize();
     };
 
-    watch([currentChartData, viewMode], ([newData]) => {
-      if (props.isVisible && viewMode.value === 'chart') {
-        updateChart(newData);
-      } else if (viewMode.value === 'table') {
-         if (myChart) myChart.dispose();
-         myChart = null;
-      }
-    }, { deep: true, immediate: true });
+    watch([
+    currentChartData, 
+    viewMode, 
+    () => props.chartData 
+], ([newData, newViewMode, newChartData]) => {
+    if (newViewMode === 'chart') {
+        if (props.isVisible) {
+            updateChart(currentChartData.value); 
+        }
+    } else if (newViewMode === 'table') {
+        if (myChart) myChart.dispose();
+        myChart = null;
+    }
+}, { deep: true, immediate: true });
 
     const setTimeFilter = (key) => {
       timeFilter.value = key;

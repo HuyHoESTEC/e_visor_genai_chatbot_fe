@@ -6,50 +6,6 @@
       <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
       <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
     </div>
-    <div class="action-filter">
-      <el-select
-        v-model="selectedProductCode"
-        :placeholder="langStore.t('filterByProductCodePlaceholder')"
-        clearable
-        @change="applyFilters"
-        class="barcode-select"
-        filterable
-        remote
-        :remote-method="remoteSearchProductCode"
-        :loading="loadingProductCode"
-      >
-        <el-option
-          v-for="barcode in productCodeOptions"
-          :key="barcode.id"
-          :label="barcode.name"
-          :value="barcode.id"
-        />
-      </el-select>
-      <el-select
-        v-model="selectedBrand"
-        :placeholder="langStore.t('filterByBrandPlaceholder')"
-        clearable
-        @change="applyFilters"
-        class="barcode-select"
-      >
-        <el-option
-          v-for="barcode in uniqueBrand"
-          :key="barcode.id"
-          :label="barcode.name"
-          :value="barcode.id"
-        />
-      </el-select>
-      <!-- <el-date-picker
-        v-model="selectedEnteredDate"
-        type="date"
-        placeholder="Chọn ngày nhập phiếu"
-        format="YYYY-MM-DD"
-        value-format="YYYY-MM-DD"
-        clearable
-        style="width: 100%;"
-      />
-      <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
-    </div>
   </div>
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
       <el-tab-pane :label="langStore.t('dashboardTabLabel')" name="dashboard" class="dashboard-tab-pane">
@@ -262,12 +218,68 @@
       </el-tab-pane> -->
     
       <el-tab-pane :label="langStore.t('groupedItemsTabLabel')" name="grouped" class="grouped-tab-pane">
+        <div class="action-filter">
+          <el-select
+            v-model="selectedProductCode"
+            :placeholder="langStore.t('filterByProductCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProductCode"
+            :loading="loadingProductCode"
+          >
+            <el-option
+              v-for="barcode in productCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <el-select
+            v-model="selectedBrand"
+            :placeholder="langStore.t('filterByBrandPlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+          >
+            <el-option
+              v-for="barcode in uniqueBrand"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
+          <!-- <el-date-picker
+            v-model="selectedEnteredDate"
+            type="date"
+            placeholder="Chọn ngày nhập phiếu"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+            clearable
+            style="width: 100%;"
+          />
+          <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
+          <!-- <el-date-picker 
+              v-model="selectedFilterDate"
+              type="date"
+              :placeholder="langStore.t('FilterByImportDate')"
+              format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD"
+              clearable
+              style="width: 100%;"
+          />
+          <el-button type="primary" v-on:click="filterDetailByDate" class="add-task-button" :icon="Filter"></el-button> -->
+        </div>
         <el-table
           :data="paginatedItemsGroup"
           border
-          style="width: 100%; height: 88%"
+          style="width: 100%;"
           stripe
           class="items-table"
+          height="calc(100vh - 330px)"
+
         >
           <template #empty>
             <div v-if="emptyData" class="empty-data-message">
@@ -466,8 +478,7 @@ export default {
       groupedItems,
       totalItemsForPagination,
       startAndEndDateVal,
-      loadDashboardWithFilters,
-      selectedEnteredDate,
+      selectedFilterDate,
     } = useWarehouseManagementDatas();
     
     const {
@@ -476,8 +487,9 @@ export default {
         editItem,
         saveItem,
         closeDialog,
+        itemDataByDate,
         filteredDataByDate,
-    } = useWarehouseManagementActions(langStore, fetchDataAndInitialize, selectedEnteredDate);
+    } = useWarehouseManagementActions(langStore, fetchDataAndInitialize, selectedFilterDate);
 
     const currentPageGroup = ref(1);
     const pageSizeGroup = ref(10);
@@ -539,7 +551,7 @@ export default {
         donutData,
         dualChartVal,
         notInstallationVal,
-    } = useLoadWarehouseChart(langStore, startAndEndDateVal, loadDashboardWithFilters);
+    } = useLoadWarehouseChart(langStore, startAndEndDateVal);
 
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
@@ -631,6 +643,10 @@ export default {
       }
     };
 
+    const filterDetailByDate = () => {
+      filteredDataByDate();
+    };
+
     return {
       langStore,
       isDetailVisible,
@@ -688,7 +704,6 @@ export default {
       mappedQuantityData,
       filterByDate,
       filterByDateAction,
-      loadDashboardWithFilters,
       Filter,
       inventoryChart,
       piedChart,
@@ -700,8 +715,6 @@ export default {
       handleItemSizeChangeGroup,
       handleItemCurrentChangeGroup,
       itemPaginationState,
-      selectedEnteredDate,
-      filteredDataByDate,
       handleFilterByDate,
       importVal,
       installationVal,
@@ -710,6 +723,10 @@ export default {
       donutData,
       dualChartVal,
       notInstallationVal,
+      filterDetailByDate,
+      selectedFilterDate,
+      itemDataByDate,
+      filteredDataByDate,
     };
   },
 };

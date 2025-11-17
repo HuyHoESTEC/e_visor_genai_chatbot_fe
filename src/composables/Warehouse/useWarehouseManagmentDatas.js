@@ -2,7 +2,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useLoadWarehouseItem } from "./useLoadWarehouseItem";
 import { getWarehouseDashboardApi } from "../../services/auth.service";
 
-export function useWarehouseManagementDatas() {
+export function useWarehouseManagementDatas(itemDataByDate) {
     const { tableData: allItemsFromComposable, isLoading, error, fetchTableData } = useLoadWarehouseItem();
 
     // Define a new ref to save data was fetched
@@ -18,6 +18,7 @@ export function useWarehouseManagementDatas() {
     const selectedProductSeriNum = ref(null);
     const selectedEnteredDate = ref(null);
     const selectedBrand = ref(null);
+    const selectedFilterDate = ref(null);
 
     // State for pagination
     const currentPage = ref(1);
@@ -120,6 +121,11 @@ export function useWarehouseManagementDatas() {
             tempItems = tempItems.filter(item => item.time === enteredDate);
         }
 
+        if (selectedFilterDate.value) {
+            const dateValue = selectedFilterDate.value;
+            tempItems = tempItems.filter(item => item.time === dateValue);
+        }
+
         filteredItems.value = tempItems;
         currentPage.value = 1;
     };
@@ -139,6 +145,39 @@ export function useWarehouseManagementDatas() {
     // Function to load data and modify values
     const fetchDataAndInitialize = async () => {
         await fetchTableData();
+    };
+
+    const filteredDataByDate = async () => {
+        const dateValue = selectedFilterDate.value;
+        if (!dateValue) {
+            ElMessage.warning("Vui lòng chọn ngày!");
+            return;
+        }
+        const payload = {
+            "request_id": `evisor-${Date.now()}`,
+            "owner": loggedInUserId,
+            "filter": {
+                "part_no": null,
+                "origin": null,
+                "seri_number": null,
+                "project_code": null,
+                "datetime_import": dateValue
+            },
+            "pagination": 1,
+            "page_size": 20
+        };
+
+        try {
+            const response = await getWarehouseManagementApi(payload);
+            if (response && response.data && Array.isArray(response.data)) {
+                itemDataByDate.value = response.data;
+            } else {
+                itemDataByDate.value = [];
+            }
+        } catch (err) {
+            const errorMessage = `Đã có lỗi trong quá trình tìm kiếm dữ liệu: ${err.message}`;
+            ElMessage.error(errorMessage)
+        }
     };
 
     watch(allItemsFromComposable, (newValue) => {
@@ -161,6 +200,19 @@ export function useWarehouseManagementDatas() {
             dummyItems.value = [];
         }
     }, { immediate: true });
+
+    watch(itemDataByDate, (newDateData) => {
+        if (newDateData && Array.isArray(newDateData)) {
+            allItems.value = newDateData;
+            applyFilters();
+            currentPage.value = 1;
+            productCodeOptions.value = uniqueProductCode.value;
+        } else if (newDateData === null) {
+            allItems.value = [];
+            filteredItems.value = [];
+            currentPage.value = 1;
+        }
+    }, { immediate: false });
 
     const totalItemsForPagination = computed(() => {
         return groupedItems.value.length;
@@ -247,5 +299,7 @@ export function useWarehouseManagementDatas() {
         totalItemsForPagination,
         startAndEndDateVal,
         loadDashboardWithFilters,
+        selectedFilterDate,
+        filteredDataByDate,
     }
 }

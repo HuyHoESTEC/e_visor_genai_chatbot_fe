@@ -77,8 +77,8 @@ export function useTaskData() {
    * V => Outside
    */
   const taskSites = [
-    { value: 'S', label: 'Văn phòng / Nhà máy' },
-    { value: 'V', label: 'Ngoài văn phòng / nhà máy' }
+    { value: 'S', label: 'VP' },
+    { value: 'V', label: 'Site' }
   ];
 
   // Dummy users cho dialog, sẽ được cập nhật từ dữ liệu thực tế

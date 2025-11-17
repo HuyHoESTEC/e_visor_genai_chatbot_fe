@@ -7,7 +7,7 @@
       <div class="filter-section">
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
-          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus" disabled>{{ langStore.t('AddWork') }}</el-button>
+          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
           <el-button type="danger" v-on:click="exportTask" class="add-task-button" :icon="Printer" disabled></el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
@@ -148,12 +148,12 @@
             </el-tag>
           </template>
         </el-table-column>
-        <!-- <el-table-column :label="langStore.t('JobAction')" width="auto">
+        <el-table-column :label="langStore.t('JobAction')" width="auto">
           <template #default="{ row }">
             <el-button size="small" @click="editTask(row)" :icon="EditPen">{{ langStore.t('EditAct') }}</el-button>
             <el-button size="small" type="danger" @click="confirmDeleteTask(row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
 
       <el-pagination
