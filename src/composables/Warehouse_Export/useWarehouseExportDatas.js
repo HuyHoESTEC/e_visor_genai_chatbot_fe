@@ -385,7 +385,7 @@ export function useWarehouseExportDatas() {
     })
 
     const totalItemsForPagination = computed(() => {
-        return groupedItems.value.length
+        return groupItemsByLocation.value.length
     })
 
     const groupedStatus = computed(() => {
