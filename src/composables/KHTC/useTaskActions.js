@@ -58,7 +58,7 @@ export function useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, 
       start_date: '',
       end_date: '',
       QTY: 0,
-      status: 'Chờ xử lý',
+      status: '-- Chọn trạng thái --',
     };
     dialogVisible.value = true;
   };
