@@ -100,7 +100,6 @@ export function useWarehouseManagementActions(langStore, fetchDataAndInitialize,
         loggedInUserId,
         originalItemData,
         filteredDataByDate,
-        filteredDataByDate,
         itemDataByDate,
     }
 }

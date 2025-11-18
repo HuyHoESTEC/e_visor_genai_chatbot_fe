@@ -190,7 +190,7 @@
                 <div style="padding: 0 20px; background-color: #2C2C6A;">
                   <h4 style="color: white !important;">Danh sách tủ thuộc mã dãy: {{ mdGroup.cabinet_no }}</h4>
                   <el-table
-                    :data="paginatedItemsGroup"
+                    :data="getPaginatedLocationGroups(mdGroup)"
                     border
                     style="width: 100%;"
                     stripe
@@ -246,12 +246,12 @@
                   </el-table>
                   <el-pagination
                     layout="prev, pager, next, sizes, total"
-                    :total="totalItemsForPagination" 
+                    :total="groupItemsByLocation(mdGroup.items).length" 
                     :page-sizes="[5, 10, 20, 50, 100]"
-                    v-model:page-size="pageSizeGroup"
-                    v-model:current-page="currentPageGroup"
-                    @size-change="handleSizeChangeGroup"
-                    @current-change="handleCurrentChangeGroup"
+                    :page-size="getMDGroupPaginationState(mdGroup.cabinet_no).pageSize"
+                    :current-page="getMDGroupPaginationState(mdGroup.cabinet_no).currentPage"
+                    @size-change="val => handleSizeChangeCabinetGroup(val, mdGroup) "
+                    @current-change="val => handleCurrentChangeCabinetGroup(val, mdGroup)"
                     class="pagination-controls"
                   >
                   </el-pagination>
@@ -418,7 +418,7 @@ import {
   Delete,
   Plus,
 } from "@element-plus/icons-vue";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import { useWarehouseExportDatas } from "../../../composables/Warehouse_Export/useWarehouseExportDatas";
@@ -459,8 +459,6 @@ export default {
     // Khai báo ref và hàm phân trang riêng cho Tab Nhóm
     const currentPageGroup = ref(1);
     const pageSizeGroup = ref(10);
-    const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
-    const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
 
     // Khai báo ref và hàm phân trang riêng cho Tab Status
     const currentPageStatus = ref(1);
@@ -500,6 +498,7 @@ export default {
       groupedItems,
       groupedMD,
       groupedStatus,
+      groupItemsByLocation,
       projectCodeOptions,
       loadingProjectCode,
       selectedBrand,
@@ -593,6 +592,8 @@ export default {
     // Calculator Paginated Items for group tab
     const paginatedItemsGroup = computed(() => {
       if (!Array.isArray(groupedItems.value)) return [];
+      console.log("groupedItems:", groupedItems.value);
+      
       const start = (currentPageGroup.value - 1) * pageSizeGroup.value;
       const end = start + pageSizeGroup.value;
 
@@ -790,6 +791,44 @@ export default {
       }
     };
 
+    const mdGroupPaginationState = reactive({}); 
+
+// Hàm để lấy hoặc khởi tạo trạng thái phân trang cho một nhóm MD cụ thể
+    const getMDGroupPaginationState = (cabinetNo) => {
+        if (!mdGroupPaginationState[cabinetNo]) {
+            mdGroupPaginationState[cabinetNo] = {
+                currentPage: 1,
+                pageSize: 10,
+            };
+        }
+        return mdGroupPaginationState[cabinetNo];
+    };
+
+    // Hàm xử lý thay đổi trang
+    const handleCurrentChangeCabinetGroup = (val, mdGroup) => {
+        const state = getMDGroupPaginationState(mdGroup.cabinet_no);
+        state.currentPage = val;
+        // Bạn có thể cần dùng một computed property để slice dữ liệu cho bảng con cấp 2
+    };
+
+    // Hàm xử lý thay đổi kích thước trang
+    const handleSizeChangeCabinetGroup = (val, mdGroup) => {
+        const state = getMDGroupPaginationState(mdGroup.cabinet_no);
+        state.pageSize = val;
+        state.currentPage = 1; // Reset về trang 1 khi thay đổi kích thước
+        // Bạn có thể cần dùng một computed property để slice dữ liệu cho bảng con cấp 2
+    };
+
+    const getPaginatedLocationGroups = (mdGroup) => {
+        const { currentPage, pageSize } = getMDGroupPaginationState(mdGroup.cabinet_no);
+        const locationGroups = groupItemsByLocation(mdGroup.items); // Dữ liệu gốc
+        
+        const start = (currentPage - 1) * pageSize;
+        const end = currentPage * pageSize;
+        
+        return locationGroups.slice(start, end);
+    };
+
     return {
       Download,
       View,
@@ -855,8 +894,6 @@ export default {
       handleSizeChangeFlat,
       currentPageGroup,
       pageSizeGroup,
-      handleCurrentChangeGroup,
-      handleSizeChangeGroup,
       currentPageStatus,
       pageSizeStatus,
       handleCurrentChangeStatus,
@@ -921,6 +958,11 @@ export default {
       handleStatusSizeChangeGroup,
       handleStatusCurrentChangeGroup,
       getPaginatedChildStatus,
+      groupItemsByLocation,
+      getPaginatedLocationGroups,
+      getMDGroupPaginationState,
+      handleSizeChangeCabinetGroup,
+      handleCurrentChangeCabinetGroup,
     };
   },
 };

@@ -8,7 +8,7 @@
         <div class="action-area">
           <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
           <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
-          <el-button type="danger" v-on:click="exportTask" class="add-task-button" :icon="Printer" disabled></el-button>
+          <el-button type="danger" v-on:click="handleDownloadClick" class="add-task-button" :icon="Download"></el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
         </div>
         <div class="filter-area">
@@ -182,11 +182,19 @@
       v-model="uploadDialogVisible"
       @uploadSuccess="handleUploadSuccess"
     />
+    <DownloadFilterDialogKHTC
+      v-model="downloadDialogVisible"
+      :download-url="downloadFileUrl"
+      :file-name="downloadFileName"
+      :is-preparing="isDownloadPreparing"
+      @create-download-link="handleCreateDownloadLink"
+      @confirm-download="confirmDownloadFile"
+    />
   </div>
 </template>
 
 <script>
-import { Plus, UploadFilled, Search, EditPen, Delete, Printer, Refresh, Filter } from "@element-plus/icons-vue";
+import { Plus, UploadFilled, Search, EditPen, Delete, Printer, Refresh, Filter, Download } from "@element-plus/icons-vue";
 import TaskFormDialog from "../../components/dialog/TaskFormDialog.vue";
 import { useTaskData } from "../../composables/KHTC/useTaskData"; 
 import { useTaskActions } from "../../composables/KHTC/useTaskActions";
@@ -194,12 +202,15 @@ import FileUploadDialog from "../../components/upload/FileUploadDialog.vue";
 import { computed, ref } from "vue";
 import { useLanguageStore } from "../../stores/language";
 import { useAdvanceDelete } from "../../composables/KHTC/useAdvanceDelete";
+import { useDownloadWorkManagement } from "../../composables/KHTC/useDownloadWorkManagement";
+import DownloadFilterDialogKHTC from "../../components/dialog/DownloadFilterDialogKHTC.vue";
 
 export default {
   name: "WorkManagmentKHTC",
   components: {
     TaskFormDialog,
     FileUploadDialog,
+    DownloadFilterDialogKHTC,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -243,6 +254,17 @@ export default {
       getSiteTagType,
     } = useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, fetchDataAndInitialize);
 
+    const {
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFileUrl,
+      isDownloadPreparing,
+      openDownloadDialog,
+      downloadFile: createDownloadLinkApi,
+      confirmDownloadFile
+    } = useDownloadWorkManagement();
+  
+
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
     // Function to open dialog upload file
@@ -265,8 +287,12 @@ export default {
       currentPage.value = val;
     };
 
-    const exportTask = () => {
-      alert("Chức năng xuất file sẽ được phát triển sau!");
+    const handleDownloadClick = () => {
+      openDownloadDialog();
+    };
+
+    const handleCreateDownloadLink = (filterPayload) => {
+      createDownloadLinkApi(filterPayload);
     };
 
     const refreshData = () => {
@@ -340,7 +366,6 @@ export default {
       EditPen,
       Delete,
       Printer,
-      exportTask,
       handleUploadSuccess,
       uploadDialogVisible,
       langStore,
@@ -362,6 +387,17 @@ export default {
       selectedVersion,
       uniqueVersion,
       tableRowClassName,
+      handleDownloadClick,
+      downloadDialogVisible,
+      downloadFileName,
+      downloadFileUrl,
+      isDownloadPreparing,
+      openDownloadDialog,
+      downloadFile: createDownloadLinkApi,
+      confirmDownloadFile,
+      handleCreateDownloadLink,
+      Download,
+      DownloadFilterDialogKHTC,
     };
   },
 };

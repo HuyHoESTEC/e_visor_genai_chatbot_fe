@@ -147,39 +147,6 @@ export function useWarehouseManagementDatas(itemDataByDate) {
         await fetchTableData();
     };
 
-    const filteredDataByDate = async () => {
-        const dateValue = selectedFilterDate.value;
-        if (!dateValue) {
-            ElMessage.warning("Vui lòng chọn ngày!");
-            return;
-        }
-        const payload = {
-            "request_id": `evisor-${Date.now()}`,
-            "owner": loggedInUserId,
-            "filter": {
-                "part_no": null,
-                "origin": null,
-                "seri_number": null,
-                "project_code": null,
-                "datetime_import": dateValue
-            },
-            "pagination": 1,
-            "page_size": 20
-        };
-
-        try {
-            const response = await getWarehouseManagementApi(payload);
-            if (response && response.data && Array.isArray(response.data)) {
-                itemDataByDate.value = response.data;
-            } else {
-                itemDataByDate.value = [];
-            }
-        } catch (err) {
-            const errorMessage = `Đã có lỗi trong quá trình tìm kiếm dữ liệu: ${err.message}`;
-            ElMessage.error(errorMessage)
-        }
-    };
-
     watch(allItemsFromComposable, (newValue) => {
         if (newValue) {
             allItems.value = newValue;
@@ -300,6 +267,5 @@ export function useWarehouseManagementDatas(itemDataByDate) {
         startAndEndDateVal,
         loadDashboardWithFilters,
         selectedFilterDate,
-        filteredDataByDate,
     }
 }
