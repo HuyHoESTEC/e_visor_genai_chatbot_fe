@@ -1,6 +1,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useLoadWarehouseItem } from "./useLoadWarehouseItem";
 import { getWarehouseDashboardApi } from "../../services/auth.service";
+import { useDateFormat } from "../utils/useDateFormat";
 
 export function useWarehouseManagementDatas(itemDataByDate) {
     const { tableData: allItemsFromComposable, isLoading, error, fetchTableData } = useLoadWarehouseItem();
@@ -19,6 +20,9 @@ export function useWarehouseManagementDatas(itemDataByDate) {
     const selectedEnteredDate = ref(null);
     const selectedBrand = ref(null);
     const selectedFilterDate = ref(null);
+    const selectedDashboardDate = ref(null);
+
+    const { extractDateOnly } = useDateFormat();
 
     // State for pagination
     const currentPage = ref(1);
@@ -124,6 +128,14 @@ export function useWarehouseManagementDatas(itemDataByDate) {
         if (selectedFilterDate.value) {
             const dateValue = selectedFilterDate.value;
             tempItems = tempItems.filter(item => item.time === dateValue);
+        }
+
+        if (selectedDashboardDate.value) {
+            const filterImportDate = selectedDashboardDate.value;
+            tempItems = tempItems.filter(item => {
+                    const itemDateOnly = extractDateOnly(item.time);
+                    return itemDateOnly === filterImportDate;
+            });
         }
 
         filteredItems.value = tempItems;
@@ -267,5 +279,6 @@ export function useWarehouseManagementDatas(itemDataByDate) {
         startAndEndDateVal,
         loadDashboardWithFilters,
         selectedFilterDate,
+        selectedDashboardDate,
     }
 }

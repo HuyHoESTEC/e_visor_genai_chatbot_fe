@@ -100,9 +100,13 @@
             clearable
             @change="applyFilters"
             class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchSeriNumber"
+            :loading="loadingBrand"
           >
             <el-option
-              v-for="barcode in uniqueSeriNumber"
+              v-for="barcode in seriOptions"
               :key="barcode.id"
               :label="barcode.name"
               :value="barcode.id"
@@ -410,6 +414,9 @@ export default {
       brandOptions,
       loadingBrand,
       remoteSearchBrand,
+      remoteSearchSeriNumber,
+      loadingSeri,
+      seriOptions,
     } = useWarehouseImportDatas();
 
     const {
@@ -688,6 +695,9 @@ export default {
       itemPaginationState,
       handleItemSizeChangeGroup,
       handleItemCurrentChangeGroup,
+      remoteSearchSeriNumber,
+      loadingSeri,
+      seriOptions,
     };
   },
 };
