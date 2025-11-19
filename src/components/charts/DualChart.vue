@@ -334,24 +334,28 @@ export default {
       myChart.resize();
     };
 
-    watch([
-    currentChartData, 
-    viewMode, 
-    () => props.chartData 
-], ([newData, newViewMode, newChartData]) => {
-    if (newViewMode === 'chart') {
-        if (props.isVisible) {
-            updateChart(currentChartData.value); 
-        }
-    } else if (newViewMode === 'table') {
-        if (myChart) myChart.dispose();
-        myChart = null;
+    watch(currentChartData, (newData) => {
+    if (viewMode.value === 'chart' && props.isVisible) {
+        updateChart(newData);
     }
-}, { deep: true, immediate: true });
+    }, { deep: true });
 
     const setTimeFilter = (key) => {
       timeFilter.value = key;
     }
+
+    watch(viewMode, (newViewMode) => {
+    if (newViewMode === 'chart') {
+        nextTick(() => {
+            if (props.isVisible) { 
+                updateChart(currentChartData.value);
+            }
+        });
+    } else if (newViewMode === 'table') {
+        if (myChart) myChart.dispose();
+        myChart = null;
+    }
+    });
 
     watch(() => props.isVisible, (newVal) => {
       if (newVal) {
@@ -362,6 +366,12 @@ export default {
         });
       }
     });
+
+    watch(currentChartData, (newData) => {
+      if (viewMode.value === 'chart' && props.isVisible) {
+        updateChart(newData);
+    }
+    }, { deep: true, immediate: true });
 
     onMounted(() => {
       window.addEventListener('resize', resizeChart);
@@ -475,14 +485,11 @@ export default {
 }
 
 .dual-chart-body {
-  width: 100%;
   height: 480px; 
-  padding: 15px;
 }
 
 .table-view {
     overflow-y: auto;
-    padding: 20px 25px;
 }
 
 .data-table {

@@ -251,16 +251,6 @@
               :value="barcode.id"
             />
           </el-select>
-          <!-- <el-date-picker
-            v-model="selectedEnteredDate"
-            type="date"
-            placeholder="Chọn ngày nhập phiếu"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-            clearable
-            style="width: 100%;"
-          />
-          <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button> -->
           <!-- <el-date-picker 
               v-model="selectedFilterDate"
               type="date"
@@ -271,6 +261,16 @@
               style="width: 100%;"
           />
           <el-button type="primary" v-on:click="filterDetailByDate" class="add-task-button" :icon="Filter"></el-button> -->
+          <el-date-picker 
+              v-model="selectedDashboardDate"
+              type="date"
+              :placeholder="langStore.t('FilterByImportDate')"
+              format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD"
+              clearable
+              @change="applyFilters"
+              style="width: 100%;"
+          />
         </div>
         <el-table
           :data="paginatedItemsGroup"
@@ -479,6 +479,7 @@ export default {
       totalItemsForPagination,
       startAndEndDateVal,
       selectedFilterDate,
+      selectedDashboardDate,
     } = useWarehouseManagementDatas();
     
     const {
@@ -727,6 +728,7 @@ export default {
       selectedFilterDate,
       itemDataByDate,
       filteredDataByDate,
+      selectedDashboardDate,
     };
   },
 };

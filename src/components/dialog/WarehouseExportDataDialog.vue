@@ -48,8 +48,7 @@
       <el-form-item :label="langStore.t('tableHeaderSeriNumber')" prop="seri_number">
         <el-input 
           v-model="formData.seri_number"
-          :disabled="true" 
-          :readonly="true">
+        >
         </el-input>
       </el-form-item>
 

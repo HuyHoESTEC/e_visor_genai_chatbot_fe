@@ -35,6 +35,9 @@ export function useWarehouseImportDatas() {
     const brandOptions = ref([]);
     const loadingBrand = ref(false);
 
+    const seriOptions = ref([]);
+    const loadingSeri= ref(false);
+
     const { extractDateOnly } = useDateFormat();
 
     // EmptyData will be computed property to show data status
@@ -61,6 +64,20 @@ export function useWarehouseImportDatas() {
 
         return Array.from(itemSeriNumber.values());
     });
+
+    const remoteSearchSeriNumber = (query) => {
+        if (query) {
+            loadingSeri.value = true;
+            setTimeout(() => {
+                loadingSeri.value = false;
+                seriOptions.value = uniqueSeriNumber.value.filter((item) => {
+                    return item.name.toLowerCase().includes(query.toLowerCase());
+                });
+            }, 200);
+        } else {
+            seriOptions.value = '';
+        }
+    };
 
     const uniqueBrand = computed(() => {
         if (!allItemsImport.value || allItemsImport.value.length === 0) {
@@ -256,6 +273,7 @@ export function useWarehouseImportDatas() {
             projectCodeOptions.value = uniqueProjectCode.value;
             importIdOptions.value = uniqueImportId.value;
             brandOptions.value = uniqueBrand.value;
+            seriOptions.value = uniqueSeriNumber.value;
         } else {
             allItemsImport.value = [];
             filteredItems.value = [];
@@ -330,5 +348,8 @@ export function useWarehouseImportDatas() {
         brandOptions,
         loadingBrand,
         remoteSearchBrand,
+        seriOptions,
+        loadingSeri,
+        remoteSearchSeriNumber,
     }
 }
