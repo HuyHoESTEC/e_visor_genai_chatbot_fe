@@ -98,7 +98,7 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
                 "quantity": itemData.quantity || '',
                 "description": itemData.description || '',
                 "part_no": itemData.part_no || '',
-                "seri_number": itemData.seri_number || '',
+                "seri_number": itemData.seri_number || null,
                 "manufacturer": itemData.manufacturer || '',
                 "project_code": itemData.project_code || '',
                 "cabinet_no": itemData.cabinet_no || '',
