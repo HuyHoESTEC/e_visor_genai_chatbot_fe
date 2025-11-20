@@ -327,13 +327,13 @@
                   </div>
               </template>
           </el-table-column>
-          <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" min-width="300" sortable />
+          <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" min-width="300" sortable  />
           <el-table-column prop="product_name" :label="langStore.t('itemNameColumn')" min-width="600">
             <template #default="{ row: productGroup }">
               {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
             </template>
           </el-table-column>
-          <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+          <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable :sort-method="sortQuantity">
             <template #default="{ row: productGroup }">
               <el-tag size="small" type="info" style="margin-left: 10px;">
                 {{ productGroup.items.length }}
@@ -648,6 +648,18 @@ export default {
       filteredDataByDate();
     };
 
+    const sortQuantity = (a, b) => {
+      const countA = a.items.length;
+      const countB = b.items.length;
+      if (countA < countB) {
+        return -1;
+      }
+      if (countA > countB) {
+        return 1;
+      }
+      return 0; 
+    };
+
     return {
       langStore,
       isDetailVisible,
@@ -729,6 +741,7 @@ export default {
       itemDataByDate,
       filteredDataByDate,
       selectedDashboardDate,
+      sortQuantity,
     };
   },
 };

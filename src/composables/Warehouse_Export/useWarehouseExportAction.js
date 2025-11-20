@@ -1,7 +1,7 @@
 import { computed, ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { createExportDataWarehouseApi, deleteExportDataWarehouseApi, updateExportDataWarehouseApi,} from "../../services/auth.service";
+import { createInstallationDataWarehouseApi, deleteInstallationDataWarehouseApi, updateInstallationDataWarehouseApi,} from "../../services/auth.service";
 
 export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
     const dialogVisible = ref(false);
@@ -65,7 +65,7 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
         };  
 
         try {
-            await createExportDataWarehouseApi(payload);
+            await createInstallationDataWarehouseApi(payload);
             const successMessage = langStore.t('InsertInfoSuccess') || 'Thêm mới sản phẩm thành công!';
             ElMessage.success(successMessage);
             if (fetchDataAndInitialize) {
@@ -108,7 +108,7 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
         };  
 
         try {
-            await updateExportDataWarehouseApi(payload);
+            await updateInstallationDataWarehouseApi(payload);
             const successMessage = langStore.t('UpdateInfoSuccess');
             ElMessage.success(successMessage);
             if (fetchDataAndInitialize) {
@@ -150,7 +150,7 @@ export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
             },
         };
         console.log("Payload gửi đi để xóa:", deletePayload);
-        await deleteExportDataWarehouseApi(deletePayload);
+        await deleteInstallationDataWarehouseApi(deletePayload);
     };
 
     const deleteAllSelectedItems = async () => {

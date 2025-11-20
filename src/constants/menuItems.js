@@ -107,11 +107,20 @@ const MENU_ITEMS = [
             iconComponent: "ShoppingCart",
             isActive: false,
           },
+
           {
             name: "ExportWarehouse",
-            label: "Xuất kho | Lắp đặt",
+            label: "Xuất kho",
             routeName: "ExportWarehouseRoute",
             iconComponent: "Van",
+            isActive: false,
+          },
+
+          {
+            name: "InstallationWarehouse",
+            label: "Lắp đặt",
+            routeName: "InstallationWarehouseRoute",
+            iconComponent: "Cpu",
             isActive: false,
           },
         ]
