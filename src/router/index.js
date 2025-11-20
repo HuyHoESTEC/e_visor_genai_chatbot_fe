@@ -25,6 +25,7 @@ import ProductionStageManagement from "../views/WorkShop/ProductionStageManageme
 import WarehouseManagementDashboard from "../views/WorkShop/Warehouse/WarehouseManagementDashboard.vue";
 import ImportedGoodsManagment from "../views/WorkShop/Warehouse/ImportedGoodsManagment.vue";
 import ExportedGoodsManagement from "../views/WorkShop/Warehouse/ExportedGoodsManagement.vue";
+import ExportedNewGoodsManagement from "../views/WorkShop/Warehouse/ExportedNewGoodsManagement.vue";
 
 const routes = [
   {
@@ -167,6 +168,12 @@ const routes = [
   {
     path: '/export-warehouse',
     name: 'ExportWarehouseRoute',
+    component: ExportedNewGoodsManagement,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/installation-warehouse',
+    name: 'InstallationWarehouseRoute',
     component: ExportedGoodsManagement,
     meta: { requiresAuth: true }
   },

@@ -22,7 +22,7 @@ export function useDownloadWorkManagement() {
         const payload = {
             "request_id": `evisor-${Date.now()}`,
             "owner": loggedInUserId,
-            "version": filterPayload.version || null,
+            "version": filterPayload || null,
         };
 
         downloadFileName.value = '';
@@ -30,13 +30,15 @@ export function useDownloadWorkManagement() {
         downloadDialogVisible.value = true;
         try {
             const response = await downloadWorkManagementFile(payload);
+            console.log('response:', response);
             
             if (response && response.data.status === 'success') {
                 downloadFileUrl.value = response.data.data;
-                const versionVal = filterPayload.version;
+                
+                const versionVal = filterPayload;
 
                 if (versionVal) {
-                    downloadFileName.value = `PhieuLapDat_${filterPayload.version}`;
+                    downloadFileName.value = `PhieuQuanLyCongViec_Ver${filterPayload}`;
                 }
 
             } else {
@@ -58,7 +60,7 @@ export function useDownloadWorkManagement() {
         if (downloadFileUrl.value) {
             const a = document.createElement('a');
             a.href = downloadFileUrl.value;
-            a.download = downloadFileName.value || 'PhieuLapDat.csv';
+            a.download = downloadFileName.value || 'PhieuQuanLyCongViec.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

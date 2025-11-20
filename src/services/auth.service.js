@@ -338,6 +338,70 @@ export const exportToFileForImportApi = async (payload, signal) => {
     }
 };
 
+export const deleteExportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`,
+        payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
+
+export const createExportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`,
+        payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
+
+export const updateExportDataWarehouseApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_DML`,
+        payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
+
+export const exportToFileForExportApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_Download`, 
+        payload, {
+            signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
+
 export const loadingExportDataWarehouse = async (payload, signal) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_View`, payload, {
@@ -371,7 +435,7 @@ export const uploadExportDataWarehouseApi = async (payload, signal) => {
     }
 }
 
-export const updateExportDataWarehouseApi = async (payload, signal) => {
+export const updateInstallationDataWarehouseApi = async (payload, signal) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`, payload, {
             signal,
@@ -386,7 +450,7 @@ export const updateExportDataWarehouseApi = async (payload, signal) => {
     }
 }
 
-export const createExportDataWarehouseApi = async (payload, signal) => {
+export const createInstallationDataWarehouseApi = async (payload, signal) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`, payload, {
             signal,
@@ -401,25 +465,9 @@ export const createExportDataWarehouseApi = async (payload, signal) => {
     }
 }
 
-export const deleteExportDataWarehouseApi = async (payload, signal) => {
+export const deleteInstallationDataWarehouseApi = async (payload, signal) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/WS/WarehouseInstallation_DML`,
-        payload, {
-            signal,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response;
-    } catch (err) {
-        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
-        throw new Error(`${errorMessage}`);
-    }
-};
-
-export const exportToFileForExportApi = async (payload, signal) => {
-    try {
-        const response = await axios.post(`${API_BASE_URL}/WS/WarehouseImportExport_Download`, 
         payload, {
             signal,
             headers: {

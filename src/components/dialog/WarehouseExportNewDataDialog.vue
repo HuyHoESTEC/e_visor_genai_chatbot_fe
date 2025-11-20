@@ -1,0 +1,254 @@
+<template>
+  <el-dialog
+    v-model="internalDialogVisible"
+    :title="langStore.t('editImportItemTitle')"
+    width="50%"
+    :before-close="handleClose"
+  >
+    <el-form :model="formData" :rules="rules" ref="taskForm" label-width="150px">
+      <el-form-item label="PO" prop="ticket_id" v-show="false">
+        <el-input v-model="formData.export_id"></el-input>
+      </el-form-item>
+      <el-form-item :label="langStore.t('ImportNoteDate')" prop="export_time">
+        <el-date-picker
+          v-model="formData.export_time"
+          type="date"
+          :placeholder="langStore.t('selectDatePlaceholder')"
+        />
+      </el-form-item>
+      <el-form-item :label="langStore.t('detailProjectCodeLabel')" prop="project_code">
+        <el-input v-model="formData.project_code"></el-input>
+      </el-form-item>
+      <el-form-item :label="langStore.t('detailProductNameLabel')" prop="product_name">
+        <el-input v-model="formData.product_name" type="textarea" :rows="3"></el-input>
+      </el-form-item>
+      <el-form-item :label="langStore.t('detailPartNoLabel')" prop="part_no">
+        <el-input v-model="formData.part_no"></el-input>
+      </el-form-item>
+      <el-form-item :label="langStore.t('detailOriginLabel')" prop="origin">
+        <el-input v-model="formData.origin"></el-input>
+      </el-form-item>
+      <el-form-item :label="langStore.t('detailQuantityLabel')" prop="quantity">
+        <el-input v-model="formData.quantity" type="number" min="1"></el-input>
+      </el-form-item>
+      <el-form-item :label="langStore.t('detailSeriNumberLabel')" prop="seri_number">
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <el-input v-model="formData.seri_number"></el-input>
+          <el-button type="primary" @click="handleGenerateSeri" style="flex-shrink: 0;" :icon="MagicStick" plain />
+        </div>
+      </el-form-item>
+      <el-form-item :label="langStore.t('ImportItemDate')" prop="time">
+        <el-date-picker
+          v-model="formData.time"
+          type="date"
+          :placeholder="langStore.t('selectDatePlaceholder')"
+          @change="handleDateChange('time')"
+        />
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="handleClose">{{ langStore.t('cancelButton') }}</el-button>
+        <el-button type="primary" @click="handleSubmit">{{ langStore.t('saveButton') }}</el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+
+<script>
+import { ref, watch, computed } from "vue";
+import { ElMessage } from "element-plus";
+import { MagicStick } from "@element-plus/icons-vue";
+import { useLanguageStore } from "../../stores/language";
+
+export default {
+  name: "WarehouseExportNewDataDialog",
+  props: {
+    modelValue: {
+      // Sử dụng modelValue cho v-model
+      type: Boolean,
+      default: false,
+    },
+    itemToEdit: {
+      type: Object,
+      default: null, // Sẽ là null khi thêm mới
+    },
+  },
+  emits: ["update:modelValue", "save", "close"], // Khai báo các sự kiện emit
+
+  setup(props, { emit }) {
+    const langStore = useLanguageStore();
+    const internalDialogVisible = ref(props.modelValue);
+    const formData = ref(initializeFormData(props.itemToEdit));
+    const taskForm = ref(null); // Ref để truy cập form component
+
+    // Computed property để xác định chế độ chỉnh sửa hay thêm mới
+    const isEditing = computed(() => !!props.itemToEdit && props.itemToEdit.id !== "");
+
+    // Quy tắc kiểm tra hợp lệ cho form
+    const rules = {
+      quantity: [
+        { required: true, message: langStore.t('quantityRequiredMessage'), trigger: "change" },
+        {
+          validator: (rule, value, callback) => {
+            // Convert value to number, check
+            const numericValue = Number(value);
+            if (isNaN(numericValue)) {
+              callback(new Error(langStore.t('quantityMustBeNumberMessage')));
+            } else if (numericValue < 0) {
+              callback(new Error(langStore.t('quantityCannotBeNegativeMessage')));
+            } else {
+              callback(); // Valid
+            }
+          },
+          trigger: "blur", // Activate when users leave the input box
+        },
+      ],
+      export_id: [
+        { required: true, message: langStore.t('importIdRequiredMessage'), trigger: "change" },
+      ],
+      export_time: [
+        { required: true, message: langStore.t('importTimeRequiredMessage'), trigger: "change" },
+      ]
+    };
+
+    // Theo dõi thay đổi của modelValue (v-model) từ component cha
+    watch(
+      () => props.modelValue,
+      (newVal) => {
+        internalDialogVisible.value = newVal;
+        if (newVal && props.itemToEdit) {
+          // Khi mở dialog và có itemToEdit, điền dữ liệu
+          formData.value = JSON.parse(JSON.stringify(props.itemToEdit));
+        } else if (newVal && !props.itemToEdit) {
+          // Khi mở dialog để thêm mới, reset form
+          formData.value = initializeFormData(null);
+          if (taskForm.value) {
+            taskForm.value.resetFields(); // Reset lỗi validation
+          }
+        }
+      }
+    );
+
+    // Theo dõi thay đổi của itemToEdit để đảm bảo form được reset/điền đúng
+    watch(
+      () => props.itemToEdit,
+      (newVal) => {
+        formData.value = initializeFormData(newVal);
+        if (taskForm.value) {
+          taskForm.value.clearValidate(); // Xóa lỗi validation khi taskToEdit thay đổi
+        }
+      }
+    );
+
+    // Hàm khởi tạo dữ liệu form
+    function initializeFormData(task) {
+      return task
+        ? { ...task }
+        : {
+            project_code: "",
+            product_name: "",
+            part_no: "",
+            origin: "",
+            quantity: "",
+            seri_number: "",
+            export_id: "",
+            time: "",
+            ticket_time: '',
+          };
+    }
+
+    const handleSubmit = () => {
+      taskForm.value.validate((valid) => {
+        if (valid) {
+          emit("save", formData.value, isEditing.value);
+          // Không đóng dialog ở đây, để component cha quyết định
+          // internalDialogVisible.value = false;
+        } else {
+          ElMessage.error(langStore.t('formCheckErrorMessage'));
+          return false;
+        }
+      });
+    };
+
+    const handleClose = () => {
+      internalDialogVisible.value = false;
+      emit("update:modelValue", false); // Cập nhật v-model ở component cha
+      emit("close"); // Emit sự kiện close
+      // Reset form sau khi đóng dialog để chuẩn bị cho lần mở tiếp theo
+      formData.value = initializeFormData(null);
+      if (taskForm.value) {
+        taskForm.value.resetFields();
+      }
+    };
+
+    function generateRandomString(length) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
+    };
+
+    const handleGenerateSeri = () => {
+      const partNo = formData.value.part_no;
+      if (!partNo) {
+        ElMessage.warning(langStore.t('partNoRequiredForSeriMessage'));
+        return;
+      }
+      const randomString = generateRandomString(5);
+      formData.value.seri_number = `${partNo}${randomString}`;
+    };
+
+    const handleDateChange = (fieldName) => {
+      if (fieldName !== 'time' && fieldName !== 'export_time') return;
+
+      let dateValue = formData.value[fieldName];
+
+      if (dateValue) {
+        if (!(dateValue instanceof Date)) {
+          dateValue = new Date(dateValue);
+        }
+
+        if (isNaN(dateValue.getTime())) {
+          return;
+        }
+
+        const now = new Date();
+        dateValue.setHours(now.getHours());
+        dateValue.setMinutes(now.getMinutes());
+        dateValue.setSeconds(now.getSeconds());
+        dateValue.setMilliseconds(now.getMilliseconds());
+      }
+    };
+
+    return {
+      internalDialogVisible,
+      formData,
+      rules,
+      taskForm,
+      isEditing,
+      handleSubmit,
+      handleClose,
+      handleGenerateSeri,
+      MagicStick,
+      handleDateChange,
+      useLanguageStore,
+      langStore
+    };
+  },
+};
+</script>
+
+<style scoped>
+.dialog-footer {
+  text-align: right;
+  display: block;
+}
+.option-input {
+  width: 100%;
+  margin-bottom: 8px;
+}
+</style>

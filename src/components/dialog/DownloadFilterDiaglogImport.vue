@@ -11,7 +11,7 @@
             <el-form-item :label="langstore.t('tableHeaderProjectCode')">
                 <el-input v-model="filterData.project_code" :placeholder="langstore.t('InputProjectCodePlaceholder')" clearable />
             </el-form-item>
-            <el-form-item :label="langstore.t('detailLocationLabel')">
+            <el-form-item :label="langstore.t('detailPOLabel')">
                 <el-input v-model="filterData.ticket_id" :placeholder="langstore.t('InputPOPlaceholder')" clearable />
             </el-form-item>
         </el-form>

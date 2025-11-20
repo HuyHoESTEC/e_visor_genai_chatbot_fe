@@ -6,9 +6,9 @@
     <div v-else class="table-data">
       <div class="filter-section">
         <div class="action-area">
-          <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
+          <!-- <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled"
             >{{ langStore.t("uploadTemplateButton") }}</el-button
-          >
+          > -->
           <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
           <!-- <el-button type="primary" :icon="Plus" v-on:click="addNewItem">{{ langStore.t("addNewProductButton") }}</el-button> -->
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
@@ -58,24 +58,24 @@
               :value="barcode.id"
             />
           </el-select>
-          <el-select
-            v-model="selectedImportId"
+          <!-- <el-select
+            v-model="selectedExportId"
             :placeholder="langStore.t('FilterByImportId')"
             clearable
             @change="applyFilters"
             class="barcode-select"
             filterable
             remote
-            :remote-method="remoteSearchImportId"
-            :loading="loadingImportId"
+            :remote-method="remoteSearchExportId"
+            :loading="loadingExportId"
           >
             <el-option
-              v-for="barcode in importIdOptions"
+              v-for="barcode in exportIdOptions"
               :key="barcode.id"
               :label="barcode.name"
               :value="barcode.id"
             />
-          </el-select>
+          </el-select> -->
           <el-select
             v-model="selectedBrand"
             :placeholder="langStore.t('filterByBrandPlaceholder')"
@@ -113,7 +113,7 @@
             />
           </el-select>
           <el-date-picker 
-              v-model="selectedImportDate"
+              v-model="selectedExportDate"
               type="date"
               :placeholder="langStore.t('FilterByImportDate')"
               format="YYYY/MM/DD"
@@ -141,7 +141,6 @@
                     </div>
                 </template>
                 <el-table-column type="selection" width="55" />                
-                <el-table-column fixed prop="import_id" :label="langStore.t('PO')" width="auto" sortable />
                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                 <el-table-column prop="product_name" :label="langStore.t('detailProductNameLabel')" width="auto" />
                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
@@ -274,8 +273,7 @@
       <div v-if="selectedItem">
         <el-descriptions :column="2" border>
           <el-descriptions-item :label="langStore.t('detailIdLabel')">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('PO')">{{ selectedItem.import_id }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('ImportNoteDate')">{{ formattedImportTime }}</el-descriptions-item>
+          <el-descriptions-item :label="langStore.t('ImportNoteDate')">{{ formattedExportTime }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('ImportItemDate')">{{ formattedTime }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
           <el-descriptions-item :label="langStore.t('detailProductNameLabel')">{{ selectedItem.product_name }}</el-descriptions-item>
@@ -304,7 +302,7 @@
         </div>
       </div>
     </detail-popup>
-    <warehouse-import-data-dialog 
+    <WarehouseExportNewDataDialog
       v-model="dialogVisible"
       :item-to-edit="currentItem"
       @save="saveItem"
@@ -322,7 +320,7 @@
       v-model="uploadDialogVisible"
       @uploadSuccess="handleUploadSuccess"
     />
-    <DownloadFilterDiaglogImport
+    <DownloadFilterDiaglogExportNew
       v-model="downloadDialogVisible"
       :download-url="downloadFileUrl"
       :file-name="downloadFileName"
@@ -349,17 +347,17 @@ import {
 } from "@element-plus/icons-vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useLanguageStore } from "../../../stores/language";
-import { useWarehouseImportDatas } from "../../../composables/Warehouse_Import/useWarehouseImportDatas";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import WarehouseImportUpload from "../../../components/upload/WarehouseImportUpload.vue";
-import WarehouseImportDataDialog from "../../../components/dialog/WarehouseImportDataDialog.vue";
-import { useWarehouseImportAction } from "../../../composables/Warehouse_Import/useWarehouseImportAction";
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { useDateFormat } from "../../../composables/utils/useDateFormat";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { useWarehouseImportDownload } from "../../../composables/Warehouse_Import/useWarehouseImportDownload";
-import DownloadFilterDiaglogImport from "../../../components/dialog/DownloadFilterDiaglogImport.vue";
 import FormNewitemPopupImport from "../../../components/popup/FormNewitemPopupImport.vue";
+import { useWarehouseExportDatasNew } from "../../../composables/Warehouse_Export_New/useWarehouseExportDatasNew";
+import { useWarehouseExportActionNew } from "../../../composables/Warehouse_Export_New/useWarehouseExportActionNew";
+import { useWarehouseExportDownloadNew } from "../../../composables/Warehouse_Export_New/useWarehouseExportDownloadNew";
+import WarehouseExportNewDataDialog from "../../../components/dialog/WarehouseExportNewDataDialog.vue";
+import DownloadFilterDiaglogExportNew from "../../../components/dialog/DownloadFilterDiaglogExportNew.vue";
 
 export default {
   name: "ImportedGoodsManagement",
@@ -373,9 +371,9 @@ export default {
     Refresh,
     DetailPopup,
     WarehouseImportUpload,
-    WarehouseImportDataDialog,
-    DownloadFilterDiaglogImport,
+    DownloadFilterDiaglogExportNew,
     FormNewitemPopupImport,
+    WarehouseExportNewDataDialog
   },
   setup() {
     const langStore = useLanguageStore();
@@ -398,7 +396,7 @@ export default {
       paginatedItems,
       selectedProductCode,
       selectedSeriNumber,
-      selectedImportDate,
+      selectedExportDate,
       uniqueSeriNumber,
       pageSize,
       currentPage,
@@ -414,17 +412,17 @@ export default {
       loadingProjectCode,
       remoteSearchProjectCode,
       selectedBrand,
-      selectedImportId,
-      importIdOptions,
-      loadingImportId,
-      remoteSearchImportId,
+      selectedExportId,
+      exportIdOptions,
+      loadingExportId,
+      remoteSearchExportId,
       brandOptions,
       loadingBrand,
       remoteSearchBrand,
       remoteSearchSeriNumber,
       loadingSeri,
       seriOptions,
-    } = useWarehouseImportDatas();
+    } = useWarehouseExportDatasNew();
 
     const {
         dialogVisible,
@@ -442,7 +440,7 @@ export default {
         createItem,
         newItemDialogVisible,
         isEditing,
-    } = useWarehouseImportAction(langStore, fetchDataAndInitialize);
+    } = useWarehouseExportActionNew(langStore, fetchDataAndInitialize);
 
     const isDetailVisible = ref(false);
     const selectedItem = ref(null);
@@ -472,9 +470,9 @@ export default {
     const { barcodeRef, generatedBarcode, downloadBarcodeSvg } = useBarcodeLogic(selectedItem, isDetailVisible);
     const { formatDateTimeToDate } = useDateFormat();
 
-    const formattedImportTime = computed(() => {
-        if (selectedItem.value && selectedItem.value.import_time) {
-            return formatDateTimeToDate(selectedItem.value.import_time);
+    const formattedExportTime = computed(() => {
+        if (selectedItem.value && selectedItem.value.export_time) {
+            return formatDateTimeToDate(selectedItem.value.export_time);
         }
         return 'N/A';
     });
@@ -544,7 +542,7 @@ export default {
       openDownloadDialog,
       downloadFile: createDownloadLinkApi,
       confirmDownloadFile,
-    } = useWarehouseImportDownload();
+    } = useWarehouseExportDownloadNew();
 
     const handleDownloadClick = () => {
       openDownloadDialog();
@@ -644,8 +642,8 @@ export default {
       generatedBarcode,
       barcodeRef,
       downloadBarcodeSvg,
-      selectedImportDate,
-      formattedImportTime,
+      selectedExportDate,
+      formattedExportTime,
       formattedTime,
       Delete,
       selectedProjectCode,
@@ -673,12 +671,12 @@ export default {
       handleDelete,
       ElMessage,
       ElMessageBox,
-      selectedImportId,
+      selectedExportId,
       downloadDialogVisible,
       downloadFileName,
-      importIdOptions,
-      loadingImportId,
-      remoteSearchImportId,
+      exportIdOptions,
+      loadingExportId,
+      remoteSearchExportId,
       brandOptions,
       loadingBrand,
       remoteSearchBrand,
@@ -705,6 +703,7 @@ export default {
       remoteSearchSeriNumber,
       loadingSeri,
       seriOptions,
+      DownloadFilterDiaglogExportNew,
     };
   },
 };

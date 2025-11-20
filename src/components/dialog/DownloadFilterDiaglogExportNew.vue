@@ -7,22 +7,9 @@
         center
         :close-on-click-model="false"
     >
-        <el-form label-width="120px">
-            <el-form-item label="Version">
-                <el-select
-                    v-model="versionVal"
-                    placeholder="Lọc theo version"
-                    clearable
-                    class="status-select"
-                    style="width: 50%;"
-                >
-                    <el-option
-                        v-for="version in uniqueVersion"
-                        :key="version.id"
-                        :label="version.name"
-                        :value="version.id"
-                    ></el-option>
-                </el-select>
+        <el-form :model="filterData" label-width="120px">
+            <el-form-item :label="langstore.t('tableHeaderProjectCode')">
+                <el-input v-model="filterData.project_code" :placeholder="langstore.t('InputProjectCodePlaceholder')" clearable />
             </el-form-item>
         </el-form>
 
@@ -63,10 +50,9 @@
 import { Download } from '@element-plus/icons-vue';
 import { ref, watch } from 'vue';
 import { useLanguageStore } from '../../stores/language';
-import { useTaskData } from '../../composables/KHTC/useTaskData';
 
 export default {
-    name: 'DownloadFilterDialog',
+    name: 'DownloadFilterDialogImport',
     props: {
         modelValue: {
             type: Boolean,
@@ -78,35 +64,33 @@ export default {
     },
     emits: ['update:modelValue', 'confirmDownload', 'createDownloadLink'],
     setup(props, {emit}) {
-
-        const{ 
-            uniqueVersion, 
-            applyFilters,
-        } = useTaskData();
-        
-        const versionVal = ref('');
+        const filterData = ref({
+            project_code: '',
+            ticket_id: null,
+        });
 
         const langStore = useLanguageStore();
         // Reset form while dialog close/open
         watch(() => props.modelValue, (newVal) => {
             if (!newVal) {
                 // Reset form while close
-                versionVal.value = '';
+                filterData.value = {
+                    project_code: '',
+                    ticket_id: null,
+                };
             }
         });
 
         const handleDownload = () =>{
             // Emit event with filterData to parent component call API
-            emit('createDownloadLink', versionVal.value);
+            emit('createDownloadLink', filterData.value);
         }
-        
+
         return {
             Download,
-            versionVal,
+            filterData,
             handleDownload,
-            langstore: langStore,
-            uniqueVersion,
-            applyFilters,
+            langstore: langStore
         }
     }
 }

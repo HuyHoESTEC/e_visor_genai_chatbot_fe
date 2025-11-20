@@ -46,7 +46,8 @@ export default {
     workReport: 'Báo cáo công việc',
     WarehouseDashboardRoute: 'Thống kê vật tư trong kho',
     ImportWarehouseRoute: 'Nhập kho',
-    ExportWarehouseRoute: 'Xuất kho | Lắp đặt',
+    ExportWarehouseRoute: 'Xuất kho',
+    InstallationWarehouseRoute: 'Lắp đặt',
     
     // --- File Upload & Merging ---
     FileUpload: "Tải lên File",
@@ -198,6 +199,7 @@ export default {
     detailStockQuantityLabel: 'Còn lại',
     detailSeriNumberLabel: 'Seri No.',
     detailLocationLabel: 'Mã Tủ',
+    detailPOLabel: 'Mã PO',
     detailEnteredByLabel: 'Người nhập',
     detailEnteredDateLabel: 'Ngày nhập',
     detailUnitLabel: 'Đơn vị',
