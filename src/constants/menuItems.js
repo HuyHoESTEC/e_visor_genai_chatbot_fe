@@ -123,8 +123,24 @@ const MENU_ITEMS = [
             iconComponent: "Cpu",
             isActive: false,
           },
-        ]
-      }
+        ],
+      },
+      {
+        name: "ConstructionManagement",
+        label: "Thiết kế thi công",
+        routeName: null,
+        isDropdown: true,
+        iconComponent: "AddLocation",
+        children: [
+          {
+            name: "ConstructionDashboard",
+            label: "Thống kê",
+            routeName: "ConstructioDashboardRoute",
+            iconComponent: "List",
+            isActive: false,
+          },
+        ],
+      },
       // {
       //   name: "QuanLySanXuat",
       //   label: "Quản lý sản xuất",
