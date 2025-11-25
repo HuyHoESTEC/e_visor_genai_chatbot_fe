@@ -327,13 +327,13 @@
                   </div>
               </template>
           </el-table-column>
-          <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" min-width="300" sortable  />
+          <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" min-width="300" sortable />
           <el-table-column prop="product_name" :label="langStore.t('itemNameColumn')" min-width="600">
             <template #default="{ row: productGroup }">
               {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
             </template>
           </el-table-column>
-          <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable :sort-method="sortQuantity">
+          <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
             <template #default="{ row: productGroup }">
               <el-tag size="small" type="info" style="margin-left: 10px;">
                 {{ productGroup.items.length }}
@@ -364,6 +364,160 @@
         >
         </el-pagination>
       </el-tab-pane>
+
+      <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
+            <el-table
+                :data="paginatedItemsFlat"
+                border
+                style="width: 100%;"
+                stripe
+                class="items-table"
+                height="calc(100vh - 321px)"
+            >
+                <template #empty>
+                    <div v-if="emptyData" class="empty-data-message">
+                        <el-empty description="No Data" />
+                    </div>
+                </template>
+                <el-table-column type="selection" width="55" />
+                <el-table-column prop="higher_lever_function" :label="langStore.t('tableHigherLeverFunction')" width="auto" />
+                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                <el-table-column prop="dt" :label="langStore.t('tableDT')" width="auto" />
+                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
+                <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
+                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                                                      
+                <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
+                <template #default="{ row }">
+                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />               
+                </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination
+                background
+                layout="prev, pager, next, sizes, total"
+                :total="filteredInstallationItems.length"
+                :page-sizes="[5, 10, 20, 50, 100]"
+                v-model:page-size="pageSizeFlat"
+                v-model:current-page="currentPageFlat"
+                @size-change="handleSizeChangeFlat"
+                @current-change="handleCurrentChangeFlat"
+                class="pagination-controls"
+            >
+            </el-pagination>
+        </el-tab-pane>
+
+        <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="expand">
+          <!-- Class 1 -->
+          <el-table
+            :data="paginatedStatusGroup"
+            border
+            style="width: 100%;"
+            stripe
+            class="items-table"
+            height="calc(100vh - 321px)"
+            row-key="cabinet_no"
+            :expand-row-keys="expandedStatusKeys"
+            @expand-change="handleStatusExpandChange"
+          >
+            <template #empty>
+                <div v-if="emptyInstallationData" class="empty-data-message">
+                    <el-empty :description="langStore.t('NoData')" />
+                </div>
+            </template>
+            <el-table-column type="expand">
+              <!-- Class 2 -->
+              <template #default="{ row: partnoGroup }">
+                <div style="padding: 0 20px; background-color: #2C2C6A;">
+                  <h4 style="color: white !important;">Danh sách mã hàng hóa thuộc trạng thái: {{ partnoGroup.status }}</h4>
+                  <el-table
+                    :data="getPaginatedPartNoGroups(partnoGroup)"
+                    border
+                    style="width: 100%;"
+                    stripe
+                    class="items-table"
+                    height="calc(100vh - 297px)"
+                    row-key="location"
+                    :expand-row-keys="partnoExpandedKeys"
+                    @expand-change="handlePartNoExpandChange"
+                  >
+                    <!-- <template #empty>
+                        <div v-if="emptyInstallationData" class="empty-data-message">
+                            <el-empty :description="langStore.t('NoData')" />
+                        </div>
+                    </template>
+                    <el-table-column type="expand">
+                      <template #default="{ row: statusGroup }">
+                        <div style="padding: 0 20px; background-color: #8383A3;">
+                          <h4 style="color: white !important;">Chi tiết hàng hóa thuộc tủ: {{ statusGroup.status }}</h4>
+                          <el-table :data="getPaginatedChildStatusItems(statusGroup)" border size="small">
+                                <el-table-column type="selection" width="55" />
+                                <el-table-column prop="higher_lever_function" :label="langStore.t('tableHigherLeverFunction')" width="auto" />
+                                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                                <el-table-column prop="dt" :label="langStore.t('tableDT')" width="auto" />
+                                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
+                                <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
+                                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                                                      
+                                <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
+                                  <template #default="{ row }">
+                                      <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
+                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
+                                      <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
+                                  </template>
+                                </el-table-column>
+                            </el-table>
+                            <el-pagination
+                                  layout="prev, pager, next, sizes, total"
+                                  :total="locationGroup.items.length" 
+                                  :page-sizes="[5, 10, 20, 50, 100]"
+                                  :page-size="itemPaginationState[locationGroup.location]?.pageSize || 10"
+                                  :current-page="itemPaginationState[locationGroup.location]?.currentPage ||1"
+                                  @size-change="val => handleItemSizeChangeGroup(val, locationGroup)"
+                                  @current-change="val => handleItemCurrentChangeGroup(val, locationGroup)"
+                                  class="pagination-controls"
+                              >
+                            </el-pagination>   
+                        </div>
+                      </template>
+                    </el-table-column> -->
+                    <el-table-column prop="part_no" label="Mã hàng hóa" min-width="600" sortable />                   
+                  </el-table>
+                  <el-pagination
+                    layout="prev, pager, next, sizes, total"
+                    :total="groupItemsByPartNo(partnoGroup.items).length" 
+                    :page-sizes="[5, 10, 20, 50, 100]"
+                    :page-size="getPartNoGroupPaginationState(partnoGroup.part_no).pageSize"
+                    :current-page="getPartNoGroupPaginationState(partnoGroup.part_no).currentPage"
+                    @size-change="val => handleSizeChangePartNoGroup(val, partnoGroup) "
+                    @current-change="val => handleCurrentChangePartNoGroup(val, partnoGroup)"
+                    class="pagination-controls"
+                  >
+                  </el-pagination>
+                </div>
+              </template>
+            </el-table-column>
+            
+            <el-table-column prop="status" label="Trạng Thái" min-width="600" sortable />
+          </el-table>
+          <el-pagination
+              background
+              layout="prev, pager, next, sizes, total"
+              :total="totalStatusForPagination" 
+              :page-sizes="[5, 10, 20, 50, 100]"
+              v-model:page-size="pageSizeStatus"
+              v-model:current-page="currentPageStatus"
+              @size-change="handleSizeChangeStatus"
+              @current-change="handleCurrentChangeStatus"
+              class="pagination-controls"
+          >
+          </el-pagination>
+        </el-tab-pane> 
+
     </el-tabs>
     <detail-popup v-model="isDetailVisible" :title="langStore.t('productGroupDetailTitle')">
       <div v-if="selectedItem">
@@ -432,6 +586,7 @@ import InventoryChart from "../../../components/charts/InventoryChart.vue";
 import DualChart from "../../../components/charts/DualChart.vue";
 import { useLoadWarehouseChart } from "../../../composables/Warehouse/useLoadWarehouseChart";
 import PiedChart from "../../../components/charts/PiedChart.vue";
+import { useWarehouseInstallationManagement } from "../../../composables/Warehouse/useWarehouseInstallationManagement";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -483,6 +638,15 @@ export default {
     } = useWarehouseManagementDatas();
     
     const {
+      filteredInstallationItems,
+      totalStatusForPagination,
+      groupedStatus,
+      groupItemsByPartNo,
+      groupedInstallationStatus,
+      emptyInstallationData,
+    } = useWarehouseInstallationManagement();
+
+    const {
         dialogVisible,
         currentItem,
         editItem,
@@ -507,6 +671,16 @@ export default {
 
     const handleSizeChangeGroup = (val) => { pageSizeGroup.value = val; currentPageGroup.value = 1; };
     const handleCurrentChangeGroup = (val) => { currentPageGroup.value = val; };
+
+    const currentPageStatus = ref(1);
+    const pageSizeStatus = ref(10);
+    const handleCurrentChangeStatus = (val) => { currentPageStatus.value = val; };
+    const handleSizeChangeStatus = (val) => { pageSizeStatus.value = val; currentPageStatus.value = 1; };
+
+    const currentPageFlat = ref(1);
+    const pageSizeFlat = ref(10);
+    const handleCurrentChangeFlat = (val) => { currentPageFlat.value = val; };
+    const handleSizeChangeFlat = (val) => { pageSizeFlat.value = val; currentPageFlat.value = 1; };
 
      const handleFilterByDate = () => {
       filteredDataByDate();
@@ -648,16 +822,125 @@ export default {
       filteredDataByDate();
     };
 
-    const sortQuantity = (a, b) => {
-      const countA = a.items.length;
-      const countB = b.items.length;
-      if (countA < countB) {
-        return -1;
+    const paginatedItemsFlat = computed(() => {
+      console.log('paginatedItemsFlat:',paginatedItemsFlat);
+      
+      if (!Array.isArray(filteredInstallationItems.value)) return [];
+      const start = (currentPageFlat.value - 1) * pageSizeFlat.value;
+      const end = start + pageSizeFlat.value;
+
+      return filteredInstallationItems.value.slice(start, end);
+    });
+
+    const paginatedStatusGroup = computed(() => {
+      if (!Array.isArray(groupedStatus.value)) return [];
+      const start = (currentPageStatus.value - 1) * pageSizeStatus.value;
+      const end = start + pageSizeStatus.value;
+
+      return groupedStatus.value.slice(start, end);
+    });
+
+    const expandedStatusKeys = ref([]); 
+
+    const handleStatusExpandChange = (row, expandedRows) => {
+        if (expandedRows.length > 0) {
+          expandedStatusKeys.value = [row.status];
+        } else {
+          expandedStatusKeys.value = [];
+        }
+    };
+
+    const partnoGroupPaginationState = ref({});
+
+    const getPartNoGroupPaginationState = (partNo) => {
+        if (!partnoGroupPaginationState[partNo]) {
+            partnoGroupPaginationState[partNo] = {
+                currentPage: 1,
+                pageSize: 10,
+            };
+        }
+        return partnoGroupPaginationState[partNo];
+    };
+
+    const handleCurrentChangePartNoGroup = (val, partnoGroup) => {
+        const state = getPartNoGroupPaginationState(partnoGroup.part_no);
+        state.currentPage = val;
+    };
+
+    const handleSizeChangePartNoGroup = (val, partnoGroup) => {
+        const state = getPartNoGroupPaginationState(partnoGroup.part_no);
+        state.pageSize = val;
+        state.currentPage = 1; 
+    };
+
+    const getPaginatedPartNoGroups = (partnoGroup) => {     
+      const { currentPage, pageSize } = getPartNoGroupPaginationState(partnoGroup.part_no);
+      const partNoGroups = groupItemsByPartNo(partnoGroup.items);
+      const start = (currentPage - 1) * pageSize;
+      const end = currentPage * pageSize;
+
+      console.log('partnoGroup.items:', partnoGroup);
+      
+      return partNoGroups.slice(start, end);
+    };
+
+    const partnoExpandedKeys = ref([]);
+
+    const handlePartNoExpandChange = (row, expandedRows) => {
+      if (expandedRows.length > 0) {
+          partnoExpandedKeys.value = [row.part_no]; 
+      } else {
+          partnoExpandedKeys.value = [];
       }
-      if (countA > countB) {
-        return 1;
+    };
+    const itemStatusPaginationState = ref({});
+
+    const getPaginatedChildStatusItems = (statusGroup) => {
+      const statusVal = statusGroup.status;
+      if (!itemStatusPaginationState.value[statusVal]) {
+        itemStatusPaginationState.value[statusVal] = {
+          currentPage: 1,
+          pageSize: 10,
+        };
       }
-      return 0; 
+      const state = itemStatusPaginationState.value[statusVal];
+      const allItems = statusGroup.items;
+
+      const start = (state.currentPage - 1) * state.pageSize;
+      const end = start + state.pageSize;
+
+      return allItems.slice(start, end);
+    };
+
+    const handleStatusSizeChangeGroup = (val, statusGroup) => {
+      const statusVal = statusGroup.status;
+      if (itemStatusPaginationState.value[statusVal]) {
+        itemStatusPaginationState.value[statusVal].pageSize = val;
+        itemStatusPaginationState.value[statusVal].currentPage = 1;
+      }
+    };
+
+    const handleStatusCurrentChangeGroup = (val, statusGroup) => {
+      const statusVal = statusGroup.status;
+      if (itemStatusPaginationState.value[statusVal]) {
+        itemStatusPaginationState.value[statusVal].currentPage = val;
+      }
+    };
+
+    const getInstallationStatusName = (statusValue) => {
+      if (statusValue === 0) {
+        return "Đã lắp đặt";
+      }
+
+      if (statusValue === 1) {
+        return "Chưa lắp đặt";
+      }
+
+      return "Không xác định";
+    };
+
+    const statusFormatter = (row, column, cellValue, index) => {
+      return getInstallationStatusName(cellValue);
     };
 
     return {
@@ -741,7 +1024,37 @@ export default {
       itemDataByDate,
       filteredDataByDate,
       selectedDashboardDate,
-      sortQuantity,
+      handleCurrentChangeFlat,
+      pageSizeFlat,
+      currentPageFlat,
+      handleSizeChangeFlat,
+      paginatedItemsFlat,
+      filteredInstallationItems,
+      paginatedStatusGroup,
+      expandedStatusKeys,
+      handleStatusExpandChange,
+      currentPageStatus,
+      pageSizeStatus,
+      handleCurrentChangeStatus,
+      handleSizeChangeStatus,
+      getPartNoGroupPaginationState,
+      handleCurrentChangePartNoGroup,
+      handleSizeChangePartNoGroup,
+      getPaginatedPartNoGroups,
+      partnoExpandedKeys,
+      handlePartNoExpandChange,
+      itemStatusPaginationState,
+      getPaginatedChildStatusItems,
+      handleStatusSizeChangeGroup,
+      handleStatusCurrentChangeGroup,
+      totalStatusForPagination,
+      groupedStatus,
+      groupItemsByPartNo,
+      groupedInstallationStatus,
+      partnoGroupPaginationState,
+      getInstallationStatusName,
+      statusFormatter,
+      emptyInstallationData,
     };
   },
 };

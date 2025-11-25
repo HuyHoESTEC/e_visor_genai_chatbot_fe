@@ -297,6 +297,8 @@
                                 <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                                <el-table-column prop="cabinet_no" :label="langStore.t('tableHeaderCabinetNo')" width="auto" />
                                 <el-table-column prop="manufacturer" :label="langStore.t('detailOriginLabel')" width="auto" />
                                 <el-table-column prop="description" :label="langStore.t('detailDescriptionLabel')" width="auto" />
                                 <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
@@ -345,7 +347,7 @@
         <div v-if="selectedItem">
           <el-descriptions :column="2" border>
             <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
-  \         <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
             <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
             <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
             <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
@@ -492,7 +494,6 @@ export default {
       remoteSearchProductCode,
       remoteSearchProjectCode,
       selectedProjectCode,
-      totalItemsForPagination,
       totalStatusForPagination,
       totalMDForPagination,
       groupedItems,
@@ -879,7 +880,6 @@ export default {
       loadingManufacturer,
       remoteSearchProductCode,
       remoteSearchProjectCode,
-      totalItemsForPagination,
       totalStatusForPagination,
       totalMDForPagination,
       groupedItems,

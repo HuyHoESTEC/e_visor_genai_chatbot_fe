@@ -10,6 +10,7 @@
           <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
           <el-button type="danger" v-on:click="handleDownloadClick" class="add-task-button" :icon="Download"></el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+          <!-- <el-switch v-model="value" size="large" active-text="Chung" inactive-text="Cá nhân" class="view-mode-switch" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"/> -->
         </div>
         <div class="filter-area">
           <el-select
@@ -330,6 +331,8 @@ export default {
       return '';
     };
 
+    const value = ref(true)
+
     return {
       isLoading,
       error,
@@ -398,6 +401,7 @@ export default {
       handleCreateDownloadLink,
       Download,
       DownloadFilterDialogKHTC,
+      value,
     };
   },
 };
@@ -423,6 +427,16 @@ export default {
 
 .error-message {
   color: #f56c6c;
+}
+
+.view-mode-switch {
+  margin-left: auto;
+  padding-left: 15px;
+}
+
+.view-mode-switch:hover {
+ opacity: 0.9;
+ transition: opacity 0.2s ;
 }
 
 .filter-section {
