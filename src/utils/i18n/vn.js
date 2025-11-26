@@ -198,7 +198,7 @@ export default {
     detailExportQuantityLabel: 'Xuất kho',
     detailStockQuantityLabel: 'Còn lại',
     detailSeriNumberLabel: 'Seri No.',
-    detailLocationLabel: 'Mã Dãy Tủ',
+    detailLocationLabel: 'Mã Tủ',
     detailPOLabel: 'Mã PO',
     detailEnteredByLabel: 'Người nhập',
     detailEnteredDateLabel: 'Ngày nhập',
@@ -245,7 +245,7 @@ export default {
     tableHeaderLocation: 'Mã tủ',
     tableHeaderStatus: 'Trạng thái',
     tableHeaderAction: 'Hành động',
-    tableHeaderCabinetNo: 'Panel',
+    tableHeaderCabinetNo: 'Mã dãy tủ',
     tableHigherLeverFunction: 'Higher Level Function',
     tableDT: 'DT',
     
@@ -260,7 +260,7 @@ export default {
     detailQuantityLabel: 'Số lượng',
     detailSeriNumberLabelFlat: 'Số Seri',
     detailLocationLabelFlat: 'Mã tủ',
-    detailHeaderCabinetNo: 'Panel',
+    detailHeaderCabinetNo: 'Mã dãy tủ',
     detailStatusLabel: 'Trạng thái',
     editImportItemTitle: 'Chỉnh sửa thông tin hàng hóa đã nhập',
     // --- Export Dialog Specific ---

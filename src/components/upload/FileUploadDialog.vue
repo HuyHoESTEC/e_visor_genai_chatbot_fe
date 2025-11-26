@@ -35,6 +35,13 @@
         >
       </span>
     </template>
+    <!-- <el-switch
+      v-model="value1"
+      class="mb-2"
+      active-text="Chung"
+      inactive-text="Cá Nhân"
+    />
+    <br /> -->
   </el-dialog>
 </template>
 
@@ -142,6 +149,8 @@ export default {
         });
     };
 
+    const value1 = ref(true)
+
     return {
       langStore,
       dialogVisible,
@@ -153,10 +162,23 @@ export default {
       handleClose,
       isUploading,
       closeDialog,
+      value1,
     };
   },
 };
 </script>
 
 <style>
+  .switch-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+  }
+  .switch-label {
+    margin-right: 15px;
+    font-weight: 500;
+    color: var(--el-text-color-regular);
+    min-width: 150px; 
+  }
 </style>

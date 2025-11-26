@@ -242,7 +242,14 @@
                         </div>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />                   
+                    <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />
+                    <el-table-column prop="location" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+                      <template #default="{ row: locationGroup }">
+                        <el-tag size="small" type="info" style="margin-left: 10px;">
+                          {{ locationGroup.items.length }}
+                        </el-tag>
+                      </template>
+                    </el-table-column>                   
                   </el-table>
                   <el-pagination
                     layout="prev, pager, next, sizes, total"
@@ -260,6 +267,13 @@
             </el-table-column>
             
             <el-table-column prop="cabinet_no" label="MD" min-width="600" sortable />
+            <el-table-column prop="cabinet_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+              <template #default="{ row: mdGroup }">
+                <el-tag size="small" type="info" style="margin-left: 10px;">
+                  {{ groupItemsByLocation(mdGroup.items).length }}
+                </el-tag>
+              </template>
+            </el-table-column>
           </el-table>
           <el-pagination
               background
@@ -275,7 +289,7 @@
           </el-pagination>
         </el-tab-pane> 
 
-        <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="Status">
+        <!-- <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="Status">
             <el-table
                 :data="paginatedStatusGroup"
                 border
@@ -297,6 +311,8 @@
                                 <el-table-column prop="id" :label="langStore.t('detailIdLabel')" width="auto" />
                                 <el-table-column prop="project_code" :label="langStore.t('tableHeaderProjectCode')" width="auto" />
                                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
+                                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
+                                <el-table-column prop="cabinet_no" :label="langStore.t('tableHeaderCabinetNo')" width="auto" />
                                 <el-table-column prop="manufacturer" :label="langStore.t('detailOriginLabel')" width="auto" />
                                 <el-table-column prop="description" :label="langStore.t('detailDescriptionLabel')" width="auto" />
                                 <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="120" />
@@ -304,9 +320,9 @@
                                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                                      <!-- <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle /> -->
+                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle /> -->
                                       <!-- <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle :disabled="true" /> -->
-                                  </template>
+                                  <!-- </template>
                                 </el-table-column>
                             </el-table>
                             <el-pagination
@@ -324,6 +340,13 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" min-width="600" sortable :formatter="statusFormatter" />
+                <el-table-column prop="status" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+                  <template #default="{ row: statusGroup }">
+                    <el-tag size="small" type="info" style="margin-left: 10px;">
+                      {{ statusGroup.items.length }}
+                    </el-tag>
+                  </template>
+                </el-table-column> 
             </el-table>
             <el-pagination
                 background
@@ -337,7 +360,7 @@
                 class="pagination-controls"
             >
           </el-pagination>
-        </el-tab-pane>
+        </el-tab-pane> --> 
 
       </el-tabs>
 
@@ -345,7 +368,7 @@
         <div v-if="selectedItem">
           <el-descriptions :column="2" border>
             <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
-  \         <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
             <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
             <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
             <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
@@ -492,7 +515,6 @@ export default {
       remoteSearchProductCode,
       remoteSearchProjectCode,
       selectedProjectCode,
-      totalItemsForPagination,
       totalStatusForPagination,
       totalMDForPagination,
       groupedItems,
@@ -879,7 +901,6 @@ export default {
       loadingManufacturer,
       remoteSearchProductCode,
       remoteSearchProjectCode,
-      totalItemsForPagination,
       totalStatusForPagination,
       totalMDForPagination,
       groupedItems,

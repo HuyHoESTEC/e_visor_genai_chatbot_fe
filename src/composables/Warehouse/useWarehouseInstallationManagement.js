@@ -1,14 +1,14 @@
 import { computed, onMounted, ref, watch } from "vue";
-import { useLoadWarehouseExport } from "./useLoadWarehouseExport";
 import { useDateFormat } from "../utils/useDateFormat";
+import { useLoadWarehouseInstallation } from "./useLoadWarehouseInstallation.js";
 
-export function useWarehouseExportDatas() {
-    const { tableData: allItemsFromComposable, isLoading, error, fetchExportDataTable } = useLoadWarehouseExport();
+export function useWarehouseInstallationManagement() {
+    const { tableData: allItemsFromComposable, isLoading, error, fetchTableDataInstallation } = useLoadWarehouseInstallation();
     // Define a new ref to save data was fetched
-    const allItemsExport = ref([]);
-    const filteredItems = ref([]);
+    const allInstallationItems = ref([]);
+    const filteredInstallationItems = ref([]);
 
-    // State for filter tools
+    // State for filter tools 
     const selectedSeriNumber = ref(null);
     const selectedProductCode = ref(null);
     const selectedImportDate = ref(null);
@@ -46,21 +46,21 @@ export function useWarehouseExportDatas() {
     const { extractDateOnly } = useDateFormat();
 
     // EmptyData will be computed property to show data status
-    const emptyData = computed(() => {
+    const emptyInstallationData = computed(() => {
         if (isLoading.value || error.value) {
             return false;
         }
 
-        return filteredItems.value.length === 0;
+        return filteredInstallationItems.value.length === 0;
     })
 
     // Computed properties for project code dropdown
     const uniqueSeriNumber = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
         const itemSeriNumber = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const seriCode = item.seri_number;
             if (seriCode && !itemSeriNumber.has(seriCode)) {
                 itemSeriNumber.set(seriCode, { id: seriCode, name: seriCode });
@@ -71,11 +71,11 @@ export function useWarehouseExportDatas() {
     });
 
     const uniqueBrand = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
         const itemBrand = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const brandVal = item.origin;
             if (brandVal && !itemBrand.has(brandVal)) {
                 itemBrand.set(brandVal, {id: brandVal, name: brandVal });
@@ -99,12 +99,12 @@ export function useWarehouseExportDatas() {
     };
 
     const uniqueProductCode = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
 
         const itemProductCode = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const productCode = item.part_no;
             if (productCode && !itemProductCode.has(productCode)) {
                 itemProductCode.set(productCode, { id: productCode, name: productCode })
@@ -129,12 +129,12 @@ export function useWarehouseExportDatas() {
     };
     
     const uniqueProjectCode = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
 
         const itemProjectCode = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const projectCode = item.project_code;
             if (projectCode && !itemProjectCode.has(projectCode)) {
                 itemProjectCode.set(projectCode, { id: projectCode, name: projectCode })
@@ -159,12 +159,12 @@ export function useWarehouseExportDatas() {
     };
 
     const uniqueLocation = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
 
         const itemLocation = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const locationVal = item.location;
             if (locationVal && !itemLocation.has(Location)) {
                 itemLocation.set(locationVal, { id: locationVal, name: locationVal })
@@ -189,12 +189,12 @@ export function useWarehouseExportDatas() {
     };
 
     const uniqueMD = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
 
         const itemMdVal = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const mdVal = item.cabinet_no;
             if (mdVal && !itemMdVal.has(mdVal)) {
                 itemMdVal.set(mdVal, { id: mdVal, name: mdVal })
@@ -219,12 +219,12 @@ export function useWarehouseExportDatas() {
     };
 
     const uniqueExportId = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
 
         const itemExportId = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const exportId = item.export_id;
             if (exportId && !itemExportId.has(exportId)) {
                 itemExportId.set(exportId, { id: exportId, name: exportId })
@@ -249,11 +249,11 @@ export function useWarehouseExportDatas() {
     };
 
     const uniqueStatus = computed(() => {
-        if (!allItemsExport.value || allItemsExport.value.length === 0) {
+        if (!allInstallationItems.value || allInstallationItems.value.length === 0) {
             return [];
         }
         const itemStatus = new Map();
-        allItemsExport.value.forEach((item) => {
+        allInstallationItems.value.forEach((item) => {
             const statusVal = item.status;
             if (statusVal !== null && statusVal !== undefined && !itemStatus.has(statusVal)) {
                 itemStatus.set(statusVal, { id: statusVal, name: statusVal });
@@ -263,9 +263,9 @@ export function useWarehouseExportDatas() {
         return Array.from(itemStatus.values());
     });
 
-    // Function use filter and update filteredItems
+    // Function use filter and update filteredInstallationItems
     const applyFilters = () => {
-        let tempItems = Array.isArray(allItemsExport.value) ? [...allItemsExport.value] : [];
+        let tempItems = Array.isArray(allInstallationItems.value) ? [...allInstallationItems.value] : [];
 
         if (selectedProductCode.value) {
             tempItems = tempItems.filter(item => item.part_no === selectedProductCode.value);
@@ -307,50 +307,50 @@ export function useWarehouseExportDatas() {
             tempItems = tempItems.filter(item => item.cabinet_no === mdVal);
         }
 
-        filteredItems.value = tempItems;
+        filteredInstallationItems.value = tempItems;
         currentPage.value = 1;
     };
 
-    const groupedItems = computed(() => {
-        if (!Array.isArray(filteredItems.value)) {
-            return [];
-        }        
-        const groups = new Map();
-        filteredItems.value.forEach(item => {
-            const locationCode = item.location || 'Chưa phân loại';
-            if (!groups.has(locationCode)) {
-                groups.set(locationCode, {
-                    location: locationCode,
-                    items: [],
-                    total_quantity: 0
-                });
-            }
+    // const groupItemsByPartNo = computed(() => {
+    //     if (!Array.isArray(filteredInstallationItems.value)) {
+    //         return [];
+    //     }        
+    //     console.log("filteredInstallationItems.value:",filteredInstallationItems.value);
+    //     const groups = new Map();
+    //     filteredInstallationItems.value.forEach(item => {
+    //         const PartNo = item.part_no;
+    //         if (!groups.has(PartNo)) {
+    //             groups.set(PartNo, {
+    //                 part_no: PartNo,
+    //                 items: [],
+    //                 total_quantity: 0
+    //             });
+    //         }
 
-            const group = groups.get(locationCode);
-            group.items.push(item);
-            group.total_quantity += item.quantity || 0;
-        });
+    //         const group = groups.get(PartNo);
+    //         group.items.push(item);
+    //         group.total_quantity += item.quantity || 0;
+    //     });
+    //     return Array.from(groups.values());
+    // });
 
-        return Array.from(groups.values());
-    });
-    
-    const groupItemsByLocation = (mdItems) => {
-        if (!Array.isArray(mdItems)) {
+    const groupItemsByPartNo = (partnoItems) => {
+        if (!Array.isArray(partnoItems)) {
             return [];
         }
         const groups = new Map();
-        mdItems.forEach(item => { 
-            const locationCode = item.location || 'Chưa phân loại';
-            if (!groups.has(locationCode)) {
-                groups.set(locationCode, {
-                    id: `${locationCode}_${Date.now()}`, 
-                    location: locationCode,
+        partnoItems.forEach(item => { 
+            const partNo = item.part_no || 'Chưa phân loại';
+            if (!groups.has(partNo)) {
+                groups.set(partNo, {
+                    id: `${partNo}_${Date.now()}`, 
+                    part_no: partNo,
                     items: [],
                     total_quantity: 0
                 });
             }
 
-            const group = groups.get(locationCode);
+            const group = groups.get(partNo);
             group.items.push(item);
             group.total_quantity += item.quantity || 0;
         });
@@ -358,42 +358,40 @@ export function useWarehouseExportDatas() {
         return Array.from(groups.values());
     };
 
-    const totalItemsForPagination = computed(() => {
-        return groupItemsByLocation.value.length
+    const totalPartNoItemsForPagination = computed(() => {
+        return groupItemsByPartNo.value.length
     })
 
-    const groupedMD = computed(() => {
-        if (!Array.isArray(filteredItems.value)) {
+    const groupedInstallationStatus = computed(() => {
+        if (!Array.isArray(filteredInstallationItems.value)) {
             return [];
         }        
         const groups = new Map();
-        filteredItems.value.forEach(item => {
-            const mdCode = item.cabinet_no || 'Chưa phân loại';
-            if (!groups.has(mdCode)) {
-                groups.set(mdCode, {
-                    cabinet_no: mdCode,
+        filteredInstallationItems.value.forEach(item => {
+            const Status = item.status;
+            if (!groups.has(Status)) {
+                groups.set(Status, {
+                    status: Status,
                     items: [],
+                    total_quantity: 0
                 });
             }
 
-            const group = groups.get(mdCode);
+            const group = groups.get(Status);
             group.items.push(item);
             group.total_quantity += item.quantity || 0;
         });
-        
         return Array.from(groups.values());
     });
 
-    const totalMDForPagination = computed(() => {
-        return groupedMD.value.length
-    })
+    
 
     const groupedStatus = computed(() => {
-        if (!Array.isArray(filteredItems.value)) {
+        if (!Array.isArray(filteredInstallationItems.value)) {
             return [];
-        }        
+        }                
         const groups = new Map();
-        filteredItems.value.forEach(item => {
+        filteredInstallationItems.value.forEach(item => {
             const Status = item.status;
             if (!groups.has(Status)) {
                 groups.set(Status, {
@@ -412,20 +410,19 @@ export function useWarehouseExportDatas() {
 
     const totalStatusForPagination = computed(() => {
         return groupedStatus.value.length
-    })
-
+    })    
     // Function to load data and modify values
-    const fetchDataAndInitialize = async () => {
-        await fetchExportDataTable();
+    const fetchDataInstallationAndInitialize = async () => {
+        await fetchTableDataInstallation();
     };
 
     watch(allItemsFromComposable, (newValue) => {
         if (newValue) {
-            allItemsExport.value = newValue;
+            allInstallationItems.value = newValue;
             applyFilters();
 
             const items = new Map();
-            allItemsExport.value.forEach(item => {
+            allInstallationItems.value.forEach(item => {
                 const itemId = item.id || item.part_no;
                 if (itemId && !items.has(itemId)) {
                     items.set(itemId, { id: itemId, name: item.part_no });
@@ -438,39 +435,37 @@ export function useWarehouseExportDatas() {
             brandOptions.value = uniqueBrand.value;
             locationOptions.value = uniqueLocation.value;
         } else {
-            allItemsExport.value = [];
-            filteredItems.value = [];
+            allInstallationItems.value = [];
+            filteredInstallationItems.value = [];
             dummyItems.value = [];
         }
     }, { immediate: true });
 
     onMounted(() => {
-        fetchDataAndInitialize();
+        fetchDataInstallationAndInitialize();
     });
 
     return {
-        allItemsExport,
-        filteredItems,
+        allInstallationItems,
+        filteredInstallationItems,
         selectedProductCode,
         selectedSeriNumber,
         selectedStatus,
         currentPage,
         pageSize,
         dummyItems,
-        emptyData,
+        emptyInstallationData,
         uniqueProductCode,
         uniqueSeriNumber,
         applyFilters,
-        fetchDataAndInitialize,
+        fetchDataInstallationAndInitialize,
         selectedImportDate,
         selectedProjectCode,
         uniqueProjectCode,
         productCodeOptions,
         loadingProductCode,
         remoteSearchProductCode,
-        groupedItems,
-        groupedStatus,
-        totalItemsForPagination,
+        groupedInstallationStatus,
         totalStatusForPagination,
         projectCodeOptions,
         loadingProjectCode,
@@ -489,12 +484,14 @@ export function useWarehouseExportDatas() {
         uniqueLocation,
         uniqueStatus,
         selectedLocationCode,
-        totalMDForPagination,
-        groupedMD,
-        groupItemsByLocation,
         selectedMD,
         remoteSearchMD,
         loadingMD,
         mdOptions,
+        fetchTableDataInstallation,
+        groupedStatus,
+        totalStatusForPagination,
+        groupItemsByPartNo,
+        totalPartNoItemsForPagination,
     }
 }
