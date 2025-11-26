@@ -242,7 +242,14 @@
                         </div>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />                   
+                    <el-table-column prop="location" label="Mã tủ" min-width="600" sortable />
+                    <el-table-column prop="location" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+                      <template #default="{ row: locationGroup }">
+                        <el-tag size="small" type="info" style="margin-left: 10px;">
+                          {{ locationGroup.items.length }}
+                        </el-tag>
+                      </template>
+                    </el-table-column>                   
                   </el-table>
                   <el-pagination
                     layout="prev, pager, next, sizes, total"
@@ -260,6 +267,13 @@
             </el-table-column>
             
             <el-table-column prop="cabinet_no" label="MD" min-width="600" sortable />
+            <el-table-column prop="cabinet_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+              <template #default="{ row: mdGroup }">
+                <el-tag size="small" type="info" style="margin-left: 10px;">
+                  {{ groupItemsByLocation(mdGroup.items).length }}
+                </el-tag>
+              </template>
+            </el-table-column>
           </el-table>
           <el-pagination
               background
@@ -275,7 +289,7 @@
           </el-pagination>
         </el-tab-pane> 
 
-        <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="Status">
+        <!-- <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="Status">
             <el-table
                 :data="paginatedStatusGroup"
                 border
@@ -306,9 +320,9 @@
                                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                                   <template #default="{ row }">
                                       <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                                      <!-- <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle /> -->
+                                      <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle /> -->
                                       <!-- <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle :disabled="true" /> -->
-                                  </template>
+                                  <!-- </template>
                                 </el-table-column>
                             </el-table>
                             <el-pagination
@@ -326,6 +340,13 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="status" :label="langStore.t('tableHeaderStatus')" min-width="600" sortable :formatter="statusFormatter" />
+                <el-table-column prop="status" :label="langStore.t('quantityColumn')" min-width="100" sortable>
+                  <template #default="{ row: statusGroup }">
+                    <el-tag size="small" type="info" style="margin-left: 10px;">
+                      {{ statusGroup.items.length }}
+                    </el-tag>
+                  </template>
+                </el-table-column> 
             </el-table>
             <el-pagination
                 background
@@ -339,7 +360,7 @@
                 class="pagination-controls"
             >
           </el-pagination>
-        </el-tab-pane>
+        </el-tab-pane> --> 
 
       </el-tabs>
 

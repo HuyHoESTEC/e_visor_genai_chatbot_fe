@@ -311,9 +311,30 @@ export function useWarehouseInstallationManagement() {
         currentPage.value = 1;
     };
 
+    // const groupItemsByPartNo = computed(() => {
+    //     if (!Array.isArray(filteredInstallationItems.value)) {
+    //         return [];
+    //     }        
+    //     console.log("filteredInstallationItems.value:",filteredInstallationItems.value);
+    //     const groups = new Map();
+    //     filteredInstallationItems.value.forEach(item => {
+    //         const PartNo = item.part_no;
+    //         if (!groups.has(PartNo)) {
+    //             groups.set(PartNo, {
+    //                 part_no: PartNo,
+    //                 items: [],
+    //                 total_quantity: 0
+    //             });
+    //         }
+
+    //         const group = groups.get(PartNo);
+    //         group.items.push(item);
+    //         group.total_quantity += item.quantity || 0;
+    //     });
+    //     return Array.from(groups.values());
+    // });
+
     const groupItemsByPartNo = (partnoItems) => {
-        console.log('partnoItems:', partnoItems);
-        
         if (!Array.isArray(partnoItems)) {
             return [];
         }
@@ -336,6 +357,10 @@ export function useWarehouseInstallationManagement() {
 
         return Array.from(groups.values());
     };
+
+    const totalPartNoItemsForPagination = computed(() => {
+        return groupItemsByPartNo.value.length
+    })
 
     const groupedInstallationStatus = computed(() => {
         if (!Array.isArray(filteredInstallationItems.value)) {
@@ -364,7 +389,7 @@ export function useWarehouseInstallationManagement() {
     const groupedStatus = computed(() => {
         if (!Array.isArray(filteredInstallationItems.value)) {
             return [];
-        }        
+        }                
         const groups = new Map();
         filteredInstallationItems.value.forEach(item => {
             const Status = item.status;
@@ -387,8 +412,8 @@ export function useWarehouseInstallationManagement() {
         return groupedStatus.value.length
     })    
     // Function to load data and modify values
-    const fetchDataAndInitialize = async () => {
-        await fetchExportDataTable();
+    const fetchDataInstallationAndInitialize = async () => {
+        await fetchTableDataInstallation();
     };
 
     watch(allItemsFromComposable, (newValue) => {
@@ -417,7 +442,7 @@ export function useWarehouseInstallationManagement() {
     }, { immediate: true });
 
     onMounted(() => {
-        fetchTableDataInstallation();
+        fetchDataInstallationAndInitialize();
     });
 
     return {
@@ -433,7 +458,7 @@ export function useWarehouseInstallationManagement() {
         uniqueProductCode,
         uniqueSeriNumber,
         applyFilters,
-        fetchDataAndInitialize,
+        fetchDataInstallationAndInitialize,
         selectedImportDate,
         selectedProjectCode,
         uniqueProjectCode,
@@ -467,5 +492,6 @@ export function useWarehouseInstallationManagement() {
         groupedStatus,
         totalStatusForPagination,
         groupItemsByPartNo,
+        totalPartNoItemsForPagination,
     }
 }
