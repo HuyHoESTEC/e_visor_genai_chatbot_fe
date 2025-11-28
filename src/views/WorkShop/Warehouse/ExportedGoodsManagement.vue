@@ -143,6 +143,7 @@
                 <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
                 <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
                 <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
+                <el-table-column prop="status" label="Trạng thái" width="auto" :formatter="statusFormatter" />
                 <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                                                      
                 <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
                 <template #default="{ row }">
