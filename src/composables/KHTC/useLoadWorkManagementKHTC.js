@@ -5,6 +5,7 @@ import { useAuthStore } from "../../stores/auth";
 export function useLoadWorkManagementKHTC() {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
+    const viewModeSwitch = ref(true);
 
     const tableData = ref([]); // Table data, use ref to reactive
     const isLoading = ref(true); // Data loading status
@@ -33,9 +34,16 @@ export function useLoadWorkManagementKHTC() {
         const startDate = getFirstDayOfYear();
         const endDate = getLastDayOfYear();
 
+        let ownerValue;
+        if (viewModeSwitch.value) {
+            ownerValue = 'common'
+        } else {
+            ownerValue = loggedInUserId;
+        }
+
         const payload = {
             request_id: "evisor-" + Date.now(),
-            owner: loggedInUserId,
+            owner: ownerValue,
             filter: {
                 full_name: [],
                 project_code: [],
@@ -67,6 +75,10 @@ export function useLoadWorkManagementKHTC() {
         fetchTableData();
     })
 
+    // watch(viewModeSwitch, () => {
+    //     fetchTableData();
+    // })
+
     return {
         tableData,
         isLoading,
@@ -74,5 +86,6 @@ export function useLoadWorkManagementKHTC() {
         fetchTableData,
         getFirstDayOfYear,
         getLastDayOfYear,
+        viewModeSwitch,
     }
 }

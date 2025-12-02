@@ -3,7 +3,7 @@ import { useLoadWorkManagementKHTC } from './useLoadWorkManagementKHTC';
 import { filterWorkManagementKHTCByDateApi } from '../../services/auth.service';
 
 export function useTaskData() {
-  const { tableData: allTasksFromComposable, isLoading, error, fetchTableData } = useLoadWorkManagementKHTC();
+  const { tableData: allTasksFromComposable, isLoading, error, fetchTableData, viewModeSwitch } = useLoadWorkManagementKHTC();
 
   // Khai báo một ref mới để chứa dữ liệu đã được fetch, dễ dàng thao tác hơn
   const allTasks = ref([]); 
@@ -194,26 +194,57 @@ export function useTaskData() {
   // Sử dụng watch để theo dõi allTasksFromComposable và cập nhật allTasks cục bộ
   // Điều này đảm bảo rằng khi useLoadWorkManagementKHTC tải xong dữ liệu,
   // composable này sẽ phản ứng và cập nhật filteredTasks.
-  watch(allTasksFromComposable, (newValue) => {
-    if (newValue) {
-      allTasks.value = newValue; // Gán dữ liệu từ composable bên ngoài
-      applyFilters(); // Áp dụng bộ lọc ban đầu với dữ liệu mới
+  // watch(allTasksFromComposable, (newValue) => {
+  //   if (newValue) {
+  //     console.log('Dữ liệu gốc từ API đã thay đổi:', newValue.length, 'bản ghi');
+  //     allTasks.value = newValue; // Gán dữ liệu từ composable bên ngoài
+  //     applyFilters(); // Áp dụng bộ lọc ban đầu với dữ liệu mới
       
-      // Cập nhật dummyTasks (nếu cần cho dialog)
-      const users = new Map();
-      allTasks.value.forEach(task => {
-        const userId = task.user_id || task.full_name; // Sử dụng user_id nếu có, không thì full_name
-        if (userId && !users.has(userId)) {
-          users.set(userId, { id: userId, name: task.full_name });
-        }
-      });
-      dummyTasks.value = Array.from(users.values());
-    } else {
-      allTasks.value = [];
-      filteredTasks.value = [];
-      dummyTasks.value = [];
+  //     // Cập nhật dummyTasks (nếu cần cho dialog)
+  //     const users = new Map();
+  //     allTasks.value.forEach(task => {
+  //       const userId = task.user_id || task.full_name; // Sử dụng user_id nếu có, không thì full_name
+  //       if (userId && !users.has(userId)) {
+  //         users.set(userId, { id: userId, name: task.full_name });
+  //       }
+  //     });
+  //     dummyTasks.value = Array.from(users.values());
+  //   } else {
+  //     allTasks.value = [];
+  //     filteredTasks.value = [];
+  //     dummyTasks.value = [];
+  //   }
+  // }, { immediate: true, deep: true }); // `immediate: true` để chạy watcher ngay lập tức khi component được mount
+
+  watch(allTasksFromComposable, (newValue, oldValue) => {
+    // Chỉ chạy nếu newValue có giá trị và có sự thay đổi (hoặc chạy lần đầu với immediate: true)
+    if (newValue && newValue !== oldValue) {
+        
+        allTasks.value = newValue; // Gán dữ liệu từ composable bên ngoài
+        
+        selectedUser.value = null;
+        selectedProjectCode.value = null;
+        selectedStatus.value = null;
+        selectedVersion.value = null;
+
+
+        applyFilters(); // Áp dụng bộ lọc với trạng thái đã reset (hoặc không có lọc nào)
+        
+        // Cập nhật dummyTasks (nếu cần cho dialog)
+        const users = new Map();
+        allTasks.value.forEach(task => {
+            const userId = task.user_id || task.full_name;
+            if (userId && !users.has(userId)) {
+                users.set(userId, { id: userId, name: task.full_name });
+            }
+        });
+        dummyTasks.value = Array.from(users.values());
+    } else if (!newValue) {
+        allTasks.value = [];
+        filteredTasks.value = [];
+        dummyTasks.value = [];
     }
-  }, { immediate: true }); // `immediate: true` để chạy watcher ngay lập tức khi component được mount
+  }, { immediate: true, deep: true });
 
   // Lifecycle hook
   onMounted(() => {
@@ -244,5 +275,7 @@ export function useTaskData() {
     startAndEndDateVal,
     selectedVersion,
     uniqueVersion,
+    viewModeSwitch,
+    fetchTableData,
   };
 }
