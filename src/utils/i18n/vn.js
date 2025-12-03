@@ -227,6 +227,7 @@ export default {
     FileLabel: 'File:',
     URLLabel: 'URL:',
     DownloadDocumentButton: 'Tải tài liệu',
+    closeButton: 'Đóng',
     
     // --- Warehouse Management - Tab Labels (UPDATED) ---
     flatListTabLabel: 'Danh sách chi tiết',
