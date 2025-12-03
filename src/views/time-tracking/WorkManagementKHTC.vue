@@ -10,7 +10,22 @@
           <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
           <el-button type="danger" v-on:click="handleDownloadClick" class="add-task-button" :icon="Download"></el-button>
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
-          <!-- <el-switch v-model="value" size="large" active-text="Chung" inactive-text="Cá nhân" class="view-mode-switch" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"/> -->
+          <el-switch 
+            v-model="viewModeSwitch" 
+            size="large" 
+            active-text="Chung" 
+            inactive-text="Cá nhân" 
+            class="view-mode-switch" 
+            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          />
+          <el-button
+            type="primary"
+            @click="handleApplyLoad"
+            :loading="isLoading"
+            style="margin-left: 10px;" 
+            >
+            Áp dụng
+          </el-button>
         </div>
         <div class="filter-area">
           <el-select
@@ -205,6 +220,7 @@ import { useLanguageStore } from "../../stores/language";
 import { useAdvanceDelete } from "../../composables/KHTC/useAdvanceDelete";
 import { useDownloadWorkManagement } from "../../composables/KHTC/useDownloadWorkManagement";
 import DownloadFilterDialogKHTC from "../../components/dialog/DownloadFilterDialogKHTC.vue";
+import { useLoadWorkManagementKHTC } from "../../composables/KHTC/useLoadWorkManagementKHTC";
 
 export default {
   name: "WorkManagmentKHTC",
@@ -238,7 +254,9 @@ export default {
       startAndEndDateVal,
       loadTasksWithFilters,
       selectedVersion,
-      uniqueVersion
+      uniqueVersion,
+      fetchTableData,
+      viewModeSwitch,
     } = useTaskData();
 
     const {
@@ -264,7 +282,6 @@ export default {
       downloadFile: createDownloadLinkApi,
       confirmDownloadFile
     } = useDownloadWorkManagement();
-  
 
     // Reactive variable to control display dialog upload
     const uploadDialogVisible = ref(false);
@@ -332,6 +349,10 @@ export default {
     };
 
     const value = ref(true)
+
+    const handleApplyLoad = async () => {
+      await fetchTableData();
+    };
 
     return {
       isLoading,
@@ -402,6 +423,9 @@ export default {
       Download,
       DownloadFilterDialogKHTC,
       value,
+      viewModeSwitch,
+      fetchTableData,
+      handleApplyLoad,
     };
   },
 };

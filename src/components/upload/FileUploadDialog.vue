@@ -30,18 +30,18 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button v-on:click="handleClose" :disabled="isUploading">{{ langStore.t('DestroyAct') }}</el-button>
-        <el-button type="success" @click="submitUpload" :disabled="isUploading"
+        <el-button type="success" @click="submitUpload(value1)" :disabled="isUploading"
           >{{ langStore.t('UploadAct') }}</el-button
         >
       </span>
     </template>
-    <!-- <el-switch
+    <el-switch
       v-model="value1"
       class="mb-2"
       active-text="Chung"
       inactive-text="Cá Nhân"
     />
-    <br /> -->
+    <br />
   </el-dialog>
 </template>
 
@@ -102,7 +102,7 @@ export default {
         fileToUpload.value = uploadFile.raw;
     }
 
-    const submitUpload = async () => {
+    const submitUpload = async (isCommon) => {
       if (!fileToUpload.value) {
         ElMessage.error(langStore.t('PleaseSelectOneFileToUpload'));
         return;
@@ -116,7 +116,7 @@ export default {
       isUploading.value = true;
       try {
         // Call service and transfer userId receive from props
-        const result = await uploadFile(file);
+        const result = await uploadFile(file, isCommon);
 
         if (result) {
           emit("uploadSuccess");

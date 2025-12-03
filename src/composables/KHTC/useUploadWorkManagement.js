@@ -7,18 +7,31 @@ export function useUploadWorkManagement() {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
     const isUploading = ref(false);
+    
     /**
      * @param {File} file - File was choosed from user
+     * @param {boolean} isCommon - True if 'Chung' is selected, False if 'Cá Nhân' is selected
      */
-    const uploadFile = async (file) => {
-        if (!loggedInUserId) {
-            ElMessage.error('Không tìm thấy User ID. Vui lòng đăng nhập lại.');
+    const uploadFile = async (file, isCommon) => {
+        
+        // XÁC ĐỊNH user_id DỰA TRÊN TRẠNG THÁI SWITCH
+        let targetUserId;
+        if (isCommon) {
+            targetUserId = 'common'; // Chế độ Chung
+        } else {
+            targetUserId = loggedInUserId; // Chế độ Cá nhân
+        }
+
+        if (!targetUserId) {
+            ElMessage.error('Không tìm thấy User ID. Vui lòng đăng nhập lại hoặc kiểm tra trạng thái.');
             return false;
         }
+
         isUploading.value = true;
         const payload = {
             file: file,
-            user_id: loggedInUserId
+            // SỬ DỤNG targetUserId ĐÃ XÁC ĐỊNH
+            user_id: targetUserId 
         };
 
         try {
