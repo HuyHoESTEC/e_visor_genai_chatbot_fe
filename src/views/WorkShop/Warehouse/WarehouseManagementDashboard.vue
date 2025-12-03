@@ -411,124 +411,10 @@
         </el-tab-pane> -->
 
         <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="expand">
-          <!-- Class 1 -->
-          <el-table
-            :data="paginatedStatusGroup"
-            border
-            style="width: 100%;"
-            stripe
-            class="items-table"
-            height="calc(100vh - 321px)"
-            row-key="status"
-            :expand-row-keys="expandedStatusKeys"
-            @expand-change="handleStatusExpandChange"
-          >
-            <template #empty>
-                <div v-if="emptyInstallationData" class="empty-data-message">
-                    <el-empty :description="langStore.t('NoData')" />
-                </div>
-            </template>
-            <el-table-column type="expand">
-              <!-- Class 2 -->
-              <template #default="{ row: partnoGroup }">
-                <div style="padding: 0 20px; background-color: #2C2C6A;">
-                  <h4 style="color: white !important;">Danh sách mã hàng hóa thuộc trạng thái: {{ getInstallationStatusName(partnoGroup.status) }}</h4>
-                  <el-table
-                    :data="getPaginatedPartNoGroups(partnoGroup)"
-                    border
-                    style="width: 100%;"
-                    stripe
-                    class="items-table"
-                    height="calc(100vh - 297px)"
-                    row-key="part_no"
-                    :expand-row-keys="partnoExpandedKeys"
-                    @expand-change="handlePartNoExpandChange"
-                  >
-                    <template #empty>
-                        <div v-if="emptyInstallationData" class="empty-data-message">
-                            <el-empty :description="langStore.t('NoData')" />
-                        </div>
-                    </template>
-                    <el-table-column type="expand">
-                      <template #default="{ row: productcodeGroup }">
-                        <div style="padding: 0 20px; background-color: #8383A3;">
-                          <h4 style="color: white !important;">Chi tiết hàng hóa thuộc mã hàng: {{ productcodeGroup.part_no }}</h4>
-                          <el-table :data="getPaginatedChildProductItems(productcodeGroup)" border size="small">
-                            <el-table-column prop="higher_lever_function" :label="langStore.t('tableHigherLeverFunction')" width="auto" />
-                            <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
-                            <el-table-column prop="dt" :label="langStore.t('tableDT')" width="auto" />
-                            <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
-                            <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
-                            <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
-                            <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
-                            <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                                                      
-                            <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
-                              <template #default="{ row }">
-                                  <el-button type="success" size="default" @click="showDetailInstallation(row)" :icon="View" plain circle />
-                                  <!-- <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                                  <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle /> -->
-                              </template>
-                            </el-table-column>
-                          </el-table>
-                          <el-pagination
-                                layout="prev, pager, next, sizes, total"
-                                :total="productcodeGroup.items.length" 
-                                :page-sizes="[5, 10, 20, 50, 100]"
-                                :page-size="itemProductPaginationState[productcodeGroup.part_no]?.pageSize || 10"
-                                :current-page="itemProductPaginationState[productcodeGroup.part_no]?.currentPage ||1"
-                                @size-change="val => handleItemProductSizeChangeGroup(val, productcodeGroup)"
-                                @current-change="val => handleProductCurrentChangeGroup(val, productcodeGroup)"
-                                class="pagination-controls"
-                            >
-                          </el-pagination>   
-                        </div>
-                      </template>
-                    </el-table-column>
-                    <el-table-column prop="part_no" label="Mã hàng hóa" min-width="600" sortable />
-                    <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
-                      <template #default="{ row: productcodeGroup }">
-                        <el-tag size="small" type="info" style="margin-left: 10px;">
-                          {{ productcodeGroup.items.length }}
-                        </el-tag>
-                      </template>
-                    </el-table-column>                   
-                  </el-table>
-                  <el-pagination
-                    layout="prev, pager, next, sizes, total"
-                    :total="groupItemsByPartNo(partnoGroup.items).length" 
-                    :page-sizes="[5, 10, 20, 50, 100]"
-                    :page-size="getPartNoGroupPaginationState(partnoGroup.part_no).pageSize"
-                    :current-page="getPartNoGroupPaginationState(partnoGroup.part_no).currentPage"
-                    @size-change="val => handleSizeChangePartNoGroup(val, partnoGroup) "
-                    @current-change="val => handleCurrentChangePartNoGroup(val, partnoGroup)"
-                    class="pagination-controls"
-                  >
-                  </el-pagination>
-                </div>
-              </template>
-            </el-table-column>
-            
-            <el-table-column prop="status" label="Trạng Thái" min-width="600" sortable :formatter="statusFormatter" />
-            <el-table-column prop="status" :label="langStore.t('quantityColumn')" min-width="100" sortable>
-              <template #default="{ row: partnoGroup }">
-                <el-tag size="small" type="info" style="margin-left: 10px;">
-                  {{ groupItemsByPartNo(partnoGroup.items).length }}
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-              background
-              layout="prev, pager, next, sizes, total"
-              :total="totalStatusForPagination" 
-              :page-sizes="[5, 10, 20, 50, 100]"
-              v-model:page-size="pageSizeStatus"
-              v-model:current-page="currentPageStatus"
-              @size-change="handleSizeChangeStatus"
-              @current-change="handleCurrentChangeStatus"
-              class="pagination-controls"
-          >
-          </el-pagination>
+          <InstallationStatusTable 
+            v-if="activeTab === 'expand'"
+            @view-detail="showDetailInstallation"
+          />
         </el-tab-pane> 
 
     </el-tabs>
@@ -637,6 +523,8 @@ import DualChart from "../../../components/charts/DualChart.vue";
 import { useLoadWarehouseChart } from "../../../composables/Warehouse/useLoadWarehouseChart";
 import PiedChart from "../../../components/charts/PiedChart.vue";
 import { useWarehouseInstallationManagement } from "../../../composables/Warehouse/useWarehouseInstallationManagement";
+import InstallationStatusTable from "../../../components/table/warehouse_dashboard/InstallationStatusTable.vue";
+import InventoryTable from "../../../components/table/warehouse_dashboard/InventoryTable.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -660,7 +548,9 @@ export default {
     DualChart,
     Filter,
     PiedChart,
-    DualChart
+    DualChart,
+    InstallationStatusTable,
+    InventoryTable,
   },
   setup() {
     const langStore = useLanguageStore();
