@@ -9,488 +9,49 @@
   </div>
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
       <el-tab-pane :label="langStore.t('dashboardTabLabel')" name="dashboard" class="dashboard-tab-pane">
-        <div class="dashboard-content">
-          <div class="header-filters">
-            <el-date-picker
-              v-model="startAndEndDateVal"
-              type="daterange"
-              range-separator="To"
-              :start-placeholder="langStore.t('startDatePlaceholder')"
-              :end-placeholder="langStore.t('endDatePlaceholder')"
-            />
-            <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
-          </div>
-          <div class="metric-cards">
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ importVal }}</div>
-                <div class="metric-label">{{ langStore.t('importQuantityMetric') }}</div>
-              </div>
-            </div>
-            <!-- <div class="metric-card">
-              <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ installationVal }} | {{ notInstallationVal }}</div>
-                <div class="metric-label">Lắp đặt | Chưa lắp đặt</div>
-              </div>
-            </div> -->
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ installationVal }}</div>
-                <div class="metric-label">Số lượng xuất kho</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-export"><el-icon><Tickets /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ totalPO }}</div>
-                <div class="metric-label">{{ langStore.t('totalPOMetric') }}</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-request"><el-icon><Files /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ totalProject }}</div>
-                <div class="metric-label">{{ langStore.t('totalProjectMetric') }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="charts-and-tables">
-            <!-- <div class="left-column">
-              <el-card header="Phiếu nhập kho">
-                <div class="card-header-filter">
-                  <el-select placeholder="Tât cả kho" size="small" style="width: 120px;" />
-                </div>
-                <el-table :data="importSummaryData" border size="small">
-                  <el-table-column prop="project_code" label="Mã dự án" width="100" />
-                  <el-table-column prop="total_quantity" label="Số lượng" width="100" />
-                </el-table>
-              </el-card>
-
-              <el-card header="Phiếu xuất kho" class="mt-20">
-                <div class="card-header-filter">
-                  <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
-                </div>
-                <el-table :data="exportSummaryData" border size="small">
-                  <el-table-column prop="project_code" label="Mã dự án" width="100" />
-                  <el-table-column prop="total_quantity" label="Số lượng" width="100" />
-                </el-table>
-              </el-card>
-            </div> -->
-
-            <div class="right-column">
-              <el-card style="height: 100%;" class="transaction-chart-card">
-                <PiedChart 
-                  :key="langStore.currentLanguage"
-                  :pied-chart="piedChart" 
-                  :title-text="langStore.t('quantityFluctuationChartTitle')"
-                />
-              </el-card>
-            </div>
-
-            <div class="right-column">
-              <el-card class="transaction-chart-card">
-                <DualChart 
-                  :chart-data="dualChartVal"
-                  :is-visible="activeTab === 'dashboard'" 
-              />
-              </el-card>
-            </div>
-
-            <div class="left-column">
-              <el-card>
-               <!-- <DonutChart :inventory-data="inventoryValueData" /> -->
-                <DonutChart 
-                  :installation-data-from-inventory="donutData" 
-                  :isLoading="isLoading" 
-                  :langStore="langStore" 
-                  class="mb-4"
-                />
-              </el-card>
-            </div>
-          </div>
-        </div>
+        <WarehouseDashboardTab 
+          v-if="activeTab === 'dashboard'"
+          v-model:dateRange="startAndEndDateVal"
+          :langStore="langStore"
+          :importVal="importVal"
+          :installation-val="installationVal"
+          :totalPO="totalPO"
+          :total-project="totalProject"
+          :pied-chart="piedChart"
+          :dual-chart-val="dualChartVal"
+          :donut-data="donutData"
+          :is-loading="isLoading"
+          :is-visible="activeTab ==='dashboard'"
+          @filter="filterByDate"
+        />
       </el-tab-pane>
-      <!-- <el-tab-pane style="height: calc(100vh - 100px);" label="Chi tiết hàng hóa" name="table">
-        <div v-if="isLoading" class="loading-message">
-          {{ langStore.t('DataUploading') }}
-        </div>
-        <div v-else class="table-data">
-          <div class="filter-section">
-            <div class="action-area">
-              <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
-              <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
-              <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
-            </div>
-            <el-select
-              v-model="selectedProductCode"
-              placeholder="Lọc theo mã code sản phẩm"
-              clearable
-              @change="applyFilters"
-              class="barcode-select"
-              filterable
-              remote
-              :remote-method="remoteSearchProductCode"
-              :loading="loadingProductCode"
-            >
-              <el-option
-                v-for="barcode in productCodeOptions"
-                :key="barcode.id"
-                :label="barcode.name"
-                :value="barcode.id"
-              />
-            </el-select>
-            <el-select
-              v-model="selectedBrand"
-              placeholder="Lọc theo hãng"
-              clearable
-              @change="applyFilters"
-              class="barcode-select"
-            >
-              <el-option
-                v-for="barcode in uniqueBrand"
-                :key="barcode.id"
-                :label="barcode.name"
-                :value="barcode.id"
-              />
-            </el-select>
-            <el-date-picker
-              v-model="selectedEnteredDate"
-              type="date"
-              placeholder="Chọn ngày nhập phiếu"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-              clearable
-              style="width: 100%;"
-            />
-            <el-button type="primary" v-on:click="handleFilterByDate" class="add-task-button" :icon="Filter"></el-button>
-          </div>
-          <el-table 
-            :data="paginatedItems"
-            border
-            style="width: 100%; height: 100%"
-            stripe
-            class="items-table"
-          >
-            <template #empty>
-              <div v-if="emptyData" class="empty-data-message">
-                <el-empty description="No Data" />
-              </div>
-            </template>
-            <el-table-column fixed prop="id" label="ID" width="80" sortable />
-            <el-table-column prop="product_name" label="Tên hàng hóa" width="auto" />
-            <el-table-column prop="part_no" label="Mã hàng hóa" width="auto" />
-            <el-table-column prop="origin" label="Hãng" width="auto" />
-            <el-table-column prop="quantity_import" label="Nhập kho" width="auto" />
-            <el-table-column prop="quantity_export" label="Xuất kho" width="auto" />
-            <el-table-column prop="quantity_stock" label="Còn lại" width="auto" />
-            <el-table-column prop="seri_number" label="Seri No." width="auto" />
-            <el-table-column label="Trạng thái" width="120">
-              <template #default="{ row }">
-                <el-tag :type="row.quantity_stock > 0 ? 'success' : 'danger'" effect="light">
-                  {{ row.quantity_stock > 0 ? `Còn hàng` : `Hết hàng` }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column fixed="right" label="Hành động" min-width="auto">
-              <template #default="{ row }">
-                <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                <el-button type="danger" size="default" :icon="Delete" plain circle />
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            background
-            layout="prev, pager, next, sizes, total"
-            :total="filteredItems.length"
-            :page-sizes="[5, 10, 20, 50, 100]"
-            v-model:page-size="pageSize"
-            v-model:current-page="currentPage"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            class="pagination-controls"
-          >
-          </el-pagination>
-        </div>
-      </el-tab-pane> -->
-    
+
       <el-tab-pane :label="langStore.t('groupedItemsTabLabel')" name="grouped" class="grouped-tab-pane">
-        <div class="action-filter">
-          <el-select
-            v-model="selectedProductCode"
-            :placeholder="langStore.t('filterByProductCodePlaceholder')"
-            clearable
-            @change="applyFilters"
-            class="barcode-select"
-            filterable
-            remote
-            :remote-method="remoteSearchProductCode"
-            :loading="loadingProductCode"
-          >
-            <el-option
-              v-for="barcode in productCodeOptions"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
-            />
-          </el-select>
-          <el-select
-            v-model="selectedBrand"
-            :placeholder="langStore.t('filterByBrandPlaceholder')"
-            clearable
-            @change="applyFilters"
-            class="barcode-select"
-          >
-            <el-option
-              v-for="barcode in uniqueBrand"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
-            />
-          </el-select>
-          <!-- <el-date-picker 
-              v-model="selectedFilterDate"
-              type="date"
-              :placeholder="langStore.t('FilterByImportDate')"
-              format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-              clearable
-              style="width: 100%;"
-          />
-          <el-button type="primary" v-on:click="filterDetailByDate" class="add-task-button" :icon="Filter"></el-button> -->
-          <el-date-picker 
-              v-model="selectedDashboardDate"
-              type="date"
-              :placeholder="langStore.t('FilterByImportDate')"
-              format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-              clearable
-              @change="applyFilters"
-              style="width: 100%;"
-          />
-        </div>
-        <el-table
-          :data="paginatedItemsGroup"
-          border
-          style="width: 100%;"
-          stripe
-          class="items-table"
-          height="calc(100vh - 330px)"
-
-        >
-          <template #empty>
-            <div v-if="emptyData" class="empty-data-message">
-              <el-empty description="No Data" />
-            </div>
-          </template>
-          <el-table-column type="expand">
-              <template #default="{ row: productGroup }">
-                  <div style="padding: 0 20px;">
-                      <h4 style="color: black !important;">{{ langStore.t('productGroupDetailTitle') }} : {{ productGroup.part_no }}</h4>
-                      <el-table
-                        :data="getPaginatedChildItems(productGroup)" border
-                        style="width: 100%; height: 100%"
-                        stripe
-                        class="items-table"
-                      >
-                        <el-table-column fixed prop="id" label="ID" width="80" sortable />
-                        <el-table-column prop="product_name" :label="langStore.t('itemNameColumn')" width="auto" />
-                        <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" width="auto" />
-                        <el-table-column prop="origin" :label="langStore.t('brandColumn')" width="auto" />
-                        <el-table-column prop="quantity_import" :label="langStore.t('detailImportQuantityLabel')" width="auto" />
-                        <el-table-column prop="quantity_export" :label="langStore.t('detailExportQuantityLabel')" width="auto" />
-                        <el-table-column prop="quantity_stock" :label="langStore.t('detailStockQuantityLabel')" width="auto" />
-                        <el-table-column prop="seri_number" :label="langStore.t('detailSeriNumberLabel')" width="auto" />
-                        <el-table-column fixed="right" :label="langStore.t('JobAction')" min-width="auto">
-                          <template #default="{ row }">
-                              <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                              <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                              <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />
-                          </template>
-                        </el-table-column>
-                      </el-table>
-                      <el-pagination
-                          background
-                          layout="prev, pager, next, sizes, total"
-                          :total="productGroup.items.length"
-                          :page-sizes="[5, 10, 20, 50, 100]"
-                          :page-size="itemPaginationState[productGroup.part_no]?.pageSize || 10"
-                          :current-page="itemPaginationState[productGroup.part_no]?.currentPage || 1"
-                          @size-change="val => handleItemSizeChangeGroup(val, productGroup)"
-                          @current-change="val => handleItemCurrentChangeGroup(val, productGroup)"
-                          class="pagination-controls"
-                      >
-                    </el-pagination>
-                  </div>
-              </template>
-          </el-table-column>
-          <el-table-column prop="part_no" :label="langStore.t('itemPartNoColumn')" min-width="300" sortable />
-          <el-table-column prop="product_name" :label="langStore.t('itemNameColumn')" min-width="600">
-            <template #default="{ row: productGroup }">
-              {{ productGroup.items.length > 0 ? productGroup.items[0].product_name : 'N/A' }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="part_no" :label="langStore.t('quantityColumn')" min-width="100" sortable>
-            <template #default="{ row: productGroup }">
-              <el-tag size="small" type="info" style="margin-left: 10px;">
-                {{ productGroup.items.length }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="origin" :label="langStore.t('brandColumn')" width="auto">
-            <template #default="{ row: productGroup }">
-              {{ productGroup.items.length > 0 ? productGroup.items[0].origin : 'N/A' }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="unit" :label="langStore.t('unitColumn')" min-width="150">
-            <template #default="{ row: productGroup }">
-              {{ productGroup.items.length > 0 ? productGroup.items[0].unit : 'N/A' }}
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          background
-          layout="prev, pager, next, sizes, total"
-          :total="totalItemsForPagination" 
-          :page-sizes="[5, 10, 20, 50, 100]"
-          v-model:page-size="pageSizeGroup"
-          v-model:current-page="currentPageGroup"
-          @size-change="handleSizeChangeGroup"
-          @current-change="handleCurrentChangeGroup"
-          class="pagination-controls"
-        >
-        </el-pagination>
+        <InventoryTable
+          v-if="activeTab === 'grouped'"
+          @view-detail="showDetail"
+          @edit-detail="editItem"
+        />
       </el-tab-pane>
 
-      <!-- <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
-            <el-table
-                :data="paginatedItemsFlat"
-                border
-                style="width: 100%;"
-                stripe
-                class="items-table"
-                height="calc(100vh - 321px)"
-            >
-                <template #empty>
-                    <div v-if="emptyData" class="empty-data-message">
-                        <el-empty description="No Data" />
-                    </div>
-                </template>
-                <el-table-column type="selection" width="55" />
-                <el-table-column prop="higher_lever_function" :label="langStore.t('tableHigherLeverFunction')" width="auto" />
-                <el-table-column prop="location" :label="langStore.t('tableHeaderLocation')" width="auto" />
-                <el-table-column prop="dt" :label="langStore.t('tableDT')" width="auto" />
-                <el-table-column prop="quantity" :label="langStore.t('tableHeaderQuantity')" width="auto" />
-                <el-table-column prop="description" :label="langStore.t('tableHeaderDescription')" width="auto" />
-                <el-table-column prop="part_no" :label="langStore.t('tableHeaderPartNo')" width="auto" />
-                <el-table-column prop="seri_number" :label="langStore.t('tableHeaderSeriNumber')" width="auto" />
-                <el-table-column prop="manufacturer" :label="langStore.t('tableHeaderManufacturer')" width="auto" />                                                      
-                <el-table-column fixed="right" :label="langStore.t('tableHeaderAction')" min-width="auto">
-                <template #default="{ row }">
-                    <el-button type="success" size="default" @click="showDetail(row)" :icon="View" plain circle />
-                    <el-button type="primary" size="default" @click="editItem(row)" :icon="EditPen" plain circle />
-                    <el-button type="danger" size="default" @click="handleDelete(row)" :icon="Delete" plain circle />               
-                </template>
-                </el-table-column>
-            </el-table>
-            <el-pagination
-                background
-                layout="prev, pager, next, sizes, total"
-                :total="filteredInstallationItems.length"
-                :page-sizes="[5, 10, 20, 50, 100]"
-                v-model:page-size="pageSizeFlat"
-                v-model:current-page="currentPageFlat"
-                @size-change="handleSizeChangeFlat"
-                @current-change="handleCurrentChangeFlat"
-                class="pagination-controls"
-            >
-            </el-pagination>
-        </el-tab-pane> -->
-
-        <el-tab-pane :label="langStore.t('groupedByStatusTabLabel')" name="expand">
-          <InstallationStatusTable 
-            v-if="activeTab === 'expand'"
-            @view-detail="showDetailInstallation"
-          />
-        </el-tab-pane> 
+      <el-tab-pane label="Danh sách trạng thái của thiết bị theo dự án" name="expand">
+        <InstallationStatusTable
+          v-if="activeTab === 'expand'"
+          @view-detail="showDetailInstallation"
+        />
+      </el-tab-pane> 
 
     </el-tabs>
-    <detail-popup v-model="isDetailVisible" :title="langStore.t('productGroupDetailTitle')">
-      <div v-if="selectedItem">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item :label="langStore.t('detailIdLabel')">{{ selectedItem.id }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailProductNameLabel')">{{ selectedItem.product_name }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailPartNoLabel')">{{ selectedItem.part_no }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailOriginLabel')">{{ selectedItem.origin }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailImportQuantityLabel')">{{ selectedItem.quantity_import }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailExportQuantityLabel')">{{ selectedItem.quantity_export }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailStockQuantityLabel')">{{ selectedItem.quantity_stock }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailEnteredByLabel')">{{ selectedItem.entered_by }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailEnteredDateLabel')">{{ formattedTime }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailUnitLabel')">{{ selectedItem.unit }}</el-descriptions-item>
-        </el-descriptions>
-        <div class="barcode-area">
-          <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
-          <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-              <el-button 
-                  type="primary" 
-                  size="small" 
-                  :icon="Download" 
-                  :disabled="generatedBarcode === 'N/A'"
-                  @click="downloadBarcodeSvg"
-              >
-                  {{ langStore.t('downloadSvgButton') }}
-              </el-button>
-              <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                  <svg ref="barcodeRef"></svg> 
-              </div>
-            </div>
-            <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
-        </div>
-      </div>
-    </detail-popup>
+    
+    <ItemDetailPopup 
+      v-model="isDetailVisible"
+      :item="selectedItem"
+    />
 
-    <detail-popup v-model="isDetailInstallation" :title="langStore.t('productGroupDetailTitle')">
-      <div v-if="selectedItemInstallation">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item :label="langStore.t('detailPartNoLabel')">{{ selectedItemInstallation.part_no }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItemInstallation.higher_lever_function }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItemInstallation.project_code }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItemInstallation.manufacturer }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItemInstallation.description }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItemInstallation.quantity }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItemInstallation.seri_number }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItemInstallation.location }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailDT')">{{ selectedItemInstallation.dt }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailHeaderCabinetNo')">{{ selectedItemInstallation.cabinet_no }}</el-descriptions-item>
-          <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{ statusFormatter(null, null, selectedItemInstallation.status, null) }}</el-descriptions-item>
-        </el-descriptions>
-        <div class="barcode-area">
-          <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
-          <div v-if="generatedInstallationBarcode && generatedInstallationBarcode !== 'N/A'">
-              <el-button 
-                  type="primary" 
-                  size="small" 
-                  :icon="Download" 
-                  :disabled="generatedInstallationBarcode === 'N/A'"
-                  @click="downloadInstallationBarcodeSvg"
-              >
-                  {{ langStore.t('downloadSvgButton') }}
-              </el-button>
-              <div v-if="generatedInstallationBarcode && generatedInstallationBarcode !== 'N/A'">
-                  <svg ref="barcodeInstallationRef"></svg> 
-              </div>
-            </div>
-            <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
-        </div>
-      </div>
-    </detail-popup>
+    <InstallationDetailPopup
+      v-model="isDetailInstallation"
+      :item="selectedItemInstallation"
+    />
 
     <warehouse-item-dialog 
       v-model="dialogVisible"
@@ -498,6 +59,7 @@
       @save="saveItem"
       @close="closeDialog"
     />
+
     <warehouse-item-upload 
       v-model="uploadDialogVisible"
       @uploadSuccess="handleUploadSuccess"
@@ -525,6 +87,9 @@ import PiedChart from "../../../components/charts/PiedChart.vue";
 import { useWarehouseInstallationManagement } from "../../../composables/Warehouse/useWarehouseInstallationManagement";
 import InstallationStatusTable from "../../../components/table/warehouse_dashboard/InstallationStatusTable.vue";
 import InventoryTable from "../../../components/table/warehouse_dashboard/InventoryTable.vue";
+import ItemDetailPopup from "../../../components/popup/ItemDetailPopup.vue";
+import InstallationDetailPopup from "../../../components/popup/InstallationDetailPopup.vue";
+import WarehouseDashboardTab from "../../../components/tab/WarehouseDashboardTab.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -551,6 +116,9 @@ export default {
     DualChart,
     InstallationStatusTable,
     InventoryTable,
+    ItemDetailPopup,
+    InstallationDetailPopup,
+    WarehouseDashboardTab,
   },
   setup() {
     const langStore = useLanguageStore();

@@ -1,11 +1,11 @@
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { loadWorkManagementKHTCApi } from "../../services/auth.service";
 import { useAuthStore } from "../../stores/auth";
 
-export function useLoadWorkManagementKHTC() {
+export function useLoadWorkManagementKHTC( viewModeSwitch ) {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
-    const viewModeSwitch = ref(true);
+    const loggedInUserRole = authStore.user?.role;
 
     const tableData = ref([]); // Table data, use ref to reactive
     const isLoading = ref(true); // Data loading status
@@ -35,7 +35,7 @@ export function useLoadWorkManagementKHTC() {
         const endDate = getLastDayOfYear();
 
         let ownerValue;
-        if (viewModeSwitch.value) {
+        if (viewModeSwitch.value === true) {
             ownerValue = 'common'
         } else {
             ownerValue = loggedInUserId;
@@ -70,6 +70,7 @@ export function useLoadWorkManagementKHTC() {
             isLoading.value = false;
         }
     };
+
     // Auto call fetchTableData when composable was mounted
     onMounted(() => {
         fetchTableData();
@@ -87,5 +88,6 @@ export function useLoadWorkManagementKHTC() {
         getFirstDayOfYear,
         getLastDayOfYear,
         viewModeSwitch,
+        loggedInUserRole,
     }
 }

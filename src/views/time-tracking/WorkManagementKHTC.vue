@@ -165,9 +165,9 @@
           </template>
         </el-table-column>
         <el-table-column :label="langStore.t('JobAction')" width="auto">
-          <template #default="{ row }">
-            <el-button size="small" @click="editTask(row)" :icon="EditPen">{{ langStore.t('EditAct') }}</el-button>
-            <el-button size="small" type="danger" @click="confirmDeleteTask(row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
+          <template v-slot:default="scope">
+            <el-button :disabled="buttonStatus"  size="small" @click="editTask(scope.row)" :icon="EditPen" >{{ langStore.t('EditAct') }}</el-button>
+            <el-button :disabled="buttonStatus" size="small" type="danger" @click="confirmDeleteTask(scope.row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -231,6 +231,8 @@ export default {
   },
   setup() {
     const langStore = useLanguageStore();
+    const viewModeSwitch = ref(true);
+    const buttonStatus = ref(false);
 
     const {
       allTasks,
@@ -256,8 +258,7 @@ export default {
       selectedVersion,
       uniqueVersion,
       fetchTableData,
-      viewModeSwitch,
-    } = useTaskData();
+    } = useTaskData(viewModeSwitch);
 
     const {
       dialogVisible,
@@ -271,7 +272,20 @@ export default {
       confirmDeleteTask,
       closeDialog,
       getSiteTagType,
+      canPerformAction,
     } = useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, fetchDataAndInitialize);
+
+    const updateButtonStatus = () => {
+      const currentModeVal = viewModeSwitch.value;
+      if (currentModeVal === true){
+          buttonStatus.value = true;
+      } else if (currentModeVal === false){
+          buttonStatus.value = false;
+      } 
+      // buttonStatus.value = viewModeSwitch.value ? true : false; 
+    };
+
+    updateButtonStatus();
 
     const {
       downloadDialogVisible,
@@ -351,6 +365,7 @@ export default {
     const value = ref(true)
 
     const handleApplyLoad = async () => {
+      updateButtonStatus();
       await fetchTableData();
     };
 
@@ -426,6 +441,9 @@ export default {
       viewModeSwitch,
       fetchTableData,
       handleApplyLoad,
+      canPerformAction,
+      buttonStatus,
+      updateButtonStatus,
     };
   },
 };

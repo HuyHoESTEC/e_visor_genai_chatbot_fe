@@ -179,19 +179,20 @@ export function useWarehouseManagementDatas(itemDataByDate) {
             dummyItems.value = [];
         }
     }, { immediate: true });
-
-    watch(itemDataByDate, (newDateData) => {
-        if (newDateData && Array.isArray(newDateData)) {
-            allItems.value = newDateData;
-            applyFilters();
-            currentPage.value = 1;
-            productCodeOptions.value = uniqueProductCode.value;
-        } else if (newDateData === null) {
-            allItems.value = [];
-            filteredItems.value = [];
-            currentPage.value = 1;
-        }
-    }, { immediate: false });
+    if (itemDataByDate) {
+        watch(itemDataByDate, (newDateData) => {
+            if (newDateData && Array.isArray(newDateData)) {
+                allItems.value = newDateData;
+                applyFilters();
+                currentPage.value = 1;
+                productCodeOptions.value = uniqueProductCode.value;
+            } else if (newDateData === null) {
+                allItems.value = [];
+                filteredItems.value = [];
+                currentPage.value = 1;
+            }
+        }, { immediate: false });
+    }
 
     const totalItemsForPagination = computed(() => {
         return groupedItems.value.length;
