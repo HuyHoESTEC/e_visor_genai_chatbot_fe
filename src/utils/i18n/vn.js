@@ -352,4 +352,7 @@ export default {
     notInstalledLabel: 'Chưa Lắp Đặt',
     noDataMessageChart: 'Không có dữ liệu biểu đồ để hiển thị.',
     noDataLabel: 'Không có dữ liệu',
+    //--- PLACEHOLDER ---
+    placeholderSearchPartNo: 'Nhập mã hàng hóa để tìm kiếm...',
+    placeholderSearchProjectCode: 'Nhập mã dự án để tìm kiếm...',
 };
