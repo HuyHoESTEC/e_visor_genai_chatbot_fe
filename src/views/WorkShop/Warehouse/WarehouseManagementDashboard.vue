@@ -9,109 +9,21 @@
   </div>
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
       <el-tab-pane :label="langStore.t('dashboardTabLabel')" name="dashboard" class="dashboard-tab-pane">
-        <div class="dashboard-content">
-          <div class="header-filters">
-            <el-date-picker
-              v-model="startAndEndDateVal"
-              type="daterange"
-              range-separator="To"
-              :start-placeholder="langStore.t('startDatePlaceholder')"
-              :end-placeholder="langStore.t('endDatePlaceholder')"
-            />
-            <el-button type="primary" v-on:click="filterByDate" class="add-task-button" :icon="Filter"></el-button>
-          </div>
-          <div class="metric-cards">
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-import"><el-icon><ShoppingCart /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ importVal }}</div>
-                <div class="metric-label">{{ langStore.t('importQuantityMetric') }}</div>
-              </div>
-            </div>
-            <!-- <div class="metric-card">
-              <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ installationVal }} | {{ notInstallationVal }}</div>
-                <div class="metric-label">Lắp đặt | Chưa lắp đặt</div>
-              </div>
-            </div> -->
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-transfer"><el-icon><Van /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ installationVal }}</div>
-                <div class="metric-label">Số lượng xuất kho</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-export"><el-icon><Tickets /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ totalPO }}</div>
-                <div class="metric-label">{{ langStore.t('totalPOMetric') }}</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon metric-icon-request"><el-icon><Files /></el-icon></div>
-              <div class="metric-data">
-                <div class="metric-value">{{ totalProject }}</div>
-                <div class="metric-label">{{ langStore.t('totalProjectMetric') }}</div>
-              </div>
-            </div>
-          </div>
-          <div class="charts-and-tables">
-            <!-- <div class="left-column">
-              <el-card header="Phiếu nhập kho">
-                <div class="card-header-filter">
-                  <el-select placeholder="Tât cả kho" size="small" style="width: 120px;" />
-                </div>
-                <el-table :data="importSummaryData" border size="small">
-                  <el-table-column prop="project_code" label="Mã dự án" width="100" />
-                  <el-table-column prop="total_quantity" label="Số lượng" width="100" />
-                </el-table>
-              </el-card>
-
-              <el-card header="Phiếu xuất kho" class="mt-20">
-                <div class="card-header-filter">
-                  <el-select placeholder="Tất cả kho" size="small" style="width: 120px;" />
-                </div>
-                <el-table :data="exportSummaryData" border size="small">
-                  <el-table-column prop="project_code" label="Mã dự án" width="100" />
-                  <el-table-column prop="total_quantity" label="Số lượng" width="100" />
-                </el-table>
-              </el-card>
-            </div> -->
-
-            <div class="right-column">
-              <el-card style="height: 100%;" class="transaction-chart-card">
-                <PiedChart 
-                  :key="langStore.currentLanguage"
-                  :pied-chart="piedChart" 
-                  :title-text="langStore.t('quantityFluctuationChartTitle')"
-                />
-              </el-card>
-            </div>
-
-            <div class="right-column">
-              <el-card class="transaction-chart-card">
-                <DualChart 
-                  :chart-data="dualChartVal"
-                  :is-visible="activeTab === 'dashboard'" 
-              />
-              </el-card>
-            </div>
-
-            <div class="left-column">
-              <el-card>
-               <!-- <DonutChart :inventory-data="inventoryValueData" /> -->
-                <DonutChart 
-                  :installation-data-from-inventory="donutData" 
-                  :isLoading="isLoading" 
-                  :langStore="langStore" 
-                  class="mb-4"
-                />
-              </el-card>
-            </div>
-          </div>
-        </div>
+        <WarehouseDashboardTab 
+          v-if="activeTab === 'dashboard'"
+          v-model:dateRange="startAndEndDateVal"
+          :langStore="langStore"
+          :importVal="importVal"
+          :installation-val="installationVal"
+          :totalPO="totalPO"
+          :total-project="totalProject"
+          :pied-chart="piedChart"
+          :dual-chart-val="dualChartVal"
+          :donut-data="donutData"
+          :is-loading="isLoading"
+          :is-visible="activeTab ==='dashboard'"
+          @filter="filterByDate"
+        />
       </el-tab-pane>
 
       <el-tab-pane :label="langStore.t('groupedItemsTabLabel')" name="grouped" class="grouped-tab-pane">
@@ -177,6 +89,7 @@ import InstallationStatusTable from "../../../components/table/warehouse_dashboa
 import InventoryTable from "../../../components/table/warehouse_dashboard/InventoryTable.vue";
 import ItemDetailPopup from "../../../components/popup/ItemDetailPopup.vue";
 import InstallationDetailPopup from "../../../components/popup/InstallationDetailPopup.vue";
+import WarehouseDashboardTab from "../../../components/tab/WarehouseDashboardTab.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -205,6 +118,7 @@ export default {
     InventoryTable,
     ItemDetailPopup,
     InstallationDetailPopup,
+    WarehouseDashboardTab,
   },
   setup() {
     const langStore = useLanguageStore();
