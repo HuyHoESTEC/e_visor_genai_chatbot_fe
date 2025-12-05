@@ -2,14 +2,18 @@ import { ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useAuthStore } from '../../stores/auth';
 import { actionFormWorkManagementKHTCApi } from '../../services/auth.service';
+import { useLoadWorkManagementKHTC } from './useLoadWorkManagementKHTC';
 
 export function useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, fetchDataAndInitialize) {
+  const { viewModeSwitch, buttonStatus } = useLoadWorkManagementKHTC();
+  
   const dialogVisible = ref(false);
   const currentTask = ref(null);
   const authStore = useAuthStore();
   const loggedInUserId = authStore.user?.id;
   const originalTaskData = ref(null); // Variable to save the original data
-
+  const loggedInUserRole = authStore.role?.id;
+  
   const getStatusTagType = (status) => {
     switch (status) {
       case 0:
@@ -205,5 +209,8 @@ export function useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, 
     loggedInUserId,
     originalTaskData,
     getSiteTagType,
+    loggedInUserRole,
+    buttonStatus,
+    viewModeSwitch,
   };
 }

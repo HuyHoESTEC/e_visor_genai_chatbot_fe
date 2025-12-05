@@ -2,8 +2,8 @@ import { ref, computed, onMounted, watch } from 'vue'; // Thêm watch
 import { useLoadWorkManagementKHTC } from './useLoadWorkManagementKHTC';
 import { filterWorkManagementKHTCByDateApi } from '../../services/auth.service';
 
-export function useTaskData() {
-  const { tableData: allTasksFromComposable, isLoading, error, fetchTableData, viewModeSwitch } = useLoadWorkManagementKHTC();
+export function useTaskData(viewModeSwitch) {
+  const { tableData: allTasksFromComposable, isLoading, error, fetchTableData } = useLoadWorkManagementKHTC(viewModeSwitch);
 
   // Khai báo một ref mới để chứa dữ liệu đã được fetch, dễ dàng thao tác hơn
   const allTasks = ref([]); 
@@ -275,7 +275,6 @@ export function useTaskData() {
     startAndEndDateVal,
     selectedVersion,
     uniqueVersion,
-    viewModeSwitch,
     fetchTableData,
   };
 }
