@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('auth', {
     loading: false,
     error: null,
     authReady: false,
+    role: null,
   }),
   getters: {
     isLoggedIn: (state) => !!state.token && !!state.user,
@@ -55,12 +56,14 @@ export const useAuthStore = defineStore('auth', {
               id: response.user_id,
               name: response.full_name,
               avatar: response.avatar,
+              role: response.role_id,
             };
             this.token = response.session_id;
             this.expiresAt = expirationTime;
             localStorage.setItem('token', this.token);
             localStorage.setItem('user', JSON.stringify(this.user));
             localStorage.setItem('expiresAt', this.expiresAt.toString());
+            this.role = { id: response.role_id }
 
             this.startSessionTimer();
             router.push('/summary-dashboard');
@@ -141,6 +144,11 @@ export const useAuthStore = defineStore('auth', {
             try {
               this.user = JSON.parse(storedUser);
               this.expiresAt = parseInt(storedExpiresAt);
+              if (this.user && this.user.role !== undefined) {
+                  this.role = { id: this.user.role };
+              } else {
+                  this.role = null;
+              }
             } catch (e) {
               console.error("Lỗi khi phân tích JSON user từ localStorage:", e);
               this.clearAuthData();
