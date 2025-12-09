@@ -331,6 +331,10 @@ export default {
   cursor: pointer;
 }
 
+.header-right > .el-tag {
+  flex-shrink: 0;
+}
+
 /* --- Media Queries --- */
 
 /* For Tablets (e.g., width less than 768px or between 481px and 768px) */
@@ -382,6 +386,10 @@ export default {
   /* Đảm bảo kích thước avatar nhỏ hơn trên mobile */
   .user-avatar-el {
     --el-avatar-size: 38px; /* Giảm kích thước avatar trên mobile */
+  }
+
+  .header-right > .el-tag {
+    display: none; 
   }
 }
 </style>

@@ -341,7 +341,7 @@ const routes = [
   },
   {
     path: '/forbiddent',
-    name:'Forbidden',
+    name:'Forbiddent',
     component: () => import('../views/Forbidden.vue')
   }
 ];
@@ -405,7 +405,7 @@ router.beforeEach(async (to, from, next) => {
     return next('/summary-dashboard');
   }
   // 3. Authorization Check
-  if (to.name.requiresAuth && isLoggedIn && isTokenStillValid) {
+  if (to.meta.requiresAuth && isLoggedIn && isTokenStillValid) {
     const userDepartmentId = authStore.userDepartmentId;
     const userRoleId = authStore.userRoleId;
     // Skip permission checks for Admin and Director (as defined in the new getter)
@@ -419,7 +419,7 @@ router.beforeEach(async (to, from, next) => {
     let isAuthorized = true;
     // 3.1. Check permissions by Department
     if (allowedDepartments && allowedDepartments.length > 0) {
-      if (allowedDepartments.includes(userDepartmentId)) {
+      if (!allowedDepartments.includes(userDepartmentId)) {
         isAuthorized = false;
         ElMessage.error('Phòng ban của bạn không được phép truy cập vào trang này.');
         console.log(`Authoriaztion Failed: Department ID ${userDepartmentId} not allowed in ${to.path}.`);
