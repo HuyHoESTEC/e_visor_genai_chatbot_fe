@@ -10,7 +10,6 @@
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">
       <el-tab-pane :label="langStore.t('dashboardTabLabel')" name="dashboard" class="dashboard-tab-pane">
         <WarehouseDashboardTab 
-          v-if="activeTab === 'dashboard'"
           v-model:dateRange="startAndEndDateVal"
           :langStore="langStore"
           :importVal="importVal"
@@ -90,6 +89,7 @@ import InventoryTable from "../../../components/table/warehouse_dashboard/Invent
 import ItemDetailPopup from "../../../components/popup/ItemDetailPopup.vue";
 import InstallationDetailPopup from "../../../components/popup/InstallationDetailPopup.vue";
 import WarehouseDashboardTab from "../../../components/tab/WarehouseDashboardTab.vue";
+import BalanceChart from "../../../components/charts/BalanceChart.vue";
 
 export default {
   name: "WarehouseManagementDashboard",
@@ -119,6 +119,7 @@ export default {
     ItemDetailPopup,
     InstallationDetailPopup,
     WarehouseDashboardTab,
+    BalanceChart,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -651,6 +652,7 @@ export default {
       generatedInstallationBarcode,
       downloadInstallationBarcodeSvg,
       barcodeInstallationRef,
+      BalanceChart,
     };
   },
 };
