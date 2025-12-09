@@ -94,6 +94,18 @@ export default defineComponent({
         : [];
 
       return {
+        legend: {
+        show: hasData, // Chỉ hiện khi có dữ liệu
+        data: legendDataNames, // Sử dụng tên lát cắt đã dịch
+        left: 'center',
+        bottom: '0%', 
+        orient: 'horizontal',
+        itemGap: 20, 
+          textStyle: {
+            color: COLORS.TEXT_COLOR,
+            ontSize: 14,
+          }
+      },
         media: [
           {
             query: { maxWidth: 768 },
@@ -103,11 +115,6 @@ export default defineComponent({
                 top: '2%',
                 subtext: totalSubtext.replace('\n', ' | '),
                 subtextStyle: { fontSize: 16, top: '2%', left: 'center', fontWeight:'bold' }
-              },
-              legend: {
-                data: [t('chartExportLabel'), t('chartImportLabel')], 
-                left: 'center', top: 'bottom', orient: 'horizontal', itemGap: 10, 
-                fontSize: 18,
               },
               series: [{
                 radius: ['30%', '50%'], center: ['50%', '45%'], 
