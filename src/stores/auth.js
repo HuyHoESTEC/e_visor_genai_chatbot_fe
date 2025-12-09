@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import router from "../router";
 import { loginApi, logoutApi } from "../services/auth.service";
 import { ElMessageBox, ElMessage } from "element-plus";
+import { USER_ROLES } from "../constants/roleList";
 let sessionTimer = null; // Variable to store timer ID
 
 export const useAuthStore = defineStore('auth', {
@@ -13,6 +14,7 @@ export const useAuthStore = defineStore('auth', {
     error: null,
     authReady: false,
     role: null,
+    department: null,
   }),
   getters: {
     isLoggedIn: (state) => !!state.token && !!state.user,
@@ -32,6 +34,33 @@ export const useAuthStore = defineStore('auth', {
       // console.log(`[isTokenValid] Buffer Adjusted Expires: ${new Date(state.expiresAt - bufferTime).toLocaleString()}`);
       // console.log(`[isTokenValid] Result (currentTime < expiresAt - bufferTime): ${isValid}`);
     },
+    // -- Getter get Role ID and Department IDrole_id
+    userRoleId: (state) => state.user?.role || null,
+    userDepartmentId: (state) => state.user?.department || null,
+
+    isAdmin: (state) => state.user?.role === USER_ROLES.ADMIN,
+    isManage: (state) => state.user?.role === USER_ROLES.DIRECTOR,
+    isProjectManage: (state) => state.user?.role === USER_ROLES.PROJECT_MANAGER,
+    isEmployee: (state) => state.user?.role === USER_ROLES.EMPLOYEE,
+    isAdminOrDirector: (state) => state.user?.role === USER_ROLES.ADMIN || state.user?.role === USER_ROLES.DIRECTOR,
+    // -- General getter to check permissions flexibly
+    // Use: authStore.hasAccess(requiredRole, requiredDepts)
+    hasAccess: (state) => {
+      return (allowedRoles = [], allowedDepartments = []) => {
+        if (!state.user) return false;
+
+        const currentRole = state.user.role;
+        const currentDept = state.user.department;
+        // If user is Admin then set full permission
+        if (currentRole === USER_ROLES.ADMIN) return true;
+        // Check Role
+        const roleMatch = allowedRoles.length === 0 || allowedRoles.includes(currentRole);
+        // Check department
+        const deptMatch = allowedDepartments.length === 0 || allowedDepartments.includes(currentDept);
+
+        return roleMatch && deptMatch;
+      };
+    }
   },
   actions: {
       /**
@@ -57,13 +86,15 @@ export const useAuthStore = defineStore('auth', {
               name: response.full_name,
               avatar: response.avatar,
               role: response.role_id,
+              department: response.department_id,
             };
             this.token = response.session_id;
             this.expiresAt = expirationTime;
             localStorage.setItem('token', this.token);
             localStorage.setItem('user', JSON.stringify(this.user));
             localStorage.setItem('expiresAt', this.expiresAt.toString());
-            this.role = { id: response.role_id }
+            this.role = { id: response.role_id };
+            this.department = { id: response.department_id };
 
             this.startSessionTimer();
             router.push('/summary-dashboard');
@@ -145,9 +176,15 @@ export const useAuthStore = defineStore('auth', {
               this.user = JSON.parse(storedUser);
               this.expiresAt = parseInt(storedExpiresAt);
               if (this.user && this.user.role !== undefined) {
-                  this.role = { id: this.user.role };
+                this.role = { id: this.user.role };
               } else {
-                  this.role = null;
+                this.role = null;
+              }
+
+              if (this.user && this.user.department !== undefined) {
+                this.department = { id: this.user.department };
+              } else {
+                this.department = null;
               }
             } catch (e) {
               console.error("Lỗi khi phân tích JSON user từ localStorage:", e);

@@ -113,7 +113,7 @@
 <script>
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { Expand, SwitchButton, Tools } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { MENU_ITEMS } from "../../constants/menuItems";
@@ -132,6 +132,39 @@ export default {
     const authStore = useAuthStore();
     const isCollaped = ref(false); // Add a state of reduction/zoom
     const openMenus = ref([]);
+
+    const userDepartment = computed(() => authStore.user?.department || 0);
+    const canAccess = (item) => {
+      const requiredIds = item.requiredDepartments;
+      if (!requiredIds || requiredIds.length === 0) {
+        return true;
+      }
+      return requiredIds.includes(userDepartment.value);
+    };
+
+    const filterMenuItems = (items) => {
+      if (!items) return [];
+
+      return items
+        .filter(item => canAccess(item))
+        .map(item => {
+          const newItem = { ...item };
+          if (newItem.children) {
+            newItem.children = filterMenuItems(newItem.children);
+            if (newItem.isDropdown && newItem.children.length === 0) {
+              return null;
+            }
+          }
+          return newItem;
+        })
+        .filter(item => item !== null);
+    };
+
+    const filteredMenuItems = computed(() => {
+      const deepCopyMenuItems = JSON.parse(JSON.stringify(MENU_ITEMS));
+      return filterMenuItems(deepCopyMenuItems);
+    });
+    
     // Sử dụng JSON.parse(JSON.stringify) để tạo bản sao sâu, tránh sửa đổi dữ liệu gốc
     const menuItems = ref(JSON.parse(JSON.stringify(MENU_ITEMS)));
 
@@ -161,6 +194,7 @@ export default {
     watch(
       () => route.name, // Monitoring route name to update Active status
       (newRouteName) => {
+        menuItems.value = filteredMenuItems.value;
         openMenus.value = [];
         updateActiveStatus(menuItems.value, newRouteName);
       },

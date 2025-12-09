@@ -9,10 +9,10 @@
 ## 3. Team member: ✋
 - Unit: **Estec Digital**
 - Project Manager: **Mr. Phu Tran Quang**
-- Counseling experts: **Mr. Tony Do, Mr. Toan Tan, Mr. Duc Thinh**
-- AI and Backend Engineer: **Mr. Hoan Vo Ly Hoang**
+- Counseling experts: **Mr. Tony Do**
+- AI and Backend Engineer: **Mr. Hoan Vo Ly Hoang, Mr. Kiet Pham Anh**
 - BA and Tester Engineer: **Mr. Thang Doan Ngoc Minh, Mr. Nguyen Hoang Tan**
-- Frontend Engineer: **Mr. Huy Ho Nhat**
+- Frontend Engineer: **Mr. Huy Ho Nhat, Mr. Bao Tran Nguyen**
 ## 4. Step by step: ➡️
 - Step 1: Run "**npm install**" to install all neccessary packages in package-lock
 - Step 2: Create ".env" file to config all variable

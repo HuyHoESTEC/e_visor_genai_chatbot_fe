@@ -6,15 +6,18 @@
  * import { ChatDotRound, Timer, TrendCharts, OfficeBuilding, Box, DataAnalysis, Cpu, ShoppingTrolley } from "@element-plus/icons-vue";
  */
 
+import { DEPARTMENTS } from "./departmentList";
+
 const MENU_ITEMS = [
-  // {
-  //   name: "summary-dashboard",
-  //   label: "Thống kê",
-  //   labelKey: "SummaryDashboard",
-  //   iconComponent: "Histogram",
-  //   routeName: "SummaryDashboard",
-  //   isActive: false,
-  // },
+  {
+    name: "summary-dashboard",
+    label: "Thống kê",
+    labelKey: "SummaryDashboard",
+    iconComponent: "Histogram",
+    routeName: "SummaryDashboard",
+    requiredDepartments: [],
+    isActive: false,
+  },
   // -----KHTC Department-----
   {
     name: "KHTC",
@@ -24,6 +27,7 @@ const MENU_ITEMS = [
     routeName: null,
     isActive: false,
     isDropdown: true,
+    requiredDepartments: [DEPARTMENTS.HUMAN_RESOURCES_AND_ADMINISTRATOR_HCM],
     children: [
       {
         name: "time-tracking",
@@ -31,6 +35,7 @@ const MENU_ITEMS = [
         labelKey: "TimekeepingManagement",
         iconComponent: "List",
         routeName: "TimeTracking",
+        requiredDepartments: [DEPARTMENTS.HUMAN_RESOURCES_AND_ADMINISTRATOR_HCM],
         isActive: false,
       },
       {
@@ -39,6 +44,7 @@ const MENU_ITEMS = [
         labelKey: "KHTCWorkManagement",
         iconComponent: "Briefcase",
         routeName: "KHTCWorkManagement",
+        requiredDepartments: [DEPARTMENTS.HUMAN_RESOURCES_AND_ADMINISTRATOR_HCM],
         isActive: false,
       }
     ]
@@ -50,6 +56,7 @@ const MENU_ITEMS = [
     iconComponent: "Compass",
     routeName: null,
     isDropdown: true,
+    requiredDepartments: [DEPARTMENTS.ESTEC_DIGITAL_DN, DEPARTMENTS.ESTEC_DIGITAL_HCM],
     children: [
       {
         name: "rnd-dashboard",
@@ -57,6 +64,7 @@ const MENU_ITEMS = [
         labelKey: "workManagementDashboard",
         iconComponent: "Histogram",
         routeName: "RndDashboard",
+        requiredDepartments: [DEPARTMENTS.ESTEC_DIGITAL_DN, DEPARTMENTS.ESTEC_DIGITAL_HCM],
         isActive: false,
       },
       {
@@ -65,6 +73,7 @@ const MENU_ITEMS = [
         labelKey: "workManagementTitle",
         iconComponent: "List",
         routeName: "RndWorkTracking",
+        requiredDepartments: [DEPARTMENTS.ESTEC_DIGITAL_DN, DEPARTMENTS.ESTEC_DIGITAL_HCM],
         isActive: false,
       },
       {
@@ -73,6 +82,7 @@ const MENU_ITEMS = [
         labelKey: "workReport",
         iconComponent: "EditPen",
         routeName: "RndWorkReport",
+        requiredDepartments: [DEPARTMENTS.ESTEC_DIGITAL_DN, DEPARTMENTS.ESTEC_DIGITAL_HCM],
         isActive: false,
       },
     ]
@@ -85,12 +95,14 @@ const MENU_ITEMS = [
     routeName: "WorkShop",
     isActive: false,
     isDropdown: true,
+    requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
     children: [
       {
         name: "WarehouseManagement",
         label: "Quản lý kho",
         routeName: null,
         isDropdown: true,
+        requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
         iconComponent: "Box",
         children: [
           {
@@ -99,6 +111,7 @@ const MENU_ITEMS = [
             routeName: "WarehouseDashboardRoute",
             iconComponent: "List",
             isActive: false,
+            requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
           },
           {
             name: "ImportWarehouse",
@@ -106,6 +119,7 @@ const MENU_ITEMS = [
             routeName: "ImportWarehouseRoute",
             iconComponent: "ShoppingCart",
             isActive: false,
+            requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
           },
 
           {
@@ -114,6 +128,7 @@ const MENU_ITEMS = [
             routeName: "ExportWarehouseRoute",
             iconComponent: "Van",
             isActive: false,
+            requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
           },
 
           {
@@ -122,6 +137,7 @@ const MENU_ITEMS = [
             routeName: "InstallationWarehouseRoute",
             iconComponent: "Cpu",
             isActive: false,
+            requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
           },
         ],
       },
@@ -130,6 +146,7 @@ const MENU_ITEMS = [
         label: "Thiết kế thi công",
         routeName: null,
         isDropdown: true,
+        requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
         iconComponent: "AddLocation",
         children: [
           {
@@ -138,6 +155,7 @@ const MENU_ITEMS = [
             routeName: "ConstructioDashboardRoute",
             iconComponent: "List",
             isActive: false,
+            requiredDepartments: [DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM],
           },
         ],
       },

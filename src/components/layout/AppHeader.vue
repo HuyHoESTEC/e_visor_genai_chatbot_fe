@@ -4,6 +4,24 @@
       <h1 class="current-tab-name">{{ currentTabName }}</h1>
     </div>
     <div class="header-right">
+      <el-tag 
+        v-if="authStore.isLoggedIn && currentUserRole"
+        size="small"
+        type="primary"
+        effect="dark"
+        style="margin-right: 5px;"
+      >
+        {{ currentUserRoleTag }}
+      </el-tag>
+      <el-tag 
+        v-if="authStore.isLoggedIn && currentUserDepartment"
+        size="small"
+        type="success"
+        effect="dark"
+        style="margin-right: 5px;"
+      >
+        {{ currentUserDepartmentTag }}
+      </el-tag>
       <el-select
         v-model="selectedLanguage"
         placeholder="Select Language"
@@ -87,6 +105,8 @@ import chFlag from "../../assets/flags/china-flag.png";
 import koreFlag from "../../assets/flags/korea-flag.png";
 import { changePassword }  from "../../services/auth.service";
 import { Lock } from "@element-plus/icons-vue";
+import { getRoleName } from "../../constants/roleList";
+import { getDepartmentName } from "../../constants/departmentList";
 
 export default {
   name: "AppHeader",
@@ -98,6 +118,12 @@ export default {
     const route = useRoute();
     const authStore = useAuthStore();
     const langStore = useLanguageStore();
+
+    const currentUserRole = authStore.user?.role;
+    const currentUserDepartment = authStore.user?.department;
+
+    const currentUserRoleTag = getRoleName(currentUserRole);
+    const currentUserDepartmentTag = getDepartmentName(currentUserDepartment);
 
     const showChangePasswordDialog = ref(false);
     const passwordForm = reactive({
@@ -240,6 +266,10 @@ export default {
       currentTabName,
       userAvatar,
       defaultAvatar, // Cần trả về defaultAvatar để sử dụng trong fallback của ElAvatar
+      currentUserDepartment,
+      currentUserRole,
+      currentUserRoleTag,
+      currentUserDepartmentTag,
     };
   },
 };
