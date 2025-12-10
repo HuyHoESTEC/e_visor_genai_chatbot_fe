@@ -1,9 +1,9 @@
 <template>
   <div class="installation-table-container">
     <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px">
-      <label style="font-weight: bold; min-width: 100px"
-        >{{ langStore.t("ProjectCode") }}:</label
-      >
+      <label style="font-weight: bold; min-width: 100px">
+        {{ langStore.t("ProjectCode") }}:
+      </label>
       <el-input
         v-model="projectCodeFilterText"
         :placeholder="
@@ -204,6 +204,16 @@
             :label="langStore.t('itemPartNoColumn')"
             sortable
           />
+          <el-table-column 
+            prop="description"
+            :label="langStore.t('tableHeaderDescription')"
+            width="auto"
+          />
+          <el-table-column 
+            prop="manufacturer"
+            :label="langStore.t('tableHeaderManufacturer')"
+            width="auto"
+          />
           <el-table-column :label="langStore.t('quantityColumn')" width="120">
             <template #default="{ row }">
               <el-tag>{{ row.items.length }}</el-tag>
@@ -334,7 +344,19 @@ export default {
 
     const groupedPartNosInPopup = computed(() => {
       if (!filteredStatusItemsByPartNo.value.length) return [];
-      return groupItemsByPartNo(filteredStatusItemsByPartNo.value);
+      // 1. Group items by part_no using the built-in utility function
+      const groups = groupItemsByPartNo(filteredStatusItemsByPartNo.value);
+      // 2. Add description and manufacturer to the group object (partNoRow)
+      return groups.map(group => {
+        // Get information from the first object in group (assuming items with the same part_no have the same description/manufacturer)
+        const firstItem = group.items[0] || {};
+
+        return {
+          ...group,
+          description: firstItem.description || langStore.t('NoData'),
+          manufacturer: firstItem.manufacturer || langStore.t('NoData'),
+        };
+      });
     });
 
     const paginatedPartNoGroups = computed(() => {

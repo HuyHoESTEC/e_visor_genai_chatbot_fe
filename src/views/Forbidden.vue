@@ -24,7 +24,7 @@
 import { HomeFilled } from '@element-plus/icons-vue';
 
 export default {
-    name: 'Forbiddent',
+    name: 'Forbidden',
     components: {
         HomeFilled,
     },
