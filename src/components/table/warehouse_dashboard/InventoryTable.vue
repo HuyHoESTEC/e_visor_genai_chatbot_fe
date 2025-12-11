@@ -135,6 +135,7 @@
 
     <el-pagination
       background
+      size="small"
       layout="prev, pager, next, sizes, total"
       :total="totalItems"
       :page-sizes="[5, 10, 20, 50, 100]"

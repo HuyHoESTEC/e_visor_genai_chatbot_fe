@@ -86,6 +86,17 @@
           />
         </el-card>
       </div>
+
+      <!-- <div class="left-column">
+        <el-card>
+          <BalanceChart
+           :inventory-chart="inventoryChart"
+            :dual-chart-val="dualChartVal"
+            :is-loading="isLoading"
+            class="mb-4"
+          />
+        </el-card>
+      </div> -->
     </div>
   </div>
 </template>
@@ -95,6 +106,7 @@ import { Files, Filter, ShoppingCart, Tickets, Van } from "@element-plus/icons-v
 import DualChart from "../charts/DualChart.vue";
 import DonutChart from "../charts/DonutChart.vue";
 import PiedChart from "../charts/PiedChart.vue";
+import BalanceChart from "../charts/BalanceChart.vue";
 
 export default {
   name: "WarehouseDashboardTab",
@@ -107,6 +119,7 @@ export default {
     PiedChart,
     DualChart,
     DonutChart,
+    BalanceChart,
   },
   props: {
     langStore: {
@@ -124,6 +137,7 @@ export default {
     piedChart: Object,
     dualChartVal: Object,
     donutData: Object,
+    inventoryChart: Object,
     isLoading: Boolean,
     isVisible: Boolean,
   },

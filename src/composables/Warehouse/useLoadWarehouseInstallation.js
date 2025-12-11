@@ -5,6 +5,7 @@ import { loadingWarehouseInstallationApi } from "../../services/auth.service";
 export function useLoadWarehouseInstallation() {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
+    console.log('user:', authStore.user);
 
     const tableData = ref([]);
     const isLoading = ref(false);
