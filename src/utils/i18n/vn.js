@@ -48,7 +48,7 @@ export default {
     ImportWarehouseRoute: 'Nhập kho',
     ExportWarehouseRoute: 'Xuất kho',
     InstallationWarehouseRoute: 'Lắp đặt',
-    Forbiddent: 'Lỗi',
+    Forbidden: 'Lỗi',
     
     // --- File Upload & Merging ---
     FileUpload: "Tải lên File",

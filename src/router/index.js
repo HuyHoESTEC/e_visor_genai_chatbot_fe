@@ -29,6 +29,7 @@ import ExportedNewGoodsManagement from "../views/WorkShop/Warehouse/ExportedNewG
 import { DEPARTMENTS } from "../constants/departmentList";
 import { USER_ROLES } from "../constants/roleList";
 import { ElMessage } from "element-plus";
+import InstallationDevicesManagement from "../views/WorkShop/Warehouse/InstallationDevicesManagement.vue";
 
 const routes = [
   {
@@ -122,8 +123,8 @@ const routes = [
       // Only allow access with Admin Role
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -142,8 +143,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -162,8 +163,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -181,8 +182,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -200,8 +201,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -219,8 +220,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -237,8 +238,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -255,8 +256,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -273,8 +274,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -291,8 +292,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -309,8 +310,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -318,7 +319,7 @@ const routes = [
   {
     path: '/installation-warehouse',
     name: 'InstallationWarehouseRoute',
-    component: ExportedGoodsManagement,
+    component: InstallationDevicesManagement,
     meta: { 
       requiresAuth: true,
       allowedDepartments: [
@@ -327,8 +328,8 @@ const routes = [
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
-        USER_ROLES.DIRECTOR,
-        USER_ROLES.PROJECT_MANAGER,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
         USER_ROLES.EMPLOYEE,
       ]
     }
@@ -340,8 +341,8 @@ const routes = [
     component: () => import('../views/NotFoundPage.vue') // Lazy load 404 page
   },
   {
-    path: '/forbiddent',
-    name:'Forbiddent',
+    path: '/forbidden',
+    name:'Forbidden',
     component: () => import('../views/Forbidden.vue')
   }
 ];

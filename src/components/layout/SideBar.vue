@@ -117,6 +117,7 @@ import { computed, ref, watch } from "vue";
 import { Expand, SwitchButton, Tools } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { MENU_ITEMS } from "../../constants/menuItems";
+import { USER_ROLES } from "../../constants/roleList";
 
 export default {
   name: "SideBar",
@@ -134,12 +135,31 @@ export default {
     const openMenus = ref([]);
 
     const userDepartment = computed(() => authStore.user?.department || 0);
+    const userRole = computed(() => authStore.user?.role || 0);
     const canAccess = (item) => {
-      const requiredIds = item.requiredDepartments;
-      if (!requiredIds || requiredIds.length === 0) {
+      if (userRole.value === USER_ROLES.ADMIN) {
         return true;
       }
-      return requiredIds.includes(userDepartment.value);
+      const requiredDepts = item.requiredDepartments;
+      const requiredRoles = item.requiredRoles;
+      // Check Phòng ban (Department)
+      // Nếu menu không yêu cầu phòng ban (mảng rỗng/undefined) -> Cho phép
+      // Nếu có yêu cầu -> User phải thuộc phòng ban đó
+      const isDeptAllowed =
+        !requiredDepts ||
+        requiredDepts.length === 0 ||
+        requiredDepts.includes(userDepartment.value);
+
+      // Check Vai trò (Role)
+      // Nếu menu không yêu cầu role (mảng rỗng/undefined) -> Cho phép
+      // Nếu có yêu cầu -> User phải có role đó
+      const isRoleAllowed =
+        !requiredRoles ||
+        requiredRoles.length === 0 ||
+        requiredRoles.includes(userRole.value);
+
+      // User thường phải thỏa mãn cả 2 điều kiện
+      return isDeptAllowed && isRoleAllowed;
     };
 
     const filterMenuItems = (items) => {

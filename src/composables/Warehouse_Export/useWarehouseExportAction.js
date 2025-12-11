@@ -1,7 +1,7 @@
 import { computed, ref } from "vue"
 import { useAuthStore } from "../../stores/auth";
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { createInstallationDataWarehouseApi, deleteInstallationDataWarehouseApi, updateInstallationDataWarehouseApi,} from "../../services/auth.service";
+import { createInstallationDataWarehouseApi, deleteInstallationDataWarehouseApi, updateInstallationDataWarehouseApi} from "../../services/auth.service";
 
 export function useWarehouseExportAction(langStore, fetchDataAndInitialize) {
     const dialogVisible = ref(false);
