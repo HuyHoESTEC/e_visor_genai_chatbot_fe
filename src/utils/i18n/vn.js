@@ -185,6 +185,7 @@ export default {
     quantityColumn: 'Số lượng',
     brandColumn: 'Hãng',
     unitColumn: 'Đơn vị',
+    cabinetQuantityColumn: 'Số lượng tủ',
     
     // --- Warehouse Management - Detail Labels (UPDATED) ---
     detailIdLabel: 'ID',
