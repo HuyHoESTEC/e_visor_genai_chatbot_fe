@@ -2,9 +2,9 @@
   <div class="warehouse_management_container">
   <div class="filter-section">
     <div class="action-area">
-      <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile">{{ langStore.t('BOMFileUpload') }}</el-button>
-      <el-button type="danger" class="warehouse-action-btn" :icon="Printer" disabled />
-      <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+      <el-button type="success" class="warehouse-action-btn" :icon="UploadFilled" v-on:click="handleUploadFile" plain>{{ langStore.t('BOMFileUpload') }}</el-button>
+      <el-button type="danger" class="warehouse-action-btn" plain :icon="Printer" disabled />
+      <el-button type="warning" v-on:click="refreshData" class="add-task-button" plain circle :icon="Refresh"></el-button>
     </div>
   </div>
     <el-tabs v-model="activeTab" class="warehouse-tabs" type="border-card" name="dashboard">

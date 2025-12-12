@@ -11,28 +11,31 @@
             type="success"
             v-on:click="handleUploadFile"
             class="warehouse-action-btn"
+            plain
             :icon="UploadFilled"
           >
             {{ langStore.t("uploadTemplateButton") }}
           </el-button>
 
           <el-button
-            type="danger"
-            v-on:click="handleDownloadClick"
-            :icon="Download"
+            type="warning"
+            v-on:click="handleUploadDesignClick"
+            class="warehouse-action-btn"
+            plain
+            :icon="Cpu"
           >
-            {{ langStore.t('downloadButton') }}
+            Tải lên thiết kế thi công
           </el-button>
 
-          <el-button
-            type="primary"
-            :icon="Plus"
-            v-on:click="addNewItem"
-          >
-            {{ langStore.t('addNewProductButton') }}
+          <el-button type="primary" :icon="Plus" plain v-on:click="addNewItem">
+            {{ langStore.t("addNewProductButton") }}
           </el-button>
-          
-          <el-button
+
+          <el-button type="danger" v-on:click="handleDownloadClick" plain :icon="Download">
+            {{ langStore.t("downloadButton") }}
+          </el-button>
+
+           <el-button
             type="warning"
             v-on:click="refreshData"
             class="add-task-button"
@@ -45,167 +48,190 @@
             type="danger"
             v-if="!selectionEmpty || isDeleting"
             v-on:click="deleteAllSelectedItems"
+            plain
             :icon="Delete"
             :loading="isDeleting"
           >
-            {{ langStore.t('deleteSelectedButton') }} ({{ selectedItems.length }})
+            {{ langStore.t("deleteSelectedButton") }} ({{ selectedItems.length }})
           </el-button>
         </div>
 
         <div class="action-filter">
-            <el-select
-                v-model="selectedProductCode"
-                :placeholder="langStore.t('filterByProductCodePlaceholder')"
-                clearable
-                @change="applyFilters"
-                filterable
-                remote
-                :remote-method="remoteSearchProductCode"
-                :loading="loadingProductCode"
-            >
-                <el-option
-                    v-for="barcode in productCodeOptions"
-                    :key="barcode.id"
-                    :label="barcode.name"
-                    :value="barcode.id"
-                />
-            </el-select>
+          <el-select
+            v-model="selectedProductCode"
+            :placeholder="langStore.t('filterByProductCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            filterable
+            remote
+            :remote-method="remoteSearchProductCode"
+            :loading="loadingProductCode"
+          >
+            <el-option
+              v-for="barcode in productCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
 
-            <el-select
-                v-model="selectedLocationCode"
-                :placeholder="langStore.t('filterByLocationCodePlaceholder')"
-                clearable
-                @change="applyFilters"
-                class="barcode-select"
-                filterable
-                remote
-                :remote-method="remoteSearchLoaction"
-                :loading="loadingLocaction"
-            >
-                <el-option 
-                    v-for="barcode in locationOptions"
-                    :key="barcode.id"
-                    :label="barcode.name"
-                    :value="barcode.id"
-                />
-            </el-select>
+          <el-select
+            v-model="selectedLocationCode"
+            :placeholder="langStore.t('filterByLocationCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchLoaction"
+            :loading="loadingLocaction"
+          >
+            <el-option
+              v-for="barcode in locationOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
 
-            <el-select
-                v-model="selectedMD"
-                :placeholder="langStore.t('filterByMDPlaceholder')"
-                clearable
-                @change="applyFilters"
-                class="barcode-select"
-                filterable
-                remote
-                :remote-method="remoteSearchMD"
-                :loading="loadingMD"
-            >
-                <el-option
-                    v-for="barcode in mdOptions"
-                    :key="barcode.id"
-                    :label="barcode.name"
-                    :value="barcode.id"
-                />
-            </el-select>
+          <el-select
+            v-model="selectedMD"
+            :placeholder="langStore.t('filterByMDPlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchMD"
+            :loading="loadingMD"
+          >
+            <el-option
+              v-for="barcode in mdOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
 
-            <el-select
-                v-model="selectedProjectCode"
-                :placeholder="langStore.t('filterByProjectCodePlaceholder')"
-                clearable
-                @change="applyFilters"
-                class="barcode-select"
-                filterable
-                remote
-                :remote-method="remoteSearchProjectCode"
-                :loading="loadingProjectCode"
-            >
-                <el-option 
-                    v-for="barcode in projectCodeOptions"
-                    :key="barcode.id"
-                    :label="barcode.name"
-                    :value="barcode.id"
-                />
-            </el-select>
+          <el-select
+            v-model="selectedProjectCode"
+            :placeholder="langStore.t('filterByProjectCodePlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+            filterable
+            remote
+            :remote-method="remoteSearchProjectCode"
+            :loading="loadingProjectCode"
+          >
+            <el-option
+              v-for="barcode in projectCodeOptions"
+              :key="barcode.id"
+              :label="barcode.name"
+              :value="barcode.id"
+            />
+          </el-select>
 
-            <el-select
-                v-model="selectedStatus"
-                :placeholder="langStore.t('filterByStatusNumberPlaceholder')"
-                clearable
-                @change="applyFilters"
-                class="barcode-select"
-            >
-                <el-option 
-                    v-for="barcode in uniqueStatus"
-                    :key="barcode.id"
-                    :label="getInstallationStatusName(barcode.id)"
-                    :value="barcode.id"
-                />
-            </el-select>
+          <el-select
+            v-model="selectedStatus"
+            :placeholder="langStore.t('filterByStatusNumberPlaceholder')"
+            clearable
+            @change="applyFilters"
+            class="barcode-select"
+          >
+            <el-option
+              v-for="barcode in uniqueStatus"
+              :key="barcode.id"
+              :label="getInstallationStatusName(barcode.id)"
+              :value="barcode.id"
+            />
+          </el-select>
         </div>
       </div>
 
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
-            <flat-list-table 
-                v-if="activeTab === 'flat'"
-                :data="filteredItems"
-                :total-items="filteredItems.length"
-                :status-formatter="statusFormatter"
-                v-model:current-page="currentPageStatus"
-                v-model:page-size="pageSizeStatus"
-                @view-detail="showDetail"
-                @edit-item="editItem"
-                @delete-item="handleDelete"
-                @selection-change="handleSelectionChange"
-            />
+          <flat-list-table
+            v-if="activeTab === 'flat'"
+            :data="filteredItems"
+            :total-items="filteredItems.length"
+            :status-formatter="statusFormatter"
+            v-model:current-page="currentPageStatus"
+            v-model:page-size="pageSizeStatus"
+            @view-detail="showDetail"
+            @edit-item="editItem"
+            @delete-item="handleDelete"
+            @selection-change="handleSelectionChange"
+          />
         </el-tab-pane>
 
         <el-tab-pane :label="langStore.t('groupedByMDTabLabel')" name="expand">
-            <project-m-d-group-table 
-                v-if="activeTab === 'expand'"
-                :all-items="filteredItems"
-                @view-detail="showDetail"
-            />
+          <project-m-d-group-table
+            v-if="activeTab === 'expand'"
+            :all-items="filteredItems"
+            @view-detail="showDetail"
+            @edit-item="editItem"
+            @delete-item="handleDelete"
+          />
         </el-tab-pane>
       </el-tabs>
 
       <detail-popup v-model="isDetailVisible" :title="langStore.t('detailPopupTitle')">
         <div v-if="selectedItem">
-            <el-descriptions :column="2" border>
-                <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{ selectedItem.higher_lever_function }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{ selectedItem.project_code }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{ selectedItem.manufacturer }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{ selectedItem.description }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{ selectedItem.quantity }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{ selectedItem.seri_number }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{ selectedItem.location }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailDT')">{{ selectedItem.dt }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailHeaderCabinetNo')">{{ selectedItem.cabinet_no }}</el-descriptions-item>
-                <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{ statusFormatter(null, null, selectedItem.status, null) }}</el-descriptions-item>
-            </el-descriptions>
-            <div class="barcode-area">
-                <h4 class="barcode-label">{{ langStore.t('barcodeLabel') }}</h4>
-                <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                    <el-button
-                        type="primary"
-                        size="small"
-                        :icon="Download"
-                        :disabled="generatedBarcode === 'N/A'"
-                        @click="downloadBarcodeSvg"
-                    >
-                        {{ langStore.t('downloadSvgButton') }}
-                    </el-button>
-                    <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
-                        <svg ref="barcodeRef"></svg>
-                    </div>
-                </div>
-                <p v-else class="barcode-value-error">{{ langStore.t('barcodeError') }}</p>
+          <el-descriptions :column="2" border>
+            <el-descriptions-item :label="langStore.t('detailHigherLeverFunction')">{{
+              selectedItem.higher_lever_function
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailProjectCodeLabel')">{{
+              selectedItem.project_code
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailManufacturerLabel')">{{
+              selectedItem.manufacturer
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailDescriptionLabel')">{{
+              selectedItem.description
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailQuantityLabel')">{{
+              selectedItem.quantity
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailSeriNumberLabel')">{{
+              selectedItem.seri_number
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailLocationLabel')">{{
+              selectedItem.location
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailDT')">{{
+              selectedItem.dt
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailHeaderCabinetNo')">{{
+              selectedItem.cabinet_no
+            }}</el-descriptions-item>
+            <el-descriptions-item :label="langStore.t('detailStatusLabel')">{{
+              statusFormatter(null, null, selectedItem.status, null)
+            }}</el-descriptions-item>
+          </el-descriptions>
+          <div class="barcode-area">
+            <h4 class="barcode-label">{{ langStore.t("barcodeLabel") }}</h4>
+            <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+              <el-button
+                type="primary"
+                size="small"
+                :icon="Download"
+                :disabled="generatedBarcode === 'N/A'"
+                @click="downloadBarcodeSvg"
+              >
+                {{ langStore.t("downloadSvgButton") }}
+              </el-button>
+              <div v-if="generatedBarcode && generatedBarcode !== 'N/A'">
+                <svg ref="barcodeRef"></svg>
+              </div>
             </div>
+            <p v-else class="barcode-value-error">{{ langStore.t("barcodeError") }}</p>
+          </div>
         </div>
       </detail-popup>
 
-      <warehouse-export-data-dialog 
+      <warehouse-export-data-dialog
         v-model="dialogVisible"
         :item-to-edit="currentItem"
         @save="saveItem"
@@ -221,9 +247,9 @@
       />
     </div>
 
-    <warehouse-export-upload 
-        v-model="uploadDialogVisible"
-        @uploadSuccess="handleUploadSuccess"
+    <warehouse-export-upload
+      v-model="uploadDialogVisible"
+      @uploadSuccess="handleUploadSuccess"
     />
 
     <download-filter-dialog
@@ -233,6 +259,17 @@
       :is-preparing="isDownloadPreparing"
       @create-download-link="handleCreateDownloadLink"
       @confirm-download="confirmDownloadFile"
+    />
+
+    <file-url-uploading-dialog 
+        v-model="isConstructionUploadDialogVisible"
+        title="Tải lên tài liệu thiết kế thi công"
+        accept=".xls, .xlsx"
+        :upload-function="uploadDesignFile"
+        :max-file-size-mb="10"
+        downloadUrlText="Tải xuống Tệp Thiết kế thi công"
+        tipText="Chấp nhận tệp .xls, .xlsx cho thiết kế thi công"
+        @uploadSuccess="handleDesignUploadSuccess"
     />
   </div>
 </template>
@@ -253,6 +290,7 @@ import { useWarehouseExportDownload } from "../../../composables/Warehouse_Expor
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
 import { ElMessage, ElMessageBox } from "element-plus";
 import {
+  Cpu,
   Delete,
   Download,
   EditPen,
@@ -262,6 +300,8 @@ import {
   UploadFilled,
   View,
 } from "@element-plus/icons-vue";
+import FileUrlUploadingDialog from "../../../components/upload/FileUrlUploadingDialog.vue";
+import { useUploadConstructionDesign } from "../../../composables/Warehouse_Export/useUploadConstructionDesign";
 
 export default {
   name: "InstallationDevicesManagement",
@@ -281,6 +321,7 @@ export default {
     FormNewItemPopup,
     FlatListTable,
     ProjectMDGroupTable,
+    FileUrlUploadingDialog,
   },
   setup() {
     const langStore = useLanguageStore();
@@ -407,6 +448,23 @@ export default {
       return getInstallationStatusName(cellValue);
     };
 
+    const isConstructionUploadDialogVisible = ref(false);
+    const uploadedDesignUrl = ref("");
+
+    const {
+      isUploading: isDesignUploading,
+      uploadFile: uploadDesignFile,
+    } = useUploadConstructionDesign();
+
+    const handleUploadDesignClick = () => {
+      uploadedDesignUrl.value = "";
+      isConstructionUploadDialogVisible.value = true;
+    };
+
+    const handleDesignUploadSuccess = (url) => {
+      uploadedDesignUrl.value = url;
+    };
+
     return {
       // Icons
       Download,
@@ -489,6 +547,13 @@ export default {
       downloadBarcodeSvg,
       currentPageStatus,
       pageSizeStatus,
+
+      isConstructionUploadDialogVisible,
+      uploadDesignFile,
+      handleUploadDesignClick,
+      handleDesignUploadSuccess,
+      uploadedDesignUrl,
+      Cpu,
     };
   },
 };
@@ -538,54 +603,54 @@ export default {
   gap: 10px;
 }
 .barcode-area {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #e4e7ed;
-    border-radius: 4px;
-    background-color: #f4f4f5;
-    text-align: center;
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  background-color: #f4f4f5;
+  text-align: center;
 }
 
 .barcode-label {
-    margin-top: 0;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #606266;
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #606266;
 }
 
 .barcode-value {
-    font-size: 1.5em; /* Kích thước lớn hơn cho mã */
-    font-family: monospace; /* Sử dụng font cố định để mô phỏng mã */
-    font-weight: 700;
-    color: #303133;
-    word-break: break-all; /* Đảm bảo mã dài không tràn */
+  font-size: 1.5em; /* Kích thước lớn hơn cho mã */
+  font-family: monospace; /* Sử dụng font cố định để mô phỏng mã */
+  font-weight: 700;
+  color: #303133;
+  word-break: break-all; /* Đảm bảo mã dài không tràn */
 }
 .barcode-area {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #e4e7ed;
-    border-radius: 4px;
-    background-color: #f4f4f5;
-    text-align: center; /* Căn giữa nội dung, bao gồm barcode SVG */
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  background-color: #f4f4f5;
+  text-align: center; /* Căn giữa nội dung, bao gồm barcode SVG */
 }
 
 .barcode-label {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #606266;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #606266;
 }
 
 .actual-barcode-image {
-    display: block; /* Quan trọng để căn giữa SVG */
-    margin: 0 auto;
-    max-width: 90%; 
-    height: auto;
+  display: block; /* Quan trọng để căn giữa SVG */
+  margin: 0 auto;
+  max-width: 90%;
+  height: auto;
 }
 
 .barcode-value-error {
-    color: #f56c6c;
-    font-style: italic;
+  color: #f56c6c;
+  font-style: italic;
 }
 
 .action-filter {

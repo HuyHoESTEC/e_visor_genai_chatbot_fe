@@ -49,6 +49,7 @@ export default {
     ExportWarehouseRoute: 'Xuất kho',
     InstallationWarehouseRoute: 'Lắp đặt',
     Forbidden: 'Lỗi',
+    UserManagement: 'Quản lý nhân sự',
     
     // --- File Upload & Merging ---
     FileUpload: "Tải lên File",
@@ -185,6 +186,7 @@ export default {
     quantityColumn: 'Số lượng',
     brandColumn: 'Hãng',
     unitColumn: 'Đơn vị',
+    cabinetQuantityColumn: 'Số lượng tủ',
     
     // --- Warehouse Management - Detail Labels (UPDATED) ---
     detailIdLabel: 'ID',
