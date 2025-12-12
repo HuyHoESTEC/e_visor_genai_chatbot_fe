@@ -21,9 +21,9 @@
                 width="200"
               />
 
-              <el-table-column :label="langStore.t('quantityColumn')" width="150">
+              <el-table-column :label="langStore.t('cabinetQuantityColumn')" width="150">
                 <template #default="{ row }">
-                  <span style="font-weight: bold">{{ row.items.length }}</span>
+                  <el-tag type="primary">{{ getLocationCount(row.items) }}</el-tag>
                 </template>
               </el-table-column>
 
@@ -35,7 +35,7 @@
                     :icon="List"
                     v-on:click="openDetailDialog(mdRow, projectRow.project_code)"
                   >
-                    Xem danh sách chi tiết
+                    Xem danh sách chi tiết {{ mdRow.cabinet_no }}
                   </el-button>
                 </template>
               </el-table-column>
@@ -93,7 +93,7 @@
         <div style="margin-bottom: 15px; display: flex; gap: 10px;">
           <el-input
             v-model="filterText"
-            placeholder="Tìm kiếm Location..."
+            placeholder="Tìm kiếm mã tủ..."
             style="width: 300px"
             clearable
           />
@@ -103,6 +103,15 @@
             style="width: 300px;"
             clearable
           />
+          <el-select 
+            v-model="statusFilterValue"
+            placeholder="Lọc theo trạng thái hàng hóa"
+            style="width: 250px"
+            clearable
+          >
+            <el-option :label="getInstallationStatusName(0)" :value="0" />
+            <el-option :label="getInstallationStatusName(1)" :value="1" />
+          </el-select>
         </div>
 
         <el-table
@@ -115,6 +124,9 @@
           <el-table-column type="expand">
             <template #default="{ row: locationRow }">
               <div style="padding: 10px">
+                <h4 style="margin-top: 0; color: #606266">
+                  Danh sách thiết bị thuộc tủ {{ locationRow.location }}
+                </h4>
                 <el-table :data="getPaginatedLocationItems(locationRow.items, locationRow.location)" border size="small">
                   <el-table-column
                     prop="part_no"
@@ -124,7 +136,7 @@
                   <el-table-column
                     prop="description"
                     :label="langStore.t('tableHeaderDescription')"
-                    min-width="200"
+                    min-width="150"
                   />
                   <el-table-column
                     prop="quantity"
@@ -142,7 +154,7 @@
                     width="auto"
                     :formatter="statusFormatter"
                   />
-                  <el-table-column fixed="right" width="100" label="Action">
+                  <el-table-column fixed="right" width="auto" :label="langStore.t('tableHeaderAction')">
                     <template #default="{ row }">
                       <el-button
                         type="success"
@@ -151,6 +163,22 @@
                         circle
                         plain
                         @click="$emit('view-detail', row)"
+                      />
+                      <el-button 
+                        type="primary"
+                        size="small"
+                        :icon="EditPen"
+                        circle
+                        plain
+                        @click="$emit('edit-item', row)"
+                      />
+                      <el-button 
+                        type="danger"
+                        size="small"
+                        :icon="Delete"
+                        circle
+                        plain
+                        @click="$emit('delete-item', row)"
                       />
                     </template>
                   </el-table-column>
@@ -182,6 +210,16 @@
               <el-tag>{{ row.items.length }}</el-tag>
             </template>
           </el-table-column>
+          <el-table-column label="Chưa lắp đặt" width="120">
+            <template #default="{ row }">
+              <el-tag type="warning">{{ getCountNotInstalled(row.items) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="Đã lắp đặt" width="120">
+            <template #default="{ row }">
+              <el-tag type="success">{{ getCountInstalled(row.items) }}</el-tag>
+            </template>
+          </el-table-column>
         </el-table>
 
         <div style="margin-top: 15px; display: flex; justify-content: center">
@@ -205,7 +243,7 @@
 </template>
 
 <script>
-import { View, List } from "@element-plus/icons-vue";
+import { View, List, EditPen, Delete } from "@element-plus/icons-vue";
 import { useLanguageStore } from "../../../stores/language";
 import { computed, ref } from "vue";
 
@@ -214,6 +252,8 @@ export default {
   components: {
     View,
     List,
+    EditPen,
+    Delete,
   },
   props: {
     allItems: {
@@ -221,7 +261,7 @@ export default {
       required: true,
     },
   },
-  emits: ["view-detail"],
+  emits: ["view-detail", "edit-item", "delete-item"],
   setup(props) {
     const langStore = useLanguageStore();
     // -- Grouping Level 1: Project Code --
@@ -299,6 +339,7 @@ export default {
     const selectedProjectCode = ref("");
     const filterText = ref("");
     const partNoFilterText = ref("");
+    const statusFilterValue = ref(null);
 
     const currentLocationPage = ref(1);
     const locationPageSize = ref(10);
@@ -342,6 +383,7 @@ export default {
       currentLocationPage.value = 1;
       filterText.value = "";
       partNoFilterText.value = "";
+      statusFilterValue.value = null;
       dialogVisible.value = true;
       itemPaginationStateInDialog.value = {};
     };
@@ -350,11 +392,18 @@ export default {
       let items = selectedMDItems.value;
       const lowerLoc = filterText.value.toLowerCase();
       const lowerPartNo = partNoFilterText.value.toLowerCase();
-      if (lowerLoc || lowerPartNo) {
+      const statusFilter = statusFilterValue.value;
+      const isStatusFilterApplied = statusFilter !== null && statusFilter !== undefined && statusFilter !== '';
+      if (lowerLoc || lowerPartNo || isStatusFilterApplied) {
         items = items.filter((i) => {
           const locationMatch = !lowerLoc || i.location?.toLowerCase().includes(lowerLoc);
           const partNoMatch = !lowerPartNo || i.part_no?.toLowerCase().includes(lowerPartNo);
-          return locationMatch && partNoMatch;
+          let statusMatch = true;
+          if (isStatusFilterApplied) {
+            const statusValue = typeof statusFilter === 'string' ? parseInt(statusFilter) : statusFilter;
+            statusMatch = i.status === statusValue;
+          }
+          return locationMatch && partNoMatch && statusMatch;
         });
       }
 
@@ -393,12 +442,31 @@ export default {
       return getInstallationStatusName(cellValue);
     };
 
+    const getCountInstalled = (items) => {
+      if (!items || !Array.isArray(items)) return 0;
+      return items.filter(item => item.status === 0).length;
+    };
+
+    const getCountNotInstalled = (items) => {
+      if (!items || !Array.isArray(items)) return 0;
+      return items.filter(item => item.status === 1).length;
+    };
+
+    const getLocationCount = (items) => {
+      if (!items || !Array.isArray(items)) return 0;
+      // Create Set to save unique location
+      const uniqueLocations = new Set(items.map(item => item.location));
+      return uniqueLocations.size;
+    };
+
     return {
       langStore,
       currentPage,
       pageSize,
       View,
       List,
+      EditPen,
+      Delete,
       groupedByProject,
       paginatedProjectGroups,
       totalProjectGroups,
@@ -428,6 +496,10 @@ export default {
       getInstallationStatusName,
       statusFormatter,
       partNoFilterText,
+      getCountInstalled,
+      getCountNotInstalled,
+      getLocationCount,
+      statusFilterValue,
     };
   },
 };
