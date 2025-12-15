@@ -244,6 +244,10 @@ export default {
       emit("toggleSidebar", isCollaped.value);
     };
 
+    const DisabledForRole = computed(() => {
+      return userRole.value === USER_ROLES.EMPLOYEE;
+    })
+
     return {
       route,
       router,
@@ -257,6 +261,7 @@ export default {
       Expand,
       Tools,
       SwitchButton,
+      DisabledForRole,
     };
   },
 };
