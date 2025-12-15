@@ -35,7 +35,7 @@ export function useLoadWorkManagementKHTC( viewModeSwitch ) {
         const endDate = getLastDayOfYear();
 
         let ownerValue;
-        if (viewModeSwitch.value === true) {
+        if (viewModeSwitch && viewModeSwitch.value === true) {
             ownerValue = 'common'
         } else {
             ownerValue = loggedInUserId;
