@@ -6,10 +6,10 @@
     <div v-else class="table-data">
       <div class="filter-section">
         <div class="action-area">
-          <el-button type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
-          <el-button type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
-          <el-button type="danger" v-on:click="handleDownloadClick" class="add-task-button" :icon="Download"></el-button>
-          <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
+          <el-button plain type="success" v-on:click="handleUploadFile" class="add-task-button" :icon="UploadFilled">{{ langStore.t('FileUpload') }}</el-button>
+          <el-button plain type="primary" v-on:click="addTask" class="add-task-button" :icon="Plus">{{ langStore.t('AddWork') }}</el-button>
+          <el-button plain type="danger" v-on:click="handleDownloadClick" class="add-task-button" :icon="Download"></el-button>
+          <el-button plain type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh"></el-button>
           <el-switch 
             v-model="viewModeSwitch" 
             size="large" 
@@ -19,6 +19,7 @@
             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           />
           <el-button
+            plain
             type="primary"
             @click="handleApplyLoad"
             :loading="isLoading"
@@ -166,8 +167,8 @@
         </el-table-column>
         <el-table-column :label="langStore.t('JobAction')" width="auto">
           <template v-slot:default="scope">
-            <el-button :disabled="buttonStatus"  size="small" @click="editTask(scope.row)" :icon="EditPen" >{{ langStore.t('EditAct') }}</el-button>
-            <el-button :disabled="buttonStatus" size="small" type="danger" @click="confirmDeleteTask(scope.row)" :icon="Delete">{{ langStore.t('DeleteAct') }}</el-button>
+            <el-button :disabled="checkRoleFlat" type="primary"  size="small" @click="editTask(scope.row)" :icon="EditPen" plain >{{ langStore.t('EditAct') }}</el-button>
+            <el-button :disabled="checkRoleFlat" size="small" type="danger" @click="confirmDeleteTask(scope.row)" :icon="Delete" plain>{{ langStore.t('DeleteAct') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -220,7 +221,8 @@ import { useLanguageStore } from "../../stores/language";
 import { useAdvanceDelete } from "../../composables/KHTC/useAdvanceDelete";
 import { useDownloadWorkManagement } from "../../composables/KHTC/useDownloadWorkManagement";
 import DownloadFilterDialogKHTC from "../../components/dialog/DownloadFilterDialogKHTC.vue";
-import { useLoadWorkManagementKHTC } from "../../composables/KHTC/useLoadWorkManagementKHTC";
+import { useAuthStore } from "../../stores/auth";
+import { watchEffect } from "vue";
 
 export default {
   name: "WorkManagmentKHTC",
@@ -233,6 +235,17 @@ export default {
     const langStore = useLanguageStore();
     const viewModeSwitch = ref(true);
     const buttonStatus = ref(false);
+    const authStore = useAuthStore();
+    const userRole = computed(() => authStore.user?.role || 0);
+    const checkRoleFlat = ref(false);
+
+    const DisabledForRole = () => {
+      if (userRole.value === 255 || userRole.value === 127 || userRole.value === 63 ){
+        checkRoleFlat.value = false;
+      } else if (userRole.value === 1){
+        checkRoleFlat.value = true;
+      }
+    };
 
     const {
       allTasks,
@@ -275,17 +288,17 @@ export default {
       canPerformAction,
     } = useTaskActions(allTasks, paginatedTasks, dummyTasks, langStore, fetchDataAndInitialize);
 
-    const updateButtonStatus = () => {
-      const currentModeVal = viewModeSwitch.value;
-      if (currentModeVal === true){
-          buttonStatus.value = true;
-      } else if (currentModeVal === false){
-          buttonStatus.value = false;
-      } 
-      // buttonStatus.value = viewModeSwitch.value ? true : false; 
-    };
+    // const updateButtonStatus = () => {
+    //   const currentModeVal = viewModeSwitch.value;
+    //   if (currentModeVal === true){
+    //       buttonStatus.value = true;
+    //   } else if (currentModeVal === false){
+    //       buttonStatus.value = false;
+    //   } 
+    //   // buttonStatus.value = viewModeSwitch.value ? true : false; 
+    // };
 
-    updateButtonStatus();
+    // updateButtonStatus();
 
     const {
       downloadDialogVisible,
@@ -365,9 +378,13 @@ export default {
     const value = ref(true)
 
     const handleApplyLoad = async () => {
-      updateButtonStatus();
+      DisabledForRole();
       await fetchTableData();
     };
+
+    watchEffect(() => {
+      DisabledForRole();
+    })
 
     return {
       isLoading,
@@ -443,7 +460,9 @@ export default {
       handleApplyLoad,
       canPerformAction,
       buttonStatus,
-      updateButtonStatus,
+      userRole,
+      DisabledForRole,
+      checkRoleFlat,
     };
   },
 };

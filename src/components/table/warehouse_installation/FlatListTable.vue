@@ -71,6 +71,7 @@
             size="small"
             :icon="View"
             circle
+            plain
             v-on:click="$emit('view-detail', row)"
           />
           <el-button
@@ -78,6 +79,7 @@
             size="small"
             :icon="EditPen"
             circle
+            plain
             @click="$emit('edit-item', row)"
           />
           <el-button
@@ -85,6 +87,7 @@
             size="small"
             :icon="Delete"
             circle
+            plain
             @click="$emit('delete-item', row)"
           />
         </template>

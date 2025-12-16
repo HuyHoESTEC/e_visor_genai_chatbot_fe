@@ -6,15 +6,16 @@
     <div v-else class="table-data">
       <div class="filter-section">
         <div class="action-area">
-          <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" :icon="UploadFilled">{{ langStore.t("uploadTemplateButton") }}</el-button>
-          <el-button type="danger" v-on:click="handleDownloadClick" :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
-          <el-button type="primary" :icon="Plus" v-on:click="addNewItem">{{ langStore.t("addNewProductButton") }}</el-button>          
+          <el-button type="success" v-on:click="handleUploadFile" class="warehouse-action-btn" plain :icon="UploadFilled">{{ langStore.t("uploadTemplateButton") }}</el-button>
+          <el-button type="danger" v-on:click="handleDownloadClick" plain :icon="Download">{{ langStore.t("downloadButton") }}</el-button>
+          <el-button type="primary" :icon="Plus" plain v-on:click="addNewItem">{{ langStore.t("addNewProductButton") }}</el-button>          
           <el-button type="warning" v-on:click="refreshData" class="add-task-button" :icon="Refresh" plain circle />
           <el-button type="danger" 
             v-if="!selectionEmpty || isDeleting" 
             v-on:click="deleteAllSelectedItems" 
             :icon ="Delete" 
             :loading="isDeleting"
+            plain
           >
             {{ langStore.t("deleteSelectedButton") }} ({{ selectedItems.length }})
           </el-button>

@@ -49,6 +49,7 @@ export default {
     ExportWarehouseRoute: 'Xuất kho',
     InstallationWarehouseRoute: 'Lắp đặt',
     Forbidden: 'Lỗi',
+    UserManagement: 'Quản lý nhân sự',
     
     // --- File Upload & Merging ---
     FileUpload: "Tải lên File",
@@ -185,6 +186,7 @@ export default {
     quantityColumn: 'Số lượng',
     brandColumn: 'Hãng',
     unitColumn: 'Đơn vị',
+    cabinetQuantityColumn: 'Số lượng tủ',
     
     // --- Warehouse Management - Detail Labels (UPDATED) ---
     detailIdLabel: 'ID',
@@ -278,6 +280,8 @@ export default {
     importIdRequiredMessage: 'Mã phiếu không được để trống',
     importTimeRequiredMessage: 'Ngày nhập phiếu không được để trống',
     partNoRequiredForSeriMessage: 'Vui lòng nhập Mã hàng hóa trước khi tạo Số Seri tự động.',
+    UnknownMD: 'Chưa xác định dãy',
+    UnknownLocation: 'Chưa xác định tủ',
     
     // --- Chart
     chartImportLabel: 'Nhập Kho',

@@ -25,11 +25,11 @@ import ProductionStageManagement from "../views/WorkShop/ProductionStageManageme
 import WarehouseManagementDashboard from "../views/WorkShop/Warehouse/WarehouseManagementDashboard.vue";
 import ImportedGoodsManagment from "../views/WorkShop/Warehouse/ImportedGoodsManagment.vue";
 import ExportedGoodsManagement from "../views/WorkShop/Warehouse/ExportedGoodsManagement.vue";
-import ExportedNewGoodsManagement from "../views/WorkShop/Warehouse/ExportedNewGoodsManagement.vue";
 import { DEPARTMENTS } from "../constants/departmentList";
 import { USER_ROLES } from "../constants/roleList";
 import { ElMessage } from "element-plus";
 import InstallationDevicesManagement from "../views/WorkShop/Warehouse/InstallationDevicesManagement.vue";
+import UserManagementPage from "../views/user-management/UserManagementPage.vue";
 
 const routes = [
   {
@@ -301,7 +301,7 @@ const routes = [
   {
     path: '/export-warehouse',
     name: 'ExportWarehouseRoute',
-    component: ExportedNewGoodsManagement,
+    component: ExportedGoodsManagement,
     meta: { 
       requiresAuth: true,
       allowedDepartments: [
@@ -325,6 +325,23 @@ const routes = [
       allowedDepartments: [
         DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN,
         DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+      ],
+      allowedRoles: [
+        USER_ROLES.ADMIN,
+        USER_ROLES.MANAGER,
+        USER_ROLES.WAREHOUSE_MANAGER,
+        USER_ROLES.EMPLOYEE,
+      ]
+    }
+  },
+  {
+    path: '/user-management',
+    name: 'UserManagementRoute',
+    component: UserManagementPage,
+    meta: {
+      requiresAuth: true,
+      allowedDepartments: [
+        DEPARTMENTS.ESTEC_DIGITAL_DN,
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
