@@ -247,43 +247,23 @@ const MENU_ITEMS = [
           },
         ],
       },
-      {
-        name: "ConstructionManagement",
-        label: "Thiết kế thi công",
-        routeName: null,
-        isDropdown: true,
-        requiredDepartments: [
-          DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-          DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
-        ],
-        requiredRoles: [
-          USER_ROLES.ADMIN,
-          USER_ROLES.MANAGER,
-          USER_ROLES.EMPLOYEE,
-          USER_ROLES.WAREHOUSE_MANAGER,
-        ],
-        iconComponent: "AddLocation",
-        children: [
-          {
-            name: "ConstructionDashboard",
-            label: "Thống kê",
-            routeName: "ConstructioDashboardRoute",
-            iconComponent: "List",
-            isActive: false,
-            requiredDepartments: [
-              DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
-            ],
-            requiredRoles: [
-              USER_ROLES.ADMIN,
-              USER_ROLES.MANAGER,
-              USER_ROLES.EMPLOYEE,
-              USER_ROLES.WAREHOUSE_MANAGER,
-            ],
-          },
-        ],
-      },
     ],
+  },
+  // -----User Management-----
+  {
+    name: "user-management",
+    label: "Quản lý nhân sự",
+    labelKey: "UserManagement",
+    iconComponent: "Avatar",
+    routeName: "UserManagementRoute",
+    requiredDepartments: [
+      DEPARTMENTS.ESTEC_DIGITAL_DN
+    ],
+    requiredRoles: [
+      USER_ROLES.ADMIN,
+      USER_ROLES.MANAGER,
+    ],
+    isActive: false,
   },
   // {
   //   name: "chat",

@@ -575,3 +575,33 @@ export const downloadWorkManagementFile = async (payload, signal) => {
         throw new Error(`${errorMessage}`);
     }
 };
+
+export const constructorDesignUploadFileApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/DCD/WarehouseInstallation_Download`, payload, {
+            signal,
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
+
+export const listUserLoadingApi = async (payload, signal) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/WPermit/View`, payload, {
+            signal,
+            headers: {
+                'Content-type': 'application/json'
+            }
+        });
+        return response;
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định";
+        throw new Error(`${errorMessage}`);
+    }
+};
