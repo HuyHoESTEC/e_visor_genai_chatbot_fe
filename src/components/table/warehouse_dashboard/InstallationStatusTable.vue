@@ -260,7 +260,13 @@ export default {
     const {
       filteredInstallationItems,
       groupItemsByPartNo,
+      installedData,
+      notInstalledData,
     } = useWarehouseInstallationManagement();
+
+    const combinedTableData = computed(() => {
+      return [...installedData.value, ...notInstalledData.value];
+    });
 
     // --- LOGIC class 1: Group by project code ---
     const currentPage = ref(1);
@@ -268,16 +274,16 @@ export default {
     const projectCodeFilterText = ref("");
 
     const groupedByProject = computed(() => {
-      if (!filteredInstallationItems.value) return [];
+      if (!combinedTableData.value) return [];
       const filterText = projectCodeFilterText.value
         ? projectCodeFilterText.value.toLowerCase()
         : "";
       const filteredItems = filterText
-        ? filteredInstallationItems.value.filter((item) => {
+        ? combinedTableData.value.filter((item) => {
             const pCode = item.project_code || langStore.t("NoData");
             return pCode.toLowerCase().includes(filterText);
           })
-        : filteredInstallationItems.value;
+        : combinedTableData.value;
 
       const groups = {};
       filteredItems.forEach((item) => {
@@ -420,7 +426,8 @@ export default {
         const lowerCaseFilter = filterText.toLowerCase();
         return items.filter(item => 
             item.seri_number?.toLowerCase().includes(lowerCaseFilter) ||
-            item.product_name?.toLowerCase().includes(lowerCaseFilter)
+            item.product_name?.toLowerCase().includes(lowerCaseFilter) ||
+            item.part_no && item.part_no.toLowerCase().includes(lowerCaseFilter)
         );
     };
 
@@ -498,6 +505,9 @@ export default {
       handleItemSizeChangeInDialog,
       handleItemCurrentChangeInDialog,
       filterItemsByText,
+      installedData,
+      notInstalledData,
+      combinedTableData,
     };
   },
 };

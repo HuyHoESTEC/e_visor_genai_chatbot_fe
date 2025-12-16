@@ -280,6 +280,8 @@ export default {
     importIdRequiredMessage: 'Mã phiếu không được để trống',
     importTimeRequiredMessage: 'Ngày nhập phiếu không được để trống',
     partNoRequiredForSeriMessage: 'Vui lòng nhập Mã hàng hóa trước khi tạo Số Seri tự động.',
+    UnknownMD: 'Chưa xác định dãy',
+    UnknownLocation: 'Chưa xác định tủ',
     
     // --- Chart
     chartImportLabel: 'Nhập Kho',

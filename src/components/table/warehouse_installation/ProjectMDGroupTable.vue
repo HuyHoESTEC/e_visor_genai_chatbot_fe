@@ -300,7 +300,7 @@ export default {
     const getGroupedMDByProjectRaw = (items) => {
       const groups = {};
       items.forEach((item) => {
-        const mdCode = item.cabinet_no || "Unknown MD";
+        const mdCode = item.cabinet_no || langStore.t('UnknownMD');
         if (!groups[mdCode]) groups[mdCode] = { cabinet_no: mdCode, items: [] };
         groups[mdCode].items.push(item);
       });
@@ -409,7 +409,7 @@ export default {
 
       const groups = {};
       items.forEach((item) => {
-        const loc = item.location || "Unknown Location";
+        const loc = item.location || langStore.t('UnknownLocation');
         if (!groups[loc]) groups[loc] = { location: loc, items: [] };
         groups[loc].items.push(item);
       });

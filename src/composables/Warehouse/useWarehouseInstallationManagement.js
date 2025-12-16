@@ -3,10 +3,16 @@ import { useDateFormat } from "../utils/useDateFormat";
 import { useLoadWarehouseInstallation } from "./useLoadWarehouseInstallation.js";
 
 export function useWarehouseInstallationManagement() {
-    const { tableData: allItemsFromComposable, isLoading, error, fetchTableDataInstallation } = useLoadWarehouseInstallation();
+    const { tableData: allItemsFromComposable, installedData, notInstalledData, isLoading, error, fetchTableDataInstallation } = useLoadWarehouseInstallation();
     // Define a new ref to save data was fetched
-    const allInstallationItems = ref([]);
-    const filteredInstallationItems = ref([]);
+    const allInstallationItems = computed(() => {
+        const installed = Array.isArray(installedData.value) ? installedData.value : [];
+        const notInstalled = Array.isArray(notInstalledData.value) ? notInstalledData.value : [];
+        return [...installed, ...notInstalled];
+    });
+
+    const countInstalled = computed(() => installedData.value?.length || 0);
+    const countNotInstalled = computed(() => notInstalledData.value?.length || 0);
 
     // State for filter tools 
     const selectedSeriNumber = ref(null);
@@ -17,6 +23,34 @@ export function useWarehouseInstallationManagement() {
     const selectedExportId = ref(null);
     const selectedStatus = ref(null);
     const selectedMD = ref(null);
+
+    const filteredInstallationItems = computed(() => {
+        let tempItems = allInstallationItems.value || [];
+        if (selectedProductCode.value) {
+            tempItems = tempItems.filter(item => item.part_no === selectedProductCode.value);
+        }
+        // Lọc theo Seri
+        if (selectedSeriNumber.value) {
+            tempItems = tempItems.filter(item => item.seri_number === selectedSeriNumber.value);
+        }
+
+        // Lọc theo Status
+        if (selectedStatus.value !== null && selectedStatus.value !== undefined) {
+            tempItems = tempItems.filter(item => item.status === selectedStatus.value);
+        }
+
+        // Lọc theo Project Code
+        if (selectedProjectCode.value) {
+            tempItems = tempItems.filter(item => item.project_code === selectedProjectCode.value);
+        }
+
+        // Lọc theo MD (Cabinet No) - KIỂM TRA TÊN TRƯỜNG cabinet_no CÓ ĐÚNG KHÔNG
+        if (selectedMD.value) {
+            tempItems = tempItems.filter(item => item.cabinet_no === selectedMD.value);
+        }
+
+        return tempItems;
+    });
 
     // State for pagination
     const currentPage = ref(1);
@@ -124,7 +158,7 @@ export function useWarehouseInstallationManagement() {
                 });
             }, 200);
         } else {
-            productCodeOptions.value = '';
+            productCodeOptions.value = [];
         }
     };
     
@@ -154,7 +188,7 @@ export function useWarehouseInstallationManagement() {
                 })
             }, 200);
         } else {
-            projectCodeOptions.value = '';
+            projectCodeOptions.value = [];
         }
     };
 
@@ -166,7 +200,7 @@ export function useWarehouseInstallationManagement() {
         const itemLocation = new Map();
         allInstallationItems.value.forEach((item) => {
             const locationVal = item.location;
-            if (locationVal && !itemLocation.has(Location)) {
+            if (locationVal && !itemLocation.has(locationVal)) {
                 itemLocation.set(locationVal, { id: locationVal, name: locationVal })
             }
         });
@@ -184,7 +218,7 @@ export function useWarehouseInstallationManagement() {
                 })
             }, 200);
         } else {
-            locationOptions.value = '';
+            locationOptions.value = [];
         }
     };
 
@@ -214,7 +248,7 @@ export function useWarehouseInstallationManagement() {
                 })
             }, 200);
         } else {
-            mdOptions.value = '';
+            mdOptions.value = [];
         }
     };
 
@@ -265,49 +299,49 @@ export function useWarehouseInstallationManagement() {
 
     // Function use filter and update filteredInstallationItems
     const applyFilters = () => {
-        let tempItems = Array.isArray(allInstallationItems.value) ? [...allInstallationItems.value] : [];
+        // let tempItems = Array.isArray(allInstallationItems.value) ? [...allInstallationItems.value] : [];
 
-        if (selectedProductCode.value) {
-            tempItems = tempItems.filter(item => item.part_no === selectedProductCode.value);
-        }
-
-        if (selectedSeriNumber.value) {
-            tempItems = tempItems.filter(item => item.seri_number === selectedSeriNumber.value);
-        }
-
-        if (selectedStatus.value !== null && selectedStatus.value !== undefined) {
-            tempItems = tempItems.filter(item => item.status === selectedStatus.value);        
-        }
-
-        // if (selectedImportDate.value) {
-        //     const filterImportDate = selectedImportDate.value;
-        //     tempItems = tempItems.filter(item => {
-        //             const itemDateOnly = extractDateOnly(item.export_time);
-        //             return itemDateOnly === filterImportDate;
-        //     });
+        // if (selectedProductCode.value) {
+        //     tempItems = tempItems.filter(item => item.part_no === selectedProductCode.value);
         // }
 
-        if (selectedProjectCode.value) {
-            const filterProjectCode = selectedProjectCode.value;
-            tempItems = tempItems.filter(item => item.project_code === filterProjectCode);
-        }
+        // if (selectedSeriNumber.value) {
+        //     tempItems = tempItems.filter(item => item.seri_number === selectedSeriNumber.value);
+        // }
 
-        if (selectedLocationCode.value) {
-            const locationCodeVal = selectedLocationCode.value;
-            tempItems = tempItems.filter(item => item.location === locationCodeVal);
-        }
+        // if (selectedStatus.value !== null && selectedStatus.value !== undefined) {
+        //     tempItems = tempItems.filter(item => item.status === selectedStatus.value);        
+        // }
 
-        if (selectedExportId.value) {
-            const exportIdVal = selectedExportId.value;
-            tempItems = tempItems.filter(item => item.export_id === exportIdVal);
-        }
+        // // if (selectedImportDate.value) {
+        // //     const filterImportDate = selectedImportDate.value;
+        // //     tempItems = tempItems.filter(item => {
+        // //             const itemDateOnly = extractDateOnly(item.export_time);
+        // //             return itemDateOnly === filterImportDate;
+        // //     });
+        // // }
 
-        if (selectedMD.value) {
-            const mdVal = selectedMD.value;
-            tempItems = tempItems.filter(item => item.cabinet_no === mdVal);
-        }
+        // if (selectedProjectCode.value) {
+        //     const filterProjectCode = selectedProjectCode.value;
+        //     tempItems = tempItems.filter(item => item.project_code === filterProjectCode);
+        // }
 
-        filteredInstallationItems.value = tempItems;
+        // if (selectedLocationCode.value) {
+        //     const locationCodeVal = selectedLocationCode.value;
+        //     tempItems = tempItems.filter(item => item.location === locationCodeVal);
+        // }
+
+        // if (selectedExportId.value) {
+        //     const exportIdVal = selectedExportId.value;
+        //     tempItems = tempItems.filter(item => item.export_id === exportIdVal);
+        // }
+
+        // if (selectedMD.value) {
+        //     const mdVal = selectedMD.value;
+        //     tempItems = tempItems.filter(item => item.cabinet_no === mdVal);
+        // }
+
+        // filteredInstallationItems.value = tempItems;
         currentPage.value = 1;
     };
 
@@ -417,29 +451,26 @@ export function useWarehouseInstallationManagement() {
     };
 
     watch(allItemsFromComposable, (newValue) => {
-        if (newValue) {
-            allInstallationItems.value = newValue;
-            applyFilters();
+    if (newValue && newValue.length > 0) {
+        // Cập nhật các danh sách gợi ý cho dropdown
+        productCodeOptions.value = uniqueProductCode.value;
+        projectCodeOptions.value = uniqueProjectCode.value;
+        exportIdOptions.value = uniqueExportId.value;
+        brandOptions.value = uniqueBrand.value;
+        locationOptions.value = uniqueLocation.value;
+        mdOptions.value = uniqueMD.value;
 
-            const items = new Map();
-            allInstallationItems.value.forEach(item => {
-                const itemId = item.id || item.part_no;
-                if (itemId && !items.has(itemId)) {
-                    items.set(itemId, { id: itemId, name: item.part_no });
-                }
-            });
-            dummyItems.value = Array.from(items.values());
-            productCodeOptions.value = uniqueProductCode.value;
-            projectCodeOptions.value = uniqueProjectCode.value;
-            exportIdOptions.value = uniqueExportId.value;
-            brandOptions.value = uniqueBrand.value;
-            locationOptions.value = uniqueLocation.value;
-        } else {
-            allInstallationItems.value = [];
-            filteredInstallationItems.value = [];
-            dummyItems.value = [];
-        }
-    }, { immediate: true });
+        // Xử lý dummyItems
+        const itemsMap = new Map();
+        allInstallationItems.value.forEach(item => {
+            const itemId = item.id || item.part_no;
+            if (itemId && !itemsMap.has(itemId)) {
+                itemsMap.set(itemId, { id: itemId, name: item.part_no });
+            }
+        });
+        dummyItems.value = Array.from(itemsMap.values());
+    }
+}, { immediate: true });
 
     onMounted(() => {
         fetchDataInstallationAndInitialize();
@@ -493,5 +524,9 @@ export function useWarehouseInstallationManagement() {
         totalStatusForPagination,
         groupItemsByPartNo,
         totalPartNoItemsForPagination,
+        installedData,
+        notInstalledData,
+        countInstalled,
+        countNotInstalled,
     }
 }

@@ -56,7 +56,7 @@
           </el-button>
         </div>
 
-        <div class="action-filter">
+        <!-- <div class="action-filter">
           <el-select
             v-model="selectedProductCode"
             :placeholder="langStore.t('filterByProductCodePlaceholder')"
@@ -83,7 +83,7 @@
             class="barcode-select"
             filterable
             remote
-            :remote-method="remoteSearchLoaction"
+            :remote-method="remoteSearchLocation"
             :loading="loadingLocaction"
           >
             <el-option
@@ -146,15 +146,15 @@
               :value="barcode.id"
             />
           </el-select>
-        </div>
+        </div> -->
       </div>
 
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
           <flat-list-table
             v-if="activeTab === 'flat'"
-            :data="filteredItems"
-            :total-items="filteredItems.length"
+            :data="combinedTableData"
+            :total-items="combinedTableData.length"
             :status-formatter="statusFormatter"
             v-model:current-page="currentPageStatus"
             v-model:page-size="pageSizeStatus"
@@ -168,7 +168,7 @@
         <el-tab-pane :label="langStore.t('groupedByMDTabLabel')" name="expand">
           <project-m-d-group-table
             v-if="activeTab === 'expand'"
-            :all-items="filteredItems"
+            :all-items="combinedTableData"
             @view-detail="showDetail"
             @edit-item="editItem"
             @delete-item="handleDelete"
@@ -275,7 +275,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import DownloadFilterDialog from "../../../components/dialog/DownloadFilterDialog.vue";
 import WarehouseExportDataDialog from "../../../components/dialog/WarehouseExportDataDialog.vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
@@ -284,7 +284,7 @@ import FlatListTable from "../../../components/table/warehouse_installation/Flat
 import ProjectMDGroupTable from "../../../components/table/warehouse_installation/ProjectMDGroupTable.vue";
 import WarehouseExportUpload from "../../../components/upload/WarehouseExportUpload.vue";
 import { useLanguageStore } from "../../../stores/language";
-import { useWarehouseExportDatas } from "../../../composables/Warehouse_Export/useWarehouseExportDatas";
+// import { useWarehouseExportDatas } from "../../../composables/Warehouse_Export/useWarehouseExportDatas";
 import { useWarehouseExportAction } from "../../../composables/Warehouse_Export/useWarehouseExportAction";
 import { useWarehouseExportDownload } from "../../../composables/Warehouse_Export/useWarehouseExportDownload";
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
@@ -302,6 +302,7 @@ import {
 } from "@element-plus/icons-vue";
 import FileUrlUploadingDialog from "../../../components/upload/FileUrlUploadingDialog.vue";
 import { useUploadConstructionDesign } from "../../../composables/Warehouse_Export/useUploadConstructionDesign";
+import { useWarehouseInstallationManagement } from "../../../composables/Warehouse/useWarehouseInstallationManagement";
 
 export default {
   name: "InstallationDevicesManagement",
@@ -328,8 +329,8 @@ export default {
     const activeTab = ref("flat");
 
     const {
-      filteredItems,
-      fetchDataAndInitialize,
+      filteredInstallationItems,
+      fetchTableDataInstallation,
       emptyData,
       applyFilters,
       isLoading,
@@ -347,11 +348,13 @@ export default {
       loadingProjectCode,
       loadingMD,
       loadingLocaction,
-      remoteSearchLoaction,
+      remoteSearchLocation,
       remoteSearchProductCode,
       remoteSearchProjectCode,
       remoteSearchMD,
-    } = useWarehouseExportDatas();
+      installedData,
+      notInstalledData,
+    } = useWarehouseInstallationManagement();
 
     const {
       dialogVisible,
@@ -369,7 +372,7 @@ export default {
       addNewItem,
       newItemDialogVisible,
       createItem,
-    } = useWarehouseExportAction(langStore, fetchDataAndInitialize);
+    } = useWarehouseExportAction(langStore, fetchTableDataInstallation);
 
     const {
       downloadDialogVisible,
@@ -401,11 +404,11 @@ export default {
       uploadDialogVisible.value = true;
     };
     const handleUploadSuccess = () => {
-      fetchDataAndInitialize();
+      fetchTableDataInstallation();
     };
 
     const refreshData = () => {
-      fetchDataAndInitialize();
+      fetchTableDataInstallation();
     };
 
     const handleDownloadClick = () => {
@@ -428,7 +431,7 @@ export default {
         );
         await deleteItemApi(item);
         ElMessage({ type: "success", message: langStore.t("delete_success_message") });
-        fetchDataAndInitialize();
+        fetchTableDataInstallation();
       } catch (e) {
         // Resolve error
       }
@@ -465,6 +468,10 @@ export default {
       uploadedDesignUrl.value = url;
     };
 
+    const combinedTableData = computed(() => {
+      return [...installedData.value, ...notInstalledData.value];
+    });
+
     return {
       // Icons
       Download,
@@ -481,7 +488,7 @@ export default {
       activeTab,
       isLoading,
       emptyData,
-      filteredItems, // Dữ liệu chính truyền xuống components con
+      filteredInstallationItems, // Dữ liệu chính truyền xuống components con
 
       // Filters Models & Options
       selectedProductCode,
@@ -503,10 +510,11 @@ export default {
       applyFilters,
       remoteSearchProductCode,
       remoteSearchProjectCode,
-      remoteSearchLoaction,
+      remoteSearchLocation,
       remoteSearchMD,
       getInstallationStatusName,
       statusFormatter,
+      fetchTableDataInstallation,
 
       // Actions
       refreshData,
@@ -554,6 +562,9 @@ export default {
       handleDesignUploadSuccess,
       uploadedDesignUrl,
       Cpu,
+      combinedTableData,
+      installedData,
+      notInstalledData,
     };
   },
 };
