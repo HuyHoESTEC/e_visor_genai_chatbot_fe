@@ -5,9 +5,10 @@ import { loadingWarehouseInstallationApi } from "../../services/auth.service";
 export function useLoadWarehouseInstallation() {
     const authStore = useAuthStore();
     const loggedInUserId = authStore.user?.id;
-    console.log('user:', authStore.user);
 
     const tableData = ref([]);
+    const installedData = ref([]); // Installed data
+    const notInstalledData = ref([]); // Not installed data
     const isLoading = ref(false);
     const error = ref(null);
     
@@ -28,17 +29,33 @@ export function useLoadWarehouseInstallation() {
         };
         try {
             const response = await loadingWarehouseInstallationApi(payload);
-            const dataVal = response.data.data;
             
-            if (response.data.status === "success" && Array.isArray(dataVal)) {
-                tableData.value = dataVal;
+            if (response.data.status === "success") {
+                const rawInstalledData = Array.isArray(response.data.data)
+                    ? response.data.data
+                    : [];
+                
+                const rawNotInstalledData = Array.isArray(response.data.notinstalled_data)
+                    ? response.data.notinstalled_data
+                    : [];
+                
+                installedData.value = rawInstalledData.map(item => ({
+                    ...item,
+                    status: 0
+                }));
+                notInstalledData.value = rawNotInstalledData.map(item => ({
+                    ...item,
+                    status: 1
+                }));
             } else {
-                console.warn('API did not return an array for tableData:', dataVal);
-                tableData.value = [];
+                installedData.value = [];
+                notInstalledData.value = [];
             }
         } catch (e) {
             error.value = 'Lỗi khi tải dữ liệu:' + e.message;
             console.error("Lỗi khi tải dữ liệu:", e);
+            installedData.value = [];
+                notInstalledData.value = [];
         } finally {
             isLoading.value = false;
         }
@@ -53,5 +70,7 @@ export function useLoadWarehouseInstallation() {
         isLoading,
         error,
         fetchTableDataInstallation,
+        installedData,
+        notInstalledData,
     }
 }
