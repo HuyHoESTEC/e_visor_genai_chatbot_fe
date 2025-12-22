@@ -245,8 +245,8 @@
 <script>
 import { List, View } from "@element-plus/icons-vue";
 import { useLanguageStore } from "../../../stores/language";
-import { useWarehouseInstallationManagement } from "../../../composables/Warehouse/useWarehouseInstallationManagement";
 import { computed, ref } from "vue";
+import { useWarehouseInstallationDashboardManagment } from "../../../composables/Warehouse/Dashboard/useWarehouseInstallationDashboardManagement";
 
 export default {
   name: "InstallationStatusTable",
@@ -262,7 +262,7 @@ export default {
       groupItemsByPartNo,
       installedData,
       notInstalledData,
-    } = useWarehouseInstallationManagement();
+    } = useWarehouseInstallationDashboardManagment();
 
     const combinedTableData = computed(() => {
       return [...installedData.value, ...notInstalledData.value];
