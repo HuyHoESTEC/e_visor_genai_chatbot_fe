@@ -37,7 +37,7 @@
 
            <el-button
             type="warning"
-            v-on:click="refreshData"
+            @click="refreshData"
             class="add-task-button"
             :icon="Refresh"
             plain
@@ -56,7 +56,7 @@
           </el-button>
         </div>
 
-        <!-- <div class="action-filter">
+        <div class="action-filter">
           <el-select
             v-model="selectedProductCode"
             :placeholder="langStore.t('filterByProductCodePlaceholder')"
@@ -68,10 +68,10 @@
             :loading="loadingProductCode"
           >
             <el-option
-              v-for="barcode in productCodeOptions"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
+              v-for="productCode in productCodeOptions"
+              :key="productCode.id"
+              :label="productCode.name"
+              :value="productCode.id"
             />
           </el-select>
 
@@ -87,15 +87,15 @@
             :loading="loadingLocaction"
           >
             <el-option
-              v-for="barcode in locationOptions"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
+              v-for="locationItem in locationOptions"
+              :key="locationItem.id"
+              :label="locationItem.name"
+              :value="locationItem.id"
             />
           </el-select>
 
           <el-select
-            v-model="selectedMD"
+            v-model="selectedMd"
             :placeholder="langStore.t('filterByMDPlaceholder')"
             clearable
             @change="applyFilters"
@@ -106,10 +106,10 @@
             :loading="loadingMD"
           >
             <el-option
-              v-for="barcode in mdOptions"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
+              v-for="mdVal in mdOptions"
+              :key="mdVal.id"
+              :label="mdVal.name"
+              :value="mdVal.id"
             />
           </el-select>
 
@@ -125,10 +125,10 @@
             :loading="loadingProjectCode"
           >
             <el-option
-              v-for="barcode in projectCodeOptions"
-              :key="barcode.id"
-              :label="barcode.name"
-              :value="barcode.id"
+              v-for="projectCodeVal in projectCodeOptions"
+              :key="projectCodeVal.id"
+              :label="projectCodeVal.name"
+              :value="projectCodeVal.id"
             />
           </el-select>
 
@@ -140,21 +140,21 @@
             class="barcode-select"
           >
             <el-option
-              v-for="barcode in uniqueStatus"
-              :key="barcode.id"
-              :label="getInstallationStatusName(barcode.id)"
-              :value="barcode.id"
+              v-for="statusVal in uniqueStatus"
+              :key="statusVal.id"
+              :label="getInstallationStatusName(statusVal.id)"
+              :value="statusVal.id"
             />
           </el-select>
-        </div> -->
+        </div>
       </div>
 
       <el-tabs v-model="activeTab" class="export-data-tabs" type="border-card">
         <el-tab-pane :label="langStore.t('flatListTabLabel')" name="flat">
           <flat-list-table
             v-if="activeTab === 'flat'"
-            :data="combinedTableData"
-            :total-items="combinedTableData.length"
+            :data="filterdInstallationItems"
+            :total-items="filterdInstallationItems.length"
             :status-formatter="statusFormatter"
             v-model:current-page="currentPageStatus"
             v-model:page-size="pageSizeStatus"
@@ -168,7 +168,7 @@
         <el-tab-pane :label="langStore.t('groupedByMDTabLabel')" name="expand">
           <project-m-d-group-table
             v-if="activeTab === 'expand'"
-            :all-items="combinedTableData"
+            :all-items="filterdInstallationItems"
             @view-detail="showDetail"
             @edit-item="editItem"
             @delete-item="handleDelete"
@@ -263,12 +263,12 @@
 
     <file-url-uploading-dialog 
         v-model="isConstructionUploadDialogVisible"
-        title="Tải lên tài liệu thiết kế thi công"
-        accept=".xls, .xlsx"
+        title="Tải lên tài liệu thiết kế thi công"    
+        accept=".xlsx"
         :upload-function="uploadDesignFile"
         :max-file-size-mb="10"
         downloadUrlText="Tải xuống Tệp Thiết kế thi công"
-        tipText="Chấp nhận tệp .xls, .xlsx cho thiết kế thi công"
+        tipText="Chấp nhận tệp .xlsx cho thiết kế thi công"
         @uploadSuccess="handleDesignUploadSuccess"
     />
   </div>
@@ -284,7 +284,6 @@ import FlatListTable from "../../../components/table/warehouse_installation/Flat
 import ProjectMDGroupTable from "../../../components/table/warehouse_installation/ProjectMDGroupTable.vue";
 import WarehouseExportUpload from "../../../components/upload/WarehouseExportUpload.vue";
 import { useLanguageStore } from "../../../stores/language";
-// import { useWarehouseExportDatas } from "../../../composables/Warehouse_Export/useWarehouseExportDatas";
 import { useWarehouseExportAction } from "../../../composables/Warehouse_Export/useWarehouseExportAction";
 import { useWarehouseExportDownload } from "../../../composables/Warehouse_Export/useWarehouseExportDownload";
 import { useBarcodeLogic } from "../../../composables/utils/useBarcodeLogic";
@@ -302,7 +301,7 @@ import {
 } from "@element-plus/icons-vue";
 import FileUrlUploadingDialog from "../../../components/upload/FileUrlUploadingDialog.vue";
 import { useUploadConstructionDesign } from "../../../composables/Warehouse_Export/useUploadConstructionDesign";
-import { useWarehouseInstallationManagement } from "../../../composables/Warehouse/useWarehouseInstallationManagement";
+import { useWarehouseInstallationPartManagement } from "../../../composables/Warehouse/Installation_Part/useWarehouseInstallationPartManagement";
 
 export default {
   name: "InstallationDevicesManagement",
@@ -329,16 +328,16 @@ export default {
     const activeTab = ref("flat");
 
     const {
-      filteredInstallationItems,
-      fetchTableDataInstallation,
-      emptyData,
+      filterdInstallationItems,
+      fetchDataInstallationAndInitialize,
+      emptyInstallationVal,
       applyFilters,
       isLoading,
       selectedLocationCode,
       selectedProductCode,
       selectedProjectCode,
       selectedStatus,
-      selectedMD,
+      selectedMd,
       productCodeOptions,
       projectCodeOptions,
       locationOptions,
@@ -352,9 +351,7 @@ export default {
       remoteSearchProductCode,
       remoteSearchProjectCode,
       remoteSearchMD,
-      installedData,
-      notInstalledData,
-    } = useWarehouseInstallationManagement();
+    } = useWarehouseInstallationPartManagement();
 
     const {
       dialogVisible,
@@ -372,7 +369,7 @@ export default {
       addNewItem,
       newItemDialogVisible,
       createItem,
-    } = useWarehouseExportAction(langStore, fetchTableDataInstallation);
+    } = useWarehouseExportAction(langStore, fetchDataInstallationAndInitialize);
 
     const {
       downloadDialogVisible,
@@ -404,11 +401,11 @@ export default {
       uploadDialogVisible.value = true;
     };
     const handleUploadSuccess = () => {
-      fetchTableDataInstallation();
+      fetchDataInstallationAndInitialize();
     };
 
     const refreshData = () => {
-      fetchTableDataInstallation();
+      fetchDataInstallationAndInitialize();
     };
 
     const handleDownloadClick = () => {
@@ -468,10 +465,6 @@ export default {
       uploadedDesignUrl.value = url;
     };
 
-    const combinedTableData = computed(() => {
-      return [...installedData.value, ...notInstalledData.value];
-    });
-
     return {
       // Icons
       Download,
@@ -487,15 +480,15 @@ export default {
       langStore,
       activeTab,
       isLoading,
-      emptyData,
-      filteredInstallationItems, // Dữ liệu chính truyền xuống components con
+      emptyInstallationVal,
+      filterdInstallationItems, // Dữ liệu chính truyền xuống components con
 
       // Filters Models & Options
       selectedProductCode,
       selectedLocationCode,
       selectedProjectCode,
       selectedStatus,
-      selectedMD,
+      selectedMd,
       productCodeOptions,
       projectCodeOptions,
       locationOptions,
@@ -514,7 +507,7 @@ export default {
       remoteSearchMD,
       getInstallationStatusName,
       statusFormatter,
-      fetchTableDataInstallation,
+      fetchDataInstallationAndInitialize,
 
       // Actions
       refreshData,
@@ -562,9 +555,6 @@ export default {
       handleDesignUploadSuccess,
       uploadedDesignUrl,
       Cpu,
-      combinedTableData,
-      installedData,
-      notInstalledData,
     };
   },
 };
