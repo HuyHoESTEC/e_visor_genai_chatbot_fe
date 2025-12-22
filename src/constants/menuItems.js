@@ -149,7 +149,8 @@ const MENU_ITEMS = [
     isDropdown: true,
     requiredDepartments: [
       DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-      DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
+      DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+      DEPARTMENTS.ELECTRICAL_TEAM_DN,
     ],
     requiredRoles: [
       USER_ROLES.ADMIN,
@@ -165,7 +166,8 @@ const MENU_ITEMS = [
         isDropdown: true,
         requiredDepartments: [
           DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-          DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
+          DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+          DEPARTMENTS.ELECTRICAL_TEAM_DN,
         ],
         requiredRoles: [
           USER_ROLES.ADMIN,
@@ -183,7 +185,8 @@ const MENU_ITEMS = [
             isActive: false,
             requiredDepartments: [
               DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
+              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+              DEPARTMENTS.ELECTRICAL_TEAM_DN,
             ],
             requiredRoles: [
               USER_ROLES.ADMIN,
@@ -200,7 +203,8 @@ const MENU_ITEMS = [
             isActive: false,
             requiredDepartments: [
               DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
+              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+              DEPARTMENTS.ELECTRICAL_TEAM_DN,
             ],
             requiredRoles: [
               USER_ROLES.ADMIN,
@@ -218,7 +222,8 @@ const MENU_ITEMS = [
             isActive: false,
             requiredDepartments: [
               DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
+              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+              DEPARTMENTS.ELECTRICAL_TEAM_DN,
             ],
             requiredRoles: [
               USER_ROLES.ADMIN,
@@ -236,7 +241,8 @@ const MENU_ITEMS = [
             isActive: false,
             requiredDepartments: [
               DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN, 
-              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM
+              DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+              DEPARTMENTS.ELECTRICAL_TEAM_DN,
             ],
             requiredRoles: [
               USER_ROLES.ADMIN,

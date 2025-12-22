@@ -129,6 +129,13 @@
                 </h4>
                 <el-table :data="getPaginatedLocationItems(locationRow.items, locationRow.location)" border size="small">
                   <el-table-column
+                    prop="higher_lever_function"
+                    :label="langStore.t('tableHigherLeverFunction')"
+                    width="150"
+                    show-overflow-tooltip
+                  />
+                  <el-table-column prop="dt" :label="langStore.t('tableDT')" width="100" />
+                  <el-table-column
                     prop="part_no"
                     :label="langStore.t('tableHeaderPartNo')"
                     width="150"

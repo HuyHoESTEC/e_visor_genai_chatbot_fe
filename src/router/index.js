@@ -217,6 +217,7 @@ const routes = [
       allowedDepartments: [
         DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN,
         DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+        DEPARTMENTS.ELECTRICAL_TEAM_DN,
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
@@ -271,6 +272,7 @@ const routes = [
       allowedDepartments: [
         DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN,
         DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+        DEPARTMENTS.ELECTRICAL_TEAM_DN,
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
@@ -289,6 +291,7 @@ const routes = [
       allowedDepartments: [
         DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN,
         DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+        DEPARTMENTS.ELECTRICAL_TEAM_DN,
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
@@ -307,6 +310,7 @@ const routes = [
       allowedDepartments: [
         DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN,
         DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+        DEPARTMENTS.ELECTRICAL_TEAM_DN,
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
@@ -325,6 +329,7 @@ const routes = [
       allowedDepartments: [
         DEPARTMENTS.M_AND_E_FLENDER_GEAR_BOXES_REPAIRING_SERVICES_DN,
         DEPARTMENTS.M_AND_E_TECHNICIAN_TEAM_HCM,
+        DEPARTMENTS.ELECTRICAL_TEAM_DN,
       ],
       allowedRoles: [
         USER_ROLES.ADMIN,
