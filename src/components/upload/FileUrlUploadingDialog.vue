@@ -136,6 +136,20 @@ export default {
     };
 
     const handleChange = (file, fileList) => {
+      const rawFile = file.raw;
+      if (props.accept) {
+        const acceptedExtensions = props.accept.split(',').map(ext => ext.trim().replace('.', '').toLowerCase());
+        const fileExtension = rawFile.name.split('.').pop().toLowerCase();
+
+        if (!acceptedExtensions.includes(fileExtension)) {
+          ElMessage.error(`Định dạng file không hợp lệ. Chỉ chấp nhận các tệp: ${props.accept}`);
+          if (uploadRef.value) {
+            uploadRef.value.clearFiles();
+          }
+          fileToUpload.value = null;
+          return;
+        }
+      }
       // Keep a latest file
       fileToUpload.value = fileList.length > 0 ? fileList[fileList.length - 1].raw : null;
       // Reset URL when user choose new file
