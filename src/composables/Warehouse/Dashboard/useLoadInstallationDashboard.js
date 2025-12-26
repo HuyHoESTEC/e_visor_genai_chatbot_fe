@@ -34,21 +34,20 @@ export function useLoadInstallationDashboard() {
                 const rawData = Array.isArray(response.data.data) ? response.data.data : [];
                 const rawNotInstalled = Array.isArray(response.data.notinstalled_data) ? response.data.notinstalled_data : [];
 
-                const processedData = rawData.map(item => ({
+                const onlyInstalledRaw = rawData.filter(item => Number(item.status) === 0);
+
+                const processedData = onlyInstalledRaw.map(item => ({
                     ...item,
-                    status: (item.status === 1) ? 1 : 0
+                    status: (item.status === 0) ? 0 : 1
                 }));
 
                 const processedNotInstalled = rawNotInstalled.map(item => ({
                     ...item,
-                    status: 0
+                    status: 1
                 }));
 
-                installedData.value = processedData.filter(item => item.status === 1);
-                notInstalledData.value = [
-                    ...processedData.filter(item => item.status === 0),
-                    ...processedNotInstalled
-                ];
+                installedData.value = processedData;
+                notInstalledData.value = processedNotInstalled;
 
                 tableData.value = [...processedData, ...processedNotInstalled];
             } else {
