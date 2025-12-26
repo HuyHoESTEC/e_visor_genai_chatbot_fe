@@ -231,7 +231,7 @@
         </div>
       </detail-popup>
 
-      <warehouse-export-data-dialog
+      <installation-data-edit-dialog
         v-model="dialogVisible"
         :item-to-edit="currentItem"
         @save="saveItem"
@@ -275,9 +275,8 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import DownloadFilterDialog from "../../../components/dialog/DownloadFilterDialog.vue";
-import WarehouseExportDataDialog from "../../../components/dialog/WarehouseExportDataDialog.vue";
 import DetailPopup from "../../../components/popup/DetailPopup.vue";
 import FormNewItemPopup from "../../../components/popup/FormNewItemPopup.vue";
 import FlatListTable from "../../../components/table/warehouse_installation/FlatListTable.vue";
@@ -302,6 +301,7 @@ import {
 import FileUrlUploadingDialog from "../../../components/upload/FileUrlUploadingDialog.vue";
 import { useUploadConstructionDesign } from "../../../composables/Warehouse_Export/useUploadConstructionDesign";
 import { useWarehouseInstallationPartManagement } from "../../../composables/Warehouse/Installation_Part/useWarehouseInstallationPartManagement";
+import InstallationDataEditDialog from "../../../components/dialog/Warehouse/Installation/installationDataEditDialog.vue";
 
 export default {
   name: "InstallationDevicesManagement",
@@ -316,12 +316,12 @@ export default {
     Plus,
     DetailPopup,
     WarehouseExportUpload,
-    WarehouseExportDataDialog,
     DownloadFilterDialog,
     FormNewItemPopup,
     FlatListTable,
     ProjectMDGroupTable,
     FileUrlUploadingDialog,
+    InstallationDataEditDialog,
   },
   setup() {
     const langStore = useLanguageStore();
