@@ -144,11 +144,6 @@
                     width="auto"
                   />
                   <el-table-column
-                    prop="quantity"
-                    :label="langStore.t('tableHeaderQuantity')"
-                    width="auto"
-                  />
-                  <el-table-column
                     prop="description"
                     :label="langStore.t('tableHeaderDescription')"
                     width="auto"
@@ -161,6 +156,11 @@
                   <el-table-column
                     prop="seri_number"
                     :label="langStore.t('tableHeaderSeriNumber')"
+                    width="auto"
+                  />
+                  <el-table-column
+                    prop="quantity"
+                    :label="langStore.t('tableHeaderQuantity')"
                     width="auto"
                   />
                   <el-table-column
