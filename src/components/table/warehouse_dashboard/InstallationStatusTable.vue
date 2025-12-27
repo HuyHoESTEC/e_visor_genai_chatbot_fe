@@ -129,6 +129,11 @@
               <div style="padding: 10px">
                 <el-table :data="getPaginatedItemsInDialog(partNoRow)" border size="small">
                   <el-table-column
+                    prop="cabinet_no"
+                    label="MD"
+                    width="auto"
+                  />
+                  <el-table-column
                     prop="higher_lever_function"
                     :label="langStore.t('tableHigherLeverFunction')"
                     width="auto"
